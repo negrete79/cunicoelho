@@ -380,7 +380,7 @@ select.inp option{background:#0d1c36;color:#fff}
       <div id="auto-card"></div>
       <p class="sec">⚖️ Automático por Lote</p>
       <div id="ideal-list"></div>
-      <p class="dose-note">Doses por coelho/dia: 🐇 Amamentando 300g • 🐇 Matriz 180g • 🐰 Macho 120g • 🌱 Crescimento (até 90d) 130g • 🍖 Engorda 160g.<br>🐇 Amamentando = parto há menos de 35 dias.</p>
+      <p class="dose-note">Doses por coelho/dia: 🐇 Amamentando 300g • 🐇 Matriz 180g • 🐰 Macho 120g • 🐇 Crescimento (até 90d) 130g • 🍖 Engorda 160g.<br>🐇 Amamentando = parto há menos de 35 dias.</p>
       <p class="sec">📝 Lançamento de Ração</p>
       <div class="rc-form" id="rc-form">
         <div class="row2">
@@ -1092,7 +1092,7 @@ function renderRacao(){
  L.innerHTML=[...db.racao].sort((a,b)=>String(a.data).localeCompare(String(b.data))).reverse().map(r=>`
   <div class="rc-row">
    <div class="rc-mid"><div class="rc-info"><span class="tpill tp-${r.tipo.charAt(0).toLowerCase()}">${esc(r.tipo)}</span><b>${(+r.qtd).toLocaleString('pt-BR')} kg/dia</b></div>
-   <span class="rc-d">📦 ${esc(r.lote)||'—'} • ${fmtBR(r.data)}</span></div>
+   <span class="rc-d">🧾 ${esc(r.lote)||'—'} • ${fmtBR(r.data)}</span></div>
    <div class="rc-val"><b>${fmtBRL(r.custo)}</b></div>
    <button class="mini-del" onclick="delRacao(${r.id})">🗑️</button>
   </div>`).join('')}
