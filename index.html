@@ -925,7 +925,7 @@ function delRacao(id){db.racao=db.racao.filter(r=>r.id!==id);save();renderRacao(
 function renderLotes(){const L=$('l-list');
 if(!db.lotes.length){L.innerHTML='<div class="card empty"><span class="e">🐰</span>Nenhum lote ainda.<br>Toque no <b>+</b> → <b>Novo Lote</b>.</div>';return}
 L.innerHTML=db.lotes.map(l=>{const n=db.coelhos.filter(c=>c.lote===l.nome).length;
-return `<div class="l-card"><div class="l-ico">🐰🐰🐰</div>
+return `<div class="l-card"><div class="l-ico">🐇</div>
 <div class="l-info"><b>${esc(l.nome)}</b><span>${n} coelho${n===1?'':'s'}</span></div>
 <div class="l-btns"><button onclick="openRenomear(${l.id})">✏️</button><button onclick="apagarLote(${l.id})">🗑️</button></div></div>`}).join('')}
 function novoLoteModal(){$('nl-nome').value='';openSh('m-nl');setTimeout(()=>$('nl-nome').focus(),350)}
