@@ -48,13 +48,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .stat-lbl{display:block;font-size:clamp(9.5px,2.4vw,12.5px);color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-val{display:block;font-size:clamp(17px,4.6vw,24px);font-weight:900;color:#fff;margin:3px 0 4px}
 .stat-foot{display:block;font-size:clamp(8.5px,2vw,10px);color:var(--sub);font-weight:600}
-/* Card Crescimento & Irmandade — funciona para MACHO e FÊMEA */
-.gi{margin-top:14px}
-.gi-row{display:flex;align-items:center;gap:13px;padding:10px 0;border-bottom:1px dashed rgba(148,163,184,.15)}
-.gi-row:last-of-type{border-bottom:none}
-.gi-e{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.gi-row b{font-size:14.5px;color:#fff;display:block}
-.gi-row small{font-size:11.5px;color:var(--sub);line-height:1.4;display:block;margin-top:1px}
+.fam{margin-top:14px}
+.ninhada-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tag-lote{background:rgba(138,180,248,.14);color:var(--accent);border:1px solid rgba(138,180,248,.3);border-radius:99px;padding:6px 14px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.tag-irmaos{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3);border-radius:99px;padding:6px 14px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.irmaos-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip-irmao{background:var(--glass2);border:1px solid var(--line2);border-radius:12px;padding:7px 13px;font-size:12.5px;font-weight:800;color:#dbe7ff;cursor:pointer;font-family:inherit;transition:transform .12s}
+.chip-irmao:active{transform:scale(.94)}
+.chip-sem{font-size:11.5px;color:var(--sub);font-weight:600}
+.semaforo{border-radius:14px;padding:14px 16px;text-align:center;font-size:13.5px;font-weight:900;letter-spacing:.3px;margin-top:12px;line-height:1.4}
+.semaforo small{display:block;font-size:10.5px;font-weight:700;opacity:.85;margin-top:4px}
+.vermelho{background:#2e0a0a;color:#ff3b3b;border:1px solid #ff3b3b}
+.laranja{background:#2e1f0a;color:#ff9d00;border:1px solid #ff9d00}
+.verde{background:#0a2e1f;color:#00ff88;border:1px solid #00ff88}
 .saude{margin-top:16px}
 .saude-top{display:flex;align-items:center;gap:13px}
 .saude-ico{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
@@ -68,6 +74,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .vac-head small{font-size:12px;color:var(--accent);font-weight:700}
 .vs-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed rgba(148,163,184,.15)}
 .vs-row:last-of-type{border-bottom:none}
+.vs-row.click{cursor:pointer}
+.vs-row.click:active{background:rgba(138,180,248,.06);border-radius:10px}
 .vs-e{font-size:19px;flex-shrink:0}
 .vs-t{flex:1;min-width:0}
 .vs-t b{font-size:13.5px;color:#fff;display:block}
@@ -116,7 +124,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .alerta{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.32);border-radius:18px;padding:13px 15px;font-size:13px;line-height:1.55;color:#fde68a;margin-top:16px}
 .empty{text-align:center;color:var(--sub);font-size:14px;padding:42px 18px;line-height:1.7}
 .empty .e{font-size:48px;display:block;margin-bottom:10px}
-.p-row{display:flex;align-items:center;gap:13px;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:20px;padding:12px 15px;box-shadow:var(--sh);cursor:pointer;margin-bottom:10px;transition:transform .15s;position:relative;min-width:0}
+.p-row{display:flex;align-items:center;gap:13px;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:20px;padding:12px 15px;box-shadow:var(--sh);cursor:pointer;margin-bottom:10px;transition:transform .15s;min-width:0}
 .p-row:active{transform:scale(.97)}
 .p-foto{width:52px;height:52px;border-radius:15px;object-fit:cover;background:linear-gradient(150deg,#1c3a63,#122748);flex-shrink:0;border:1px solid var(--line2)}
 .p-n{font-size:15.5px;font-weight:800;color:#fff}
@@ -227,7 +235,6 @@ select.inp option{background:#0d1c36;color:#fff}
 .act-btn.cancel{background:rgba(255,255,255,.06)}
 .nl-ico{font-size:38px;text-align:center;letter-spacing:-9px;margin:12px 0 4px}
 .cf-p{font-size:15px;text-align:center;line-height:1.55;color:#dbe7ff;margin:12px 0 4px}
-.aviso-co{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.32);color:#fde68a;border-radius:14px;padding:11px 14px;font-size:12.5px;line-height:1.5;margin-top:10px}
 .pw-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:6px;font-size:13.5px}
 .pw-row b{color:var(--accent)}
 .pw-row button{border:1px solid rgba(248,113,113,.3);background:rgba(248,113,113,.14);color:var(--red);width:28px;height:28px;border-radius:9px;font-size:12px;cursor:pointer;flex-shrink:0}
@@ -279,21 +286,18 @@ select.inp option{background:#0d1c36;color:#fff}
 .check-pill input:checked+span::before{opacity:1}
 .rel-foot{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:20px}
 .rel-foot .btn-primary{margin-top:0}
-/* ===== RESPONSIVO PRO ===== */
-/* TABLET ≥768px: 3 colunas nas listas */
 @media(min-width:768px){
 #main{max-width:960px;margin:0 auto;padding:22px 24px 160px;width:100%}
 .hdr{max-width:960px}
 .stat2{gap:16px}
-#p-list,#d-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-#p-list .p-row,#d-list .p-row{margin-bottom:0}
+#p-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+#p-list .p-row{margin-bottom:0}
 #rc-form{max-width:960px}
 .ov{align-items:center;padding:24px}
 .sheet{max-width:560px;border-radius:28px;max-height:86vh;border-bottom:1px solid rgba(255,255,255,.10)}
 .grab{display:none}
 #toast{bottom:100px}
 }
-/* DESKTOP ≥1024px: SIDEBAR FIXA 280px (.top vira sidebar) */
 @media(min-width:1024px){
 .blob{display:none}
 .top{position:fixed;left:0;top:0;bottom:0;width:280px;border-right:1px solid var(--line);border-bottom:none;background:rgba(10,24,48,.78);backdrop-filter:blur(20px);padding-top:22px;z-index:51;overflow-y:auto}
@@ -337,14 +341,17 @@ select.inp option{background:#0d1c36;color:#fff}
 <p class="sec-s">Dados atuais do animal</p>
 <div class="stat2">
 <div class="stat-card"><span class="stat-ico">🐇</span><span class="stat-lbl">Peso Atual</span><span class="stat-val" id="d-peso">—</span><span class="stat-foot" id="d-peso-foot">Sem registros</span></div>
+<div class="stat-card"><span class="stat-ico">📈</span><span class="stat-lbl">Crescimento</span><span class="stat-val" id="d-cres">—</span><span class="stat-foot" id="d-cres-foot">2+ pesagens</span></div>
 <div class="stat-card"><span class="stat-ico">📅</span><span class="stat-lbl">Idade</span><span class="stat-val" id="d-idade">—</span><span class="stat-foot" id="d-nasc-foot">Nasc. —</span></div>
-<div class="stat-card"><span class="stat-ico">📈</span><span class="stat-lbl">Crescimento</span><span class="stat-val" id="d-cres">—</span><span class="stat-foot">desde a 1ª pesagem</span></div>
 </div>
 
-<!-- Crescimento (2+ pesagens, ambos os sexos) + Irmãos pelo LOTE (ambos os sexos) -->
-<div class="card gi">
-<div class="gi-row"><span class="gi-e">📈</span><div><b id="gi-cres">—</b><small id="gi-cres-sub">Crescimento desde a 1ª pesagem</small></div></div>
-<div class="gi-row"><span class="gi-e">👥</span><div><b id="gi-irm">—</b><small id="gi-irm-sub">Irmãos do mesmo lote</small></div></div>
+<div class="card fam">
+<p class="sec" style="margin:0 0 12px">👥 Família do Lote</p>
+<div class="ninhada-row">
+<span class="tag-lote" id="tag-lote">Lote —</span>
+<span class="tag-irmaos" id="tag-irmaos">0 irmãos</span>
+</div>
+<div class="irmaos-chips" id="irmaos-chips"></div>
 </div>
 
 <div class="card saude"><div class="saude-top"><span class="saude-ico">💊</span><div><b>Status de Saúde</b><div class="saude-st" id="d-saud">—</div></div></div><div class="saude-sub" id="d-saud-sub">—</div></div>
@@ -363,7 +370,6 @@ select.inp option{background:#0d1c36;color:#fff}
 <button class="q q-mint" onclick="openVacina()"><span class="e">💉</span>Vacina</button>
 </div>
 <button class="guia-btn" onclick="openGuia()">📖 Guia de Manejo, Vacinas & Vegetais</button>
-<div class="alerta hidden" id="d-alerta">⚠️ <b>Alerta Consanguinidade</b> — <span id="al-txt"></span></div>
 
 <p class="sec">🚨 Alertas de Vacinação — toque para resolver</p>
 <div id="vac-alertas"></div>
@@ -389,7 +395,7 @@ select.inp option{background:#0d1c36;color:#fff}
 <div id="auto-card"></div>
 <p class="sec">⚖️ Automático por Lote</p>
 <div id="ideal-list"></div>
-<p class="dose-note">Doses por coelho/dia: 🐇 Amamentando 0,300 kg • 🐇 Matriz 0,180 kg • 🐰 Macho 0,120 kg • 🌱 Crescimento (até 90d, M e F) 0,130 kg • 🍖 Engorda 0,160 kg.</p>
+<p class="dose-note">Doses por coelho/dia: 🐇 Amamentando 0,300 kg • 🐇 Matriz 0,180 kg • 🐰 Macho 0,120 kg • 🌱 Crescimento (até 90d, M e F) 0,130 kg • 🍖 Engorda 0,160 kg.<br>🐇 Amamentando = parto há menos de 35 dias.</p>
 <p class="sec">📝 Lançamento de Ração</p>
 <div class="rc-form" id="rc-form">
 <div class="row2">
@@ -448,13 +454,9 @@ select.inp option{background:#0d1c36;color:#fff}
 <div id="r-vac-list"></div>
 <p class="lbl">🐰 Pai</p>
 <input id="r-pai" class="inp" placeholder="Nome do pai" style="margin-bottom:8px">
-<div class="row2"><div><input id="r-paiL" class="inp" placeholder="Lote do pai"></div><div><select id="r-paiR" class="inp"></select></div></div>
 <p class="lbl">🐇 Mãe</p>
-<input id="r-mae" class="inp" placeholder="Nome da mãe" style="margin-bottom:8px">
-<div class="row2"><div><input id="r-maeL" class="inp" placeholder="Lote da mãe"></div><div><select id="r-maeR" class="inp"></select></div></div>
+<input id="r-mae" class="inp" placeholder="Nome da mãe">
 <div class="sw-row"><span>🐇 É Matriz?</span><label class="sw"><input type="checkbox" id="r-matriz"><i></i></label></div>
-<div class="sw-row" style="border-top:1px solid var(--line)"><span>⚠️ Consanguinidade</span><b id="r-constat" style="font-size:12px;color:var(--sub)">—</b></div>
-<p class="hint" style="margin:2px 0 8px">Detectada automaticamente pelo parentesco.</p>
 <p class="lbl">📝 Observações</p>
 <textarea id="r-obs" class="inp" rows="3" placeholder="Comportamento, alimentação..." style="resize:vertical"></textarea>
 <button class="btn-primary btn-green" onclick="saveReport()">SALVAR RELATÓRIO COMPLETO</button>
@@ -472,18 +474,18 @@ select.inp option{background:#0d1c36;color:#fff}
 
 <div class="ov" id="m-cz" onclick="if(event.target===this)clSh('m-cz')"><div class="sheet">
 <div class="grab"></div><h2>🤍 Registrar Cobertura</h2>
-<p class="lbl">🐇 Fêmea</p><select id="cz-f" class="inp" onchange="checkCobParentesco()"></select>
-<p class="lbl">🐰 Macho</p><select id="cz-m" class="inp" onchange="checkCobParentesco()"></select>
+<p class="hint">Selecione fêmea e macho para verificar a sanguinidade</p>
+<p class="lbl">🐇 Fêmea</p><select id="cz-f" class="inp" onchange="updateSanguinidade()"></select>
+<p class="lbl">🐰 Macho</p><select id="cz-m" class="inp" onchange="updateSanguinidade()"></select>
+<div class="semaforo verde" id="cz-sang">✓ SANGUINIDADE COMPATÍVEL<small>Lotes e pais diferentes</small></div>
 <p class="lbl">Data</p><input type="date" id="cz-d" class="inp">
-<div class="aviso-co hidden" id="cz-aviso">⚠️ <b>Parentesco detectado!</b> O registro gerará alerta de consanguinidade.</div>
 <button class="btn-primary" onclick="saveCob()">Registrar Cobertura</button>
 </div></div>
 
 <div class="ov" id="m-pt" onclick="if(event.target===this)clSh('m-pt')"><div class="sheet">
 <div class="grab"></div><h2>🐇 Registrar Parto</h2>
-<p class="lbl">🐇 Mãe</p><select id="pt-mae" class="inp" onchange="checkPtParentesco()"></select>
-<p class="lbl">🐰 Pai</p><select id="pt-pai" class="inp" onchange="checkPtParentesco()"></select>
-<div class="aviso-co hidden" id="pt-aviso">⚠️ <b>Pais parentes!</b> Risco de consanguinidade.</div>
+<p class="lbl">🐇 Mãe</p><select id="pt-mae" class="inp"></select>
+<p class="lbl">🐰 Pai</p><select id="pt-pai" class="inp"></select>
 <div class="row2">
 <div><p class="lbl">Filhotes vivos</p><input type="number" id="pt-v" class="inp" min="0" placeholder="0"></div>
 <div><p class="lbl">Nascidos mortos</p><input type="number" id="pt-m" class="inp" min="0" placeholder="0"></div>
@@ -515,7 +517,7 @@ select.inp option{background:#0d1c36;color:#fff}
 <button class="tipo-btn active" id="tb-completo" onclick="setTipoRelatorio('completo')"><span class="tipo-ico">📊</span><b>Relatório Completo</b><small>Todas as baias</small></button>
 <button class="tipo-btn" id="tb-baia" onclick="setTipoRelatorio('baia')"><span class="tipo-ico">🐰</span><b>Por Baia</b><small>1 baia específica</small></button>
 </div>
-<div id="rel-completo"><div class="card rel-info" style="margin-top:14px"><p>📄 PDF com <b>todas as baias ativas</b>: resumo do plantel, animais com pesos, crescimento, ninhadas, mortalidade, ração e status de vacinas do período.</p></div></div>
+<div id="rel-completo"><div class="card rel-info" style="margin-top:14px"><p>📄 PDF com <b>todas as baias ativas</b>: resumo do plantel, animais com pesos e crescimento, ninhadas, mortalidade, ração e status de vacinas do período.</p></div></div>
 <div id="rel-baia" class="hidden">
 <input type="text" id="rel-busca" class="inp" placeholder="🔍 Buscar baia..." style="margin-top:14px" oninput="filtrarBaias()">
 <div class="baia-list" id="rel-baia-list"></div>
@@ -544,7 +546,7 @@ select.inp option{background:#0d1c36;color:#fff}
 <div class="g-tit">💉 CALENDÁRIO DE VACINAS E PREVENÇÃO</div>
 <div class="g-row"><span class="ge">🛡️</span><div><b>Mixomatose</b> — 1ª dose aos <b>45 dias</b>, reforço <b>anual</b>. Obrigatória.</div></div>
 <div class="g-row"><span class="ge">🩸</span><div><b>VHD</b> — junto com a mixomatose aos <b>45 dias</b>, reforço <b>anual</b>. Muito letal.</div></div>
-<div class="g-row"><span class="ge">🪱</span><div><b>Ivermectina 1%</b> — sarna, piolhos, vermes. <b>0,2 mg/kg</b> SC, <b>repetir em 15 dias</b>. Preventivo 4–6 meses.</div></div>
+<div class="g-row"><span class="ge">🪱</span><div><b>Ivermectina 1%</b> — <b>0,2 mg/kg</b> SC, <b>repetir em 15 dias</b>. Preventivo 4–6 meses.</div></div>
 <div class="g-row"><span class="ge">💣</span><div><b>Sulfaquinoxalina</b> — coccidiose. Na água por <b>5–7 dias</b>, pausa 5 dias.</div></div>
 <div class="g-row"><span class="ge">🦠</span><div><b>Enrofloxacino (Baytril)</b> — só com veterinário.</div></div>
 <div class="g-row"><span class="ge">💉</span><div><b>AD3E</b> — pré-parto, pós-parto e desmame.</div></div>
@@ -632,7 +634,7 @@ select.inp option{background:#0d1c36;color:#fff}
 </div>
 
 <script>
-/* ==================== 1. BASE + FORMATAÇÃO BR ==================== */
+/* ==================== 1. BASE ==================== */
 const LS='cunicoelho_v3';
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
@@ -644,30 +646,36 @@ const fmtBR=iso=>{if(!iso)return'—';const p=String(iso).split('-');return p[2]
 const fmtPesoBR=(v,forcarKg)=>{const n=+v||0;if(n>0&&n<1&&!forcarKg)return n.toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3})+' g';return n.toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3})+' kg'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s||'').trim().toLowerCase();
+/* PROTEÇÃO À PROVA DE QUEBRA: preenche só se o elemento existir no HTML.
+   Assim o renderDash NUNCA para no meio — mesmo se um ID faltar, o resto aparece. */
+function setTxt(id,v){const e=$(id);if(e)e.textContent=v}
+function setHtml(id,v){const e=$(id);if(e)e.innerHTML=v}
 const RABBIT='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#16304f"/><g transform="translate(200,160)"><ellipse cx="-40" cy="-70" rx="16" ry="42" fill="#e8eef8" transform="rotate(-12 -40 -70)"/><ellipse cx="40" cy="-70" rx="16" ry="42" fill="#e8eef8" transform="rotate(12 40 -70)"/><circle cx="0" cy="6" r="52" fill="#e8eef8"/><circle cx="-17" cy="-4" r="6.5" fill="#2b3a52"/><circle cx="17" cy="-4" r="6.5" fill="#2b3a52"/><ellipse cx="0" cy="16" rx="7.5" ry="5.5" fill="#e58ea1"/><path d="M0 22 v8 M0 30 c-7 8 -16 8 -20 0 M0 30 c7 8 16 8 20 0" stroke="#9fb0c9" stroke-width="4" fill="none" stroke-linecap="round"/></g></svg>');
 const RACAS=['Nova Zelândia Branco','Califórnia','Chinchila','Gigante de Flandres','Borboleta','Rex','Angorá','Himalaia','Bélgica','Polinésio','Mestiço'];
 const racaOptions=sel=>'<option value="">Raça...</option>'+RACAS.map(r=>`<option${r===sel?' selected':''}>${r}</option>`).join('');
 function idadeTxt(iso){if(!iso)return'—';const n=new Date(iso+'T12:00'),h=new Date();let m=(h.getFullYear()-n.getFullYear())*12+(h.getMonth()-n.getMonth());if(h.getDate()<n.getDate())m--;if(m<1){const d=Math.max(0,Math.round((h-n)/864e5));return d+(d===1?' dia':' dias')}if(m<12)return m+(m===1?' mês':' meses');const a=Math.floor(m/12),r=m%12;return a+(a===1?' ano':' anos')+(r?' e '+r+'m':'')}
 const diasDe=iso=>iso?Math.round((new Date(hojeISO()+'T12:00')-new Date(iso+'T12:00'))/864e5):null;
 
-/* ==================== 2. CRESCIMENTO E IRMÃOS — CORRIGIDO (ambos os sexos) ==================== */
-/* Crescimento: INDEPENDENTE de sexo — usa apenas o histórico de pesos.
-   Com 2+ pesagens retorna o % de ganho da 1ª para a última. */
+/* ==================== 2. CRESCIMENTO / IRMÃOS / SANGUINIDADE ==================== */
+/* FIX MACHO: crescimento usa APENAS o histórico de pesos — sem filtro de sexo */
 function calcCrescimento(c){
-  const ps=(c.pesos||[]).filter(p=>isFinite(+p.v)&&+p.v>0).sort((a,b)=>String(a.d).localeCompare(String(b.d)));
-  if(ps.length<2)return null;
-  const ini=+ps[0].v,fim=+ps[ps.length-1].v;
-  if(!(ini>0))return null;
-  return{pct:Math.round((fim-ini)/ini*100),de:ini,para:fim,n:ps.length}}
-
-/* Irmãos: verifica PELO CAMPO LOTE — para MACHO e FÊMEA.
-   coelho.lote === outro.lote e id diferente = irmão de lote. */
+const ps=(c.pesos||[]).filter(p=>isFinite(+p.v)&&+p.v>0).sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+if(ps.length<2)return null;
+const primeiro=+ps[0].v,ultimo=+ps[ps.length-1].v;
+if(!(primeiro>0))return null;
+return{pct:Math.round((ultimo-primeiro)/primeiro*100),de:primeiro,para:ultimo,n:ps.length}}
+/* Irmãos: pelo LOTE, macho e fêmea — lote igual + id diferente */
 function irmaosNoLote(c){
-  if(!c.lote)return[];
-  return db.coelhos.filter(o=>o.id!==c.id&&norm(o.lote)===norm(c.lote))}
-function txtIrmaos(c){
-  const ir=irmaosNoLote(c);
-  return ir.length?(ir.length+(ir.length===1?' irmão no lote ':' irmãos no lote ')+(c.lote||'—')):null}
+if(!c.lote)return[];
+return db.coelhos.filter(o=>o.id!==c.id&&norm(o.lote)===norm(c.lote))}
+/* Semáforo sanguinidade */
+function getSanguinidade(c1,c2){
+if(!c1||!c2)return{classe:'verde',texto:'✓ SANGUINIDADE COMPATÍVEL',sub:'Lotes e pais diferentes'};
+if(c1.lote&&c2.lote&&norm(c1.lote)===norm(c2.lote))
+return{classe:'vermelho',texto:'✗ CONSANGUINIDADE - NÃO CRUZAR',sub:'Mesmo lote ('+c1.lote+') — parentesco direto'};
+if((c1.mae&&c2.mae&&norm(c1.mae)===norm(c2.mae))||(c1.pai&&c2.pai&&norm(c1.pai)===norm(c2.pai)))
+return{classe:'laranja',texto:'⚠ MEIO-IRMÃOS - EVITAR',sub:'Mesmo pai ou mesma mãe em comum'};
+return{classe:'verde',texto:'✓ SANGUINIDADE COMPATÍVEL',sub:'Lotes e pais diferentes — cruzamento seguro'}}
 
 /* ==================== 3. VACINAS PRÉ-DEFINIDAS ==================== */
 const VACINAS=[
@@ -693,13 +701,13 @@ return{cls:'b-amber',txt:'Checar'}}
 function seedData(){const t=hojeISO();return{selId:1,
 lotes:[{id:1,nome:'L001'},{id:2,nome:'L002'},{id:3,nome:'L003'}],
 coelhos:[
-{id:1,foto:'',nome:'GN-1279',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:1,pesos:[{d:addMonths(t,-3),v:0.7,h:'09:12'},{d:addMonths(t,-2),v:0.82,h:'10:05'},{d:addMonths(t,-1),v:0.94,h:'09:40'},{d:addDays(t,-2),v:1,h:'09:12'}],nasc:addDays(t,-240),paiNome:'RZ-800',paiLote:'L002',paiRaca:'Califórnia',maeNome:'RZ-712',maeLote:'L001',maeRaca:'Nova Zelândia Branco',matriz:false,consang:true,vac:[{nome:'VHD',data:addDays(t,-8),local:'Vetsul'}],cob:[],par:[],obs:'Comportamento ativo e normal. Alimentação controlada.'},
-{id:2,foto:'',nome:'GN-1280',lote:'L001',raca:'Nova Zelândia Branco',sexo:'M',peso:1,pesos:[{d:addMonths(t,-3),v:0.72,h:'09:15'},{d:addMonths(t,-2),v:0.84,h:'10:00'},{d:addMonths(t,-1),v:0.95,h:'09:45'},{d:addDays(t,-2),v:1,h:'09:14'}],nasc:addDays(t,-240),paiNome:'RZ-800',paiLote:'L002',paiRaca:'Califórnia',maeNome:'RZ-712',maeLote:'L001',maeRaca:'Nova Zelândia Branco',matriz:false,consang:true,vac:[],cob:[],par:[],obs:'Irmão de lote da GN-1279 (mesmo peso e mesma baia).'},
-{id:3,foto:'',nome:'RZ-712',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:4.1,pesos:[{d:addMonths(t,-3),v:3.8,h:'07:55'},{d:addMonths(t,-2),v:3.9,h:'07:55'},{d:addMonths(t,-1),v:4.0,h:'08:10'},{d:addDays(t,-4),v:4.1,h:'08:10'}],nasc:addDays(t,-420),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:true,consang:false,vac:[{nome:'VHD',data:addDays(t,-370),local:'Vetsul'}],cob:[],par:[{data:addDays(t,-10),vivos:7,mortos:1,paiId:2,paiNome:'GN-1280',paiRaca:'Califórnia'}],obs:''},
-{id:4,foto:'',nome:'RZ-800',lote:'L002',raca:'Califórnia',sexo:'M',peso:3.8,pesos:[{d:addMonths(t,-2),v:3.5,h:'09:00'},{d:addMonths(t,-1),v:3.7,h:'09:00'},{d:addDays(t,-5),v:3.8,h:'09:05'}],nasc:addDays(t,-500),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''},
-{id:5,foto:'',nome:'RZ-1150',lote:'L003',raca:'Chinchila',sexo:'M',peso:2.7,pesos:[{d:addMonths(t,-2),v:2.1,h:'14:00'},{d:addMonths(t,-1),v:2.4,h:'14:00'},{d:addDays(t,-6),v:2.7,h:'14:10'}],nasc:addDays(t,-150),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''}],
+{id:1,foto:'',nome:'GN-1279',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:1,pesos:[{d:addMonths(t,-3),v:0.7,h:'09:12'},{d:addMonths(t,-2),v:0.82,h:'10:05'},{d:addMonths(t,-1),v:0.94,h:'09:40'},{d:addDays(t,-2),v:1,h:'09:12'}],nasc:addDays(t,-240),paiNome:'RZ-800',maeNome:'RZ-712',matriz:false,consang:true,vac:[{nome:'VHD',data:addDays(t,-8),local:'Vetsul'}],cob:[],par:[],obs:'Comportamento ativo e normal. Alimentação controlada.'},
+{id:2,foto:'',nome:'GN-1280',lote:'L001',raca:'Nova Zelândia Branco',sexo:'M',peso:1,pesos:[{d:addMonths(t,-3),v:0.72,h:'09:15'},{d:addMonths(t,-2),v:0.84,h:'10:00'},{d:addMonths(t,-1),v:0.95,h:'09:45'},{d:addDays(t,-2),v:1,h:'09:14'}],nasc:addDays(t,-240),paiNome:'RZ-800',maeNome:'RZ-712',matriz:false,consang:true,vac:[],cob:[],par:[],obs:'Irmão de lote da GN-1279.'},
+{id:3,foto:'',nome:'RZ-712',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:4.1,pesos:[{d:addMonths(t,-3),v:3.8,h:'07:55'},{d:addMonths(t,-2),v:3.9,h:'07:55'},{d:addMonths(t,-1),v:4.0,h:'08:10'},{d:addDays(t,-4),v:4.1,h:'08:10'}],nasc:addDays(t,-420),paiNome:'',maeNome:'',matriz:true,consang:false,vac:[{nome:'VHD',data:addDays(t,-370),local:'Vetsul'}],cob:[],par:[{data:addDays(t,-10),vivos:7,mortos:1,paiId:2,paiNome:'GN-1280'}],obs:''},
+{id:4,foto:'',nome:'RZ-800',lote:'L002',raca:'Califórnia',sexo:'M',peso:3.8,pesos:[{d:addMonths(t,-2),v:3.5,h:'09:00'},{d:addMonths(t,-1),v:3.7,h:'09:00'},{d:addDays(t,-5),v:3.8,h:'09:05'}],nasc:addDays(t,-500),paiNome:'',maeNome:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''},
+{id:5,foto:'',nome:'RZ-1150',lote:'L003',raca:'Chinchila',sexo:'M',peso:2.7,pesos:[{d:addMonths(t,-2),v:2.1,h:'14:00'},{d:addMonths(t,-1),v:2.4,h:'14:00'},{d:addDays(t,-6),v:2.7,h:'14:10'}],nasc:addDays(t,-150),paiNome:'',maeNome:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''}],
 racao:[{id:1,tipo:'Crescimento',qtd:2.5,lote:'L001',data:t},{id:2,tipo:'Reprodução',qtd:1.2,lote:'L002',data:t},{id:3,tipo:'Engorda',qtd:3.0,lote:'L003',data:addDays(t,-1)}]}}
-function load(){try{const d=JSON.parse(localStorage.getItem(LS));if(d&&Array.isArray(d.coelhos)){d.coelhos.forEach(c=>{if(!Array.isArray(c.pesos))c.pesos=[];if(!Array.isArray(c.vac))c.vac=[];if(!Array.isArray(c.cob))c.cob=[];if(!Array.isArray(c.par))c.par=[];if(!('obs'in c))c.obs='';if(!('paiRaca'in c))c.paiRaca='';if(!('maeRaca'in c))c.maeRaca=''});return d}}catch(e){}return seedData()}
+function load(){try{const d=JSON.parse(localStorage.getItem(LS));if(d&&Array.isArray(d.coelhos)){d.coelhos.forEach(c=>{if(!Array.isArray(c.pesos))c.pesos=[];if(!Array.isArray(c.vac))c.vac=[];if(!Array.isArray(c.cob))c.cob=[];if(!Array.isArray(c.par))c.par=[];if(!('obs'in c))c.obs=''});return d}}catch(e){}return seedData()}
 let db=load();
 const save=()=>localStorage.setItem(LS,JSON.stringify(db));
 const coelhoSel=()=>db.coelhos.find(c=>c.id===db.selId)||db.coelhos[0]||null;
@@ -748,40 +756,45 @@ for(let i=0;i<n;i+=step){const p=pts[i];g+=`<text x="${Math.max(Math.min(p[0],W-
 const lp=pts[n-1];g+=`<text x="${Math.min(lp[0],W-44).toFixed(1)}" y="${(lp[1]-12).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="900" fill="#8ab4f8">${fmtPesoBR(vals[n-1])}</text>`;
 box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;aspect-ratio:${W}/${H}"><defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa" stop-opacity=".35"/><stop offset="1" stop-color="#60a5fa" stop-opacity=".02"/></linearGradient><linearGradient id="ln" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#8ab4f8"/></linearGradient></defs>${g}</svg>`}
 
-/* ==================== 9. DASHBOARD ==================== */
+/* ==================== 9. DASHBOARD (à prova de quebra — cada campo independente) ==================== */
 function lastReg(c){const r=[];(c.vac||[]).forEach(v=>r.push({t:'vacina',d:v.data,v}));(c.cob||[]).forEach(v=>r.push({t:'cob',d:v.data,v}));(c.par||[]).forEach(v=>r.push({t:'parto',d:v.data,v}));r.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));return r[r.length-1]||null}
 function renderDash(){
 const c=coelhoSel();
  $('d-empty').classList.toggle('hidden',!!c);
  $('d-content').classList.toggle('hidden',!c);
 if(!c)return;
+/* Cada bloco em try próprio: um erro NUNCA trava os demais campos */
+try{
  $('d-foto').src=c.foto||RABBIT;
  $('d-badge-id').textContent=c.nome;
  $('d-badge-raca').textContent='🐇 '+(c.raca||'Raça não definida');
  $('d-id').textContent=c.nome;
 const pesoTxt=c.peso?fmtPesoBR(c.peso):'—';
-/* Linha de meta agora inclui IRMÃOS DO LOTE — para ambos os sexos */
-const irTxt=txtIrmaos(c);
- $('d-meta').textContent='Lote '+(c.lote||'—')+' • '+pesoTxt+' • '+(c.sexo==='M'?'Macho':'Fêmea')+' • '+idadeTxt(c.nasc)+(irTxt?' • 👥 '+irTxt:'');
+ $('d-meta').textContent='Lote '+(c.lote||'—')+' • '+pesoTxt+' • '+(c.sexo==='M'?'Macho':'Fêmea')+' • '+idadeTxt(c.nasc);
  $('d-peso').textContent=pesoTxt;
 const ps=[...(c.pesos||[])].sort((a,b)=>a.d.localeCompare(b.d));
 if(ps.length){const lp=ps[ps.length-1];$('d-peso-foot').textContent=lp.d===hojeISO()?('Atualizado hoje'+(lp.h?' • '+lp.h:'')):('Atualizado em '+fmtBR(lp.d))}else $('d-peso-foot').textContent='Sem registros';
  $('d-idade').textContent=idadeTxt(c.nasc);
  $('d-nasc-foot').textContent='Nasc. '+fmtBR(c.nasc);
-/* CRESCIMENTO — independente do sexo: usa só o histórico de pesos */
+}catch(e){console.error('bloco hero',e)}
+try{
+/* FIX MACHO: crescimento para macho e fêmea — só histórico de pesos */
 const gr=calcCrescimento(c);
 if(gr){$('d-cres').textContent=(gr.pct>0?'+':'')+gr.pct+'%';
  $('d-cres-foot').textContent=fmtPesoBR(gr.de)+' → '+fmtPesoBR(gr.para)}
-else{$('d-cres').textContent='—';$('d-cres-foot').textContent='Precisa de 2+ pesagens'}
- $('gi-cres').textContent=gr?((gr.pct>0?'+':'')+gr.pct+'% de crescimento ('+gr.n+' pesagens)'):'Sem dados suficientes';
- $('gi-cres-sub').textContent=gr?('De '+fmtPesoBR(gr.de)+' para '+fmtPesoBR(gr.para)+' — válido para macho e fêmea'):'Adicione 2 ou mais pesagens para calcular o % (ambos os sexos)';
-/* IRMÃOS — pelo campo LOTE, para macho e fêmea */
+else{$('d-cres').textContent='—';$('d-cres-foot').textContent='2+ pesagens'}
+}catch(e){console.error('bloco crescimento',e)}
+try{
+/* FIX IRMÃOS: layout limpo — tag-lote + tag-irmaos + chips clicáveis */
+ $('tag-lote').textContent='Lote '+(c.lote||'—');
 const ir=irmaosNoLote(c);
-if(ir.length){$('gi-irm').textContent=ir.length+(ir.length===1?' irmão no lote ':' irmãos no lote ')+(c.lote||'—');
- $('gi-irm-sub').textContent='Mesma baia: '+ir.map(x=>esc(x.nome)).join(', ')}
-else{$('gi-irm').textContent='Nenhum irmão no lote';
- $('gi-irm-sub').textContent='Cadastre outro coelho no lote '+(c.lote||'—')+' (macho ou fêmea) para vincular'}
-/* Status de Saúde */
+ $('tag-irmaos').textContent=ir.length+(ir.length===1?' irmão':' irmãos');
+ $('irmaos-chips').innerHTML=ir.length?
+ir.map(x=>`<button class="chip-irmao" onclick="verIrmao(${x.id})">${esc(x.nome)} ${x.sexo==='M'?'♂':'♀'}</button>`).join('')
+:'<span class="chip-sem">Nenhum outro coelho no lote '+(c.lote||'—')+' ainda</span>';
+}catch(e){console.error('bloco irmaos',e)}
+try{
+/* Status de Saúde — baseado nas vacinas pré-definidas */
 let pior='',nomePior='';
 VACINAS.forEach(v=>{const s=statusVacina(c,v);
 if(s.status==='atrasada'&&pior!=='atrasada'){pior='atrasada';nomePior=v.nome}
@@ -791,27 +804,37 @@ if(pior==='atrasada'){st.textContent='• Vacina atrasada';st.className='saude-s
 else if(pior==='pendente'){st.textContent='• Vacina pendente';st.className='saude-st saude-warn';sub.textContent=nomePior+' nunca foi aplicada'+(c.nasc&&diasDe(c.nasc)>=45?' (animal já tem 45+ dias)':'')+'.'}
 else if(pior==='proxima'){st.textContent='• Vacina vencendo';st.className='saude-st saude-warn';sub.textContent=nomePior+' '+statusVacina(c,VACINAS.find(v=>v.nome===nomePior)).txt.toLowerCase()+'.'}
 else{st.textContent='• Saudável';st.className='saude-st saude-ok';sub.textContent='Em dia com o calendário de vacinas pré-definidas.'}
+}catch(e){console.error('bloco saude',e)}
+try{
+/* Vacinas + medicações — linhas clicáveis quando pendentes */
  $('vac-animal').textContent=c.nome+' • '+idadeTxt(c.nasc);
  $('vac-list').innerHTML=VACINAS.map(v=>{const s=statusVacina(c,v);
 const cls={ok:'vs-ok',proxima:'vs-amber',atrasada:'vs-red',pendente:'vs-red'}[s.status];
 const ico={ok:'✅',proxima:'⏳',atrasada:'🚨',pendente:'❓'}[s.status];
-return `<div class="vs-row"><span class="vs-e">${v.emoji}</span><div class="vs-t"><b>${v.nome}</b><small>${v.desc}</small></div><span class="vs-s ${cls}">${ico} ${s.txt}</span></div>`}).join('');
- $('d-obs').textContent=(c.obs&&c.obs.trim())?c.obs:'Nenhuma observação registrada. Toque no card do animal → ✏️ para adicionar.';
+const cliq=s.status!=='ok';
+return `<div class="vs-row${cliq?' click':''}" ${cliq?`onclick="resolverAlerta(${c.id},'${v.nome.replace(/'/g,"\\'")}')"`:''}><span class="vs-e">${v.emoji}</span><div class="vs-t"><b>${v.nome}</b><small>${cliq?s.txt+' — toque para registrar a dose':v.desc}</small></div><span class="vs-s ${cls}">${ico} ${s.txt}</span></div>`}).join('');
+}catch(e){console.error('bloco vacinas',e)}
+try{$('d-obs').textContent=(c.obs&&c.obs.trim())?c.obs:'Nenhuma observação registrada. Toque no card do animal → ✏️ para adicionar.'}catch(e){}
+try{
 const risco=riscoCoelho(c);
  $('d-alerta').classList.toggle('hidden',!risco);
 if(risco){const mot=[];if(c.consang)mot.push('origem com parentesco registrada');if(c.lote)mot.push('parentes no lote <b>'+esc(c.lote)+'</b>');
  $('al-txt').innerHTML='Risco detectado em <b>'+esc(c.nome)+'</b>'+(mot.length?' — '+mot.join(' e '):'')+'. Recomenda-se evitar cobertura com parentes próximos.'}
-renderVacAlertas();
+}catch(e){console.error('bloco alerta',e)}
+try{renderVacAlertas()}catch(e){console.error('bloco alertas plantel',e)}
+try{
 const r=lastReg(c),head=$('r-head'),dv=$('r-div');
 if(r){head.classList.remove('hidden');dv.classList.remove('hidden');let t,s,b;
 if(r.t==='vacina'){t='💉 Vacina '+esc(r.v.nome);s='Aplicada em: '+fmtBR(r.v.data)+(r.v.local?' • '+esc(r.v.local):'');b='<span class="badge b-green">Vacina</span>'}
-else if(r.t==='cob'){const m=byNome(r.v.machoNome);t='🤍 Cobertura';s='Realizada em: '+fmtBR(r.v.data)+' • Macho: '+esc(r.v.machoNome)+(m?' ('+esc(m.raca)+')':'');b='<span class="badge b-blue">Cobertura</span>'}
+else if(r.t==='cob'){t='🤍 Cobertura';s='Realizada em: '+fmtBR(r.v.data)+' • Macho: '+esc(r.v.machoNome);b='<span class="badge b-blue">Cobertura</span>'}
 else{t='🐇 Parto';s='Ocorrido em: '+fmtBR(r.v.data)+' • '+r.v.vivos+' vivo(s)'+(r.v.mortos?', '+r.v.mortos+' morto(s)':'')+' • Pai: '+esc(r.v.paiNome||'—');b='<span class="badge b-pink">🐇 Parto</span>'}
  $('r-t').innerHTML=t;$('r-s').innerHTML=s;$('r-b').innerHTML=b;
 }else{head.classList.add('hidden');dv.classList.add('hidden')}
+}catch(e){console.error('bloco registro',e)}
 try{chartSVG(c.pesos)}catch(e){$('chart').innerHTML='<p style="text-align:center;color:#8ea3c2;font-size:12px;padding:10px">Gráfico indisponível</p>'}}
+function verIrmao(id){db.selId=id;save();renderDash();toast('Visualizando irmão do lote 👥')}
 
-/* Alertas clicáveis */
+/* ==================== 9b. ALERTAS CLICÁVEIS ==================== */
 function renderVacAlertas(){
 const al=[];
 db.coelhos.forEach(cc=>{const idade=cc.nasc?diasDe(cc.nasc):999;
@@ -820,9 +843,9 @@ if(s.status==='atrasada')al.push({cl:'vr',e:'🚨',cid:cc.id,vnome:v.nome,h:'<b>
 else if(s.status==='pendente'&&idade>=45)al.push({cl:'vr',e:'❓',cid:cc.id,vnome:v.nome,h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' <b>'+v.nome+'</b> PENDENTE (nunca aplicada)',s:'Animal com 45+ dias: toque para aplicar a 1ª dose'});
 else if(s.status==='proxima')al.push({cl:'vm',e:'⏳',cid:cc.id,vnome:v.nome,h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' '+v.nome+' '+s.txt.toLowerCase(),s:'Próxima dose: '+fmtBR(s.prox)+' • Toque para registrar'})})});
 al.sort((a,b)=>(a.cl==='vr'?0:1)-(b.cl==='vr'?0:1));
- $('vac-alertas').innerHTML=al.length?
+setHtml('vac-alertas',al.length?
 al.map(a=>`<button class="va-row ${a.cl}" onclick="resolverAlerta(${a.cid},'${esc(a.vnome).replace(/'/g,"\\'")}')"><span class="ve">${a.e}</span><div>${a.h}<small>${a.s}</small></div><span class="vgo">›</span></button>`).join('')
-:'<div class="va-ok">✅ Todas as vacinas pré-definidas estão em dia no plantel!</div>'}
+:'<div class="va-ok">✅ Todas as vacinas pré-definidas estão em dia no plantel!</div>')}
 function resolverAlerta(cid,vnome){
 db.selId=cid;save();
  $('vc-alvo').innerHTML=alvoOptions();
@@ -848,19 +871,14 @@ tempPesos=JSON.parse(JSON.stringify(c.pesos||[]));
  $('r-nome').value=c.nome||'';$('r-lote').innerHTML=loteOptions(c.lote);
  $('r-raca').innerHTML=racaOptions(c.raca);$('r-sexo').value=c.sexo||'F';$('r-nasc').value=c.nasc||'';
 renderPesosRel();renderVacRel(c);
- $('r-pai').value=c.paiNome||'';$('r-paiL').value=c.paiLote||'';$('r-paiR').innerHTML=racaOptions(c.paiRaca);
- $('r-mae').value=c.maeNome||'';$('r-maeL').value=c.maeLote||'';$('r-maeR').innerHTML=racaOptions(c.maeRaca);
+ $('r-pai').value=c.paiNome||'';$('r-mae').value=c.maeNome||'';
  $('r-matriz').checked=!!c.matriz;$('r-obs').value=c.obs||'';
-const risco=riscoCoelho(c),st=$('r-constat');
-st.textContent=risco?'⚠️ Parentesco detectado':'✅ Sem parentesco';
-st.style.color=risco?'#fbbf24':'#4ade80';
 openSh('m-rel')}
 function saveReport(){const c=coelhoSel();if(!c)return;
 const nome=$('r-nome').value.trim();if(!nome)return toast('Informe o ID do animal',1);
 c.nome=nome;c.lote=$('r-lote').value;c.raca=$('r-raca').value;c.sexo=$('r-sexo').value;
 c.nasc=$('r-nasc').value;c.foto=$('r-foto').value.trim();
-c.paiNome=$('r-pai').value.trim();c.paiLote=$('r-paiL').value.trim();c.paiRaca=$('r-paiR').value;
-c.maeNome=$('r-mae').value.trim();c.maeLote=$('r-maeL').value.trim();c.maeRaca=$('r-maeR').value;
+c.paiNome=$('r-pai').value.trim();c.maeNome=$('r-mae').value.trim();
 c.matriz=$('r-matriz').checked;c.obs=$('r-obs').value.trim();
 tempPesos.sort((a,b)=>a.d.localeCompare(b.d));
 c.pesos=tempPesos;c.peso=tempPesos.length?tempPesos[tempPesos.length-1].v:c.peso;
@@ -881,26 +899,34 @@ save();clSh('m-peso');renderDash();toast('Peso de '+c.nome+': '+fmtPesoBR(v)+' �
 
 /* ==================== 12. COBERTURA / PARTO / VACINA / GUIA ==================== */
 function openCob(){const fs=db.coelhos.filter(x=>x.sexo==='F'),ms=db.coelhos.filter(x=>x.sexo==='M');if(!fs.length||!ms.length)return toast('Precisa de 1 fêmea e 1 macho',1);const cur=coelhoSel();
- $('cz-f').innerHTML=fs.map(f=>`<option value="${f.id}"${cur&&f.id===cur.id?' selected':''}>${esc(f.nome)} • ${esc(f.raca)||'—'}</option>`).join('');
- $('cz-m').innerHTML=ms.map(m=>`<option value="${m.id}">${esc(m.nome)} • ${esc(m.raca)||'—'}</option>`).join('');
- $('cz-d').value=hojeISO();checkCobParentesco();openSh('m-cz')}
+ $('cz-f').innerHTML=fs.map(f=>`<option value="${f.id}"${cur&&f.id===cur.id?' selected':''}>${esc(f.nome)} • ${esc(f.lote)||'sem lote'}</option>`).join('');
+ $('cz-m').innerHTML=ms.map(m=>`<option value="${m.id}">${esc(m.nome)} • ${esc(m.lote)||'sem lote'}</option>`).join('');
+ $('cz-d').value=hojeISO();updateSanguinidade();openSh('m-cz')}
 function paresAtuais(){return[db.coelhos.find(x=>x.id==+$('cz-f').value),db.coelhos.find(x=>x.id==+$('cz-m').value)]}
-function checkCobParentesco(){const[f,m]=paresAtuais();$('cz-aviso').classList.toggle('hidden',!(f&&m&&saoParentes(f,m)))}
+function updateSanguinidade(){
+const f=db.coelhos.find(x=>x.id==+$('cz-f').value),m=db.coelhos.find(x=>x.id==+$('cz-m').value),el=$('cz-sang');
+if(!el)return;
+if(!f||!m||f.id===m.id){el.className='semaforo laranja';el.innerHTML='⚠ SELECIONE FÊMEA E MACHO DIFERENTES<small>Escolha os dois animais para verificar</small>';return}
+const s=getSanguinidade(f,m);
+el.className='semaforo '+s.classe;
+el.innerHTML=s.texto+'<small>'+s.sub+'</small>'}
 function saveCob(){const[f,m]=paresAtuais();if(!f||!m)return toast('Selecione fêmea e macho',1);if(f.id===m.id)return toast('Devem ser diferentes',1);
-const par=saoParentes(f,m);f.cob.push({data:$('cz-d').value||hojeISO(),machoId:m.id,machoNome:m.nome});if(par)f.consang=true;
-save();clSh('m-cz');renderDash();toast(par?'⚠️ Cobertura — PARENTESCO!':'Cobertura registrada 🤍')}
+const sang=getSanguinidade(f,m);
+if(sang.classe!=='verde')f.consang=true;
+f.cob.push({data:$('cz-d').value||hojeISO(),machoId:m.id,machoNome:m.nome,sang:sang.classe});
+save();clSh('m-cz');renderDash();
+toast(sang.classe==='verde'?'Cobertura registrada — sanguinidade compatível 🤍':sang.classe==='laranja'?'⚠️ Cobertura — MEIO-IRMÃOS, evitar!':'🚨 Cobertura — CONSANGUINIDADE!')}
 function openParto(){const fs=db.coelhos.filter(x=>x.sexo==='F'),ms=db.coelhos.filter(x=>x.sexo==='M');if(!fs.length)return toast('Cadastre a mãe primeiro',1);if(!ms.length)return toast('Cadastre o pai primeiro',1);
 const cur=coelhoSel(),ini=(cur&&cur.sexo==='F')?cur.id:fs[0].id;
  $('pt-mae').innerHTML=fs.map(f=>`<option value="${f.id}"${f.id===ini?' selected':''}>🐇 ${esc(f.nome)}</option>`).join('');
  $('pt-pai').innerHTML=ms.map(m=>`<option value="${m.id}">🐰 ${esc(m.nome)}</option>`).join('');
- $('pt-v').value='';$('pt-m').value='';$('pt-d').value=hojeISO();checkPtParentesco();openSh('m-pt')}
-function ptPares(){return[db.coelhos.find(x=>x.id==+$('pt-mae').value),db.coelhos.find(x=>x.id==+$('pt-pai').value)]}
-function checkPtParentesco(){const[m,p]=ptPares();$('pt-aviso').classList.toggle('hidden',!(m&&p&&saoParentes(m,p)))}
-function saveParto(){const[mae,pai]=ptPares();if(!mae||!pai)return toast('Selecione mãe e pai',1);if(mae.id===pai.id)return toast('Devem ser diferentes',1);
+ $('pt-v').value='';$('pt-m').value='';$('pt-d').value=hojeISO();openSh('m-pt')}
+function saveParto(){const mae=db.coelhos.find(x=>x.id==+$('pt-mae').value),pai=db.coelhos.find(x=>x.id==+$('pt-pai').value);if(!mae||!pai)return toast('Selecione mãe e pai',1);if(mae.id===pai.id)return toast('Devem ser diferentes',1);
 const v=parseInt($('pt-v').value)||0,mt=parseInt($('pt-m').value)||0;if(v+mt<=0)return toast('Informe os filhotes',1);
-mae.par.push({data:$('pt-d').value||hojeISO(),vivos:v,mortos:mt,paiId:pai.id,paiNome:pai.nome,paiRaca:pai.raca});
-const par=saoParentes(mae,pai);if(par)mae.consang=true;
-db.selId=mae.id;save();clSh('m-pt');renderDash();toast(par?'⚠️ Parto — pais PARENTES!':'Parto registrado 🐇')}
+const sang=getSanguinidade(mae,pai);
+if(sang.classe!=='verde')mae.consang=true;
+mae.par.push({data:$('pt-d').value||hojeISO(),vivos:v,mortos:mt,paiId:pai.id,paiNome:pai.nome});
+db.selId=mae.id;save();clSh('m-pt');renderDash();toast(sang.classe!=='verde'?'⚠️ Parto — pais parentes!':'Parto registrado 🐇')}
 function alvoOptions(){let h='<optgroup label="🐇 Coelho individual">';db.coelhos.forEach(c=>{h+=`<option value="c:${c.id}"${c.id===db.selId?' selected':''}>${esc(c.nome)} • ${esc(c.raca)||'—'}</option>`});h+='</optgroup>';
 if(db.lotes.length){h+='<optgroup label="📦 Lote inteiro">';db.lotes.forEach(l=>{const n=db.coelhos.filter(c=>c.lote===l.nome).length;h+=`<option value="l:${l.id}">Lote ${esc(l.nome)} — ${n} coelho(s)</option>`});h+='</optgroup>'}return h}
 function openVacina(){if(!db.coelhos.length)return toast('Cadastre coelhos primeiro',1);$('vc-alvo').innerHTML=alvoOptions();$('vc-pre').value='Mixomatose';$('vc-outra').value='';$('vc-outra').classList.add('hidden');$('vc-l').value='';$('vc-d').value=hojeISO();openSh('m-vc')}
@@ -914,32 +940,28 @@ save();clSh('m-vc');renderDash();if(vis==='plantel')renderPlantel();
 toast('Vacina registrada! Alerta atualizado ✅')}
 function openGuia(){openSh('m-guia')}
 
-/* ==================== 13. PLANTEL / CATEGORIAS (CORRIGIDO) ==================== */
+/* ==================== 13. PLANTEL / CATEGORIAS — FIX MACHO ==================== */
 const DOSES={lactante:0.300,matriz:0.180,macho:0.120,crescimento:0.130,engorda:0.160};
 const CATLBL={lactante:'Amamentando',matriz:'Matriz',macho:'Macho',crescimento:'Crescimento',engorda:'Engorda'};
 const CATEMOJI={lactante:'🐇🍼',matriz:'🐇',macho:'🐰',crescimento:'🌱',engorda:'🍖'};
 const LACT_DIAS=35,CRESC_DIAS=90;
-/* CORREÇÃO DO BUG: Crescimento calculado INDEPENDENTE do sexo.
-   Antes: macho jovem caía direto em 'macho' e nunca aparecia como Crescimento.
-   Agora: qualquer animal (M ou F) com menos de 90 dias = Crescimento.
-   Só matriz amamentando = lactante; matriz seca = matriz; macho adulto = macho. */
+/* FIX MACHO: M ou F com menos de 90 dias = Crescimento (independente do sexo) */
 function classCoelho(c){
-  if(c.matriz&&c.sexo==='F'){
-    const lact=(c.par||[]).some(p=>{const d=diasDe(p.data);return d!==null&&d>=0&&d<=LACT_DIAS});
-    return lact?'lactante':'matriz'}
-  const d=diasDe(c.nasc);
-  if(d!==null&&d<CRESC_DIAS)return'crescimento';   /* M e F jovens = Crescimento */
-  if(c.sexo==='M')return'macho';
-  return'engorda'}
+if(c.matriz&&c.sexo==='F'){
+const lact=(c.par||[]).some(p=>{const d=diasDe(p.data);return d!==null&&d>=0&&d<=LACT_DIAS});
+return lact?'lactante':'matriz'}
+const d=diasDe(c.nasc);
+if(d!==null&&d<CRESC_DIAS)return'crescimento';
+if(c.sexo==='M')return'macho';
+return'engorda'}
 function renderPlantel(){const L=$('p-list');
 if(!db.coelhos.length){L.innerHTML='<div class="card empty"><span class="e">🐰</span>Nenhum coelho no plantel.<br>Toque no <b>+</b> para cadastrar.</div>';return}
-L.innerHTML=db.coelhos.map(c=>{const cat=classCoelho(c),ci=CATEMOJI[cat],vb=vacBadge(c);
-const ir=irmaosNoLote(c),gr=calcCrescimento(c);
+L.innerHTML=db.coelhos.map(c=>{const cat=classCoelho(c),ci=CATEMOJI[cat],vb=vacBadge(c),gr=calcCrescimento(c),nIr=irmaosNoLote(c).length;
 return `<div class="p-row" onclick="selReport(${c.id})">
 <img class="p-foto" src="${esc(c.foto)||RABBIT}" onerror="this.onerror=null;this.src='${RABBIT}'" alt="">
-<div style="min-width:0"><div class="p-n">${esc(c.nome)} ${c.matriz?'🟢':''} ${riscoCoelho(c)?'⚠️':''}</div>
+<div style="min-width:0"><div class="p-n">${esc(c.nome)} ${c.matriz?'🟢':''}</div>
 <div class="p-s">${ci} ${CATLBL[cat]} • 📦 ${esc(c.lote)||'—'} • ${esc(c.raca)||'—'}</div>
-<div class="p-s">${ir.length?'👥 '+ir.length+' irmão(s) no lote • ':''}${gr?(gr.pct>0?'📈 +'+gr.pct+'%':'📈 '+gr.pct+'%'):'📈 —'}</div></div>
+<div class="p-s">${gr?(gr.pct>0?'📈 +'+gr.pct+'%':'📈 '+gr.pct+'%'):'📈 —'} • 👥 ${nIr} irmão(s)</div></div>
 <span class="badge ${vb.cls}" style="margin-left:auto;flex-shrink:0">${vb.txt}</span>
 <span class="p-arrow">›</span></div>`}).join('')}
 function selReport(id){db.selId=id;save();go('dash')}
@@ -998,7 +1020,7 @@ function apagarLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n
 function novoCoelhoModal(){$('nc-foto').value='';$('nc-id').value='';$('nc-peso').value='';$('nc-nasc').value='';$('nc-pai').value='';$('nc-mae').value='';$('nc-raca').innerHTML=racaOptions('');$('nc-lote').innerHTML=loteOptions('');$('nc-matriz').checked=false;openSh('m-nc');setTimeout(()=>$('nc-id').focus(),350)}
 function saveNewCoelho(){const nome=$('nc-id').value.trim();if(!nome)return toast('Informe o ID/nome',1);
 const peso=parseFloat(String($('nc-peso').value).replace(',','.'))||0;
-const c={id:Date.now(),foto:$('nc-foto').value.trim(),nome,lote:$('nc-lote').value,raca:$('nc-raca').value,sexo:$('nc-sexo').value,peso,pesos:peso>0?[{d:hojeISO(),v:peso,h:agoraH()}]:[],nasc:$('nc-nasc').value,paiNome:$('nc-pai').value.trim(),paiLote:'',paiRaca:'',maeNome:$('nc-mae').value.trim(),maeLote:'',maeRaca:'',matriz:$('nc-matriz').checked,consang:false,vac:[],cob:[],par:[],obs:''};
+const c={id:Date.now(),foto:$('nc-foto').value.trim(),nome,lote:$('nc-lote').value,raca:$('nc-raca').value,sexo:$('nc-sexo').value,peso,pesos:peso>0?[{d:hojeISO(),v:peso,h:agoraH()}]:[],nasc:$('nc-nasc').value,paiNome:$('nc-pai').value.trim(),maeNome:$('nc-mae').value.trim(),matriz:$('nc-matriz').checked,consang:false,vac:[],cob:[],par:[],obs:''};
 db.coelhos.push(c);db.selId=c.id;save();clSh('m-nc');go('dash');toast('Coelho cadastrado 🐰')}
 
 /* ==================== 17. MODAL RELATÓRIO PDF ==================== */
@@ -1097,7 +1119,6 @@ const rPl=coelhos.map(c=>{const ps=(c.pesos||[]).slice().sort((a,b)=>a.d.localeC
 const gr=calcCrescimento(c);
 return[{t:c.nome},{t:c.raca||'—'},{t:c.lote||'—'},{t:c.sexo==='M'?'M':'F'},{t:pv?fmtPesoBR(pv):'—'},{t:gr?((gr.pct>0?'+':'')+gr.pct+'%'):'—'},{t:CATLBL[classCoelho(c)]}]});
 y=pdfTabela(doc,y,cPl,rPl,'Nenhum coelho nesta baia.');
-/* Irmãos por lote */
 y=pdfSecao(doc,y,'Irmaos por Lote');
 const cIr=[{t:'LOTE',w:40},{t:'COELHOS',w:142}];
 const rIr=db.lotes.map(l=>{const cs=db.coelhos.filter(c=>norm(c.lote)===norm(l.nome));
@@ -1147,8 +1168,6 @@ addEventListener('load',()=>{
 navigator.serviceWorker.register('./sw.js',{scope:'./'})
 .then(reg=>{reg.update().catch(()=>{});setInterval(()=>reg.update().catch(()=>{}),60000)})
 .catch(()=>{})});
-let jaReload=false;
-navigator.serviceWorker.addEventListener('controllerchange',()=>{if(jaReload)return;jaReload=true;location.reload()});
 }
 let rzT=null;
 addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(vis==='dash')renderDash()},250)});
