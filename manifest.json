@@ -1,21 +1,17 @@
 {
   "id": "cunicoelho-app",
-  "name": "CuniCoelho — Manejo de Coelhos",
+  "name": "CuniCoelho - Manejo de Coelhos",
   "short_name": "CuniCoelho",
-  "description": "Manejo de coelhos: plantel, coberturas, partos, peso e ração automática",
+  "description": "Manejo profissional de coelhos",
   "lang": "pt-BR",
-  "dir": "ltr",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "any",
   "background_color": "#0a1830",
   "theme_color": "#0a1830",
+  "orientation": "portrait-primary",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }
