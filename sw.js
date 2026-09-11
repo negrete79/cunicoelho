@@ -17,7 +17,6 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* Network-first: com internet SEMPE baixa a versão nova; sem internet usa o cache */
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
