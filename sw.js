@@ -1,4 +1,3 @@
-/* CuniCoelho SW — cache-first p/ estáticos, network-first p/ navegação */
 const CACHE='cunicoelho-v1';
 const CORE=['./','./index.html','./manifest.json','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(CORE.map(u=>c.add(u)))).then(()=>self.skipWaiting()))});
