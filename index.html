@@ -136,7 +136,7 @@ input,select,textarea{font-family:inherit}
 .reg-sub{font-size:12.5px;color:#6b7280;margin-top:4px}
 .graf-titulo{font-weight:800;font-size:14px;margin-top:16px}
 .graf-box{position:relative;margin-top:6px}
-.label-kg{position:absolute;top:2px;right:6px;font-size:11px;color:#9ca3af;font-weight:700}
+.label-kg{position:absolute;top:2px;right:6px;font-size:11px;color:#9ca3af;font-weight:700;z-index:2}
 .sem-dados{color:#9ca3af;font-size:12.5px;text-align:center;padding:18px 0}
 
 /* ---- Alerta amarelo de consanguinidade ---- */
@@ -156,7 +156,7 @@ input,select,textarea{font-family:inherit}
 .chip-irmao:active{transform:scale(.94)}
 .chip-irmao:hover{border-color:#8ab4f8;color:#8ab4f8}
 
-/* ---- Semáforo de consanguinidade (cobertura) ---- */
+/* ---- Semáforo (consanguinidade + janela de cobertura) ---- */
 .sem-cobertura{margin-top:12px;padding:13px 14px;border-radius:14px;font-weight:800;font-size:13px;text-align:center;letter-spacing:.4px;animation:pop .2s}
 .vermelho{background:#2e0a0a;color:#ff3b3b;border:1px solid #ff3b3b}
 .laranja{background:#2e1f0a;color:#ff9d00;border:1px solid #ff9d00}
@@ -238,7 +238,6 @@ input,select,textarea{font-family:inherit}
 .lc-acoes{display:flex;gap:8px;margin-top:10px}
 .lc-acoes button{flex:1;padding:9px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
   color:#dbe6ff;font-size:12px;font-weight:700;cursor:pointer}
-.lc-acoes button:disabled{opacity:.35;cursor:not-allowed}
 
 /* ---- Formulários ---- */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -357,7 +356,7 @@ textarea.in{resize:vertical}
 /* ================================================================
    Responsivo
    ================================================================ */
-/* Celulares bem pequenos (até 380px) */
+/* Celulares pequenos (até 380px) */
 @media (max-width:380px){
   .id-animal{font-size:25px}
   .foto-animal{width:80px;height:80px;border-radius:16px}
@@ -367,7 +366,7 @@ textarea.in{resize:vertical}
   .stats-grid{gap:7px}
   .stat-card b{font-size:13.5px}
 }
-/* Celulares bem estreitos (até 360px): formulários em 1 coluna */
+/* Celulares estreitos (até 360px): formulários em 1 coluna */
 @media (max-width:360px){
   .form-grid{grid-template-columns:1fr}
   .check-grid{grid-template-columns:1fr}
@@ -410,7 +409,7 @@ textarea.in{resize:vertical}
   <button class="side-btn" data-aba="racao"><span>🌾</span> Ração</button>
   <button class="side-btn" data-aba="lotes"><span>🗂️</span> Lotes</button>
   <button class="side-btn" data-aba="guia"><span>📖</span> Guia de Manejo</button>
-  <div class="sidebar-rodape">CuniCoelho v1.0<br>Funciona offline • Dados no aparelho</div>
+  <div class="sidebar-rodape">CuniCoelho v1.1<br>Funciona offline • Dados no aparelho</div>
 </aside>
 
 <!-- ============ HEADER ============ -->
@@ -437,6 +436,7 @@ textarea.in{resize:vertical}
   <!-- ============ VIEW: DASHBOARD ============ -->
   <section id="view-dashboard" class="view">
     <div id="dashConsang"></div>
+    <div id="dashCobertura"></div>
     <div id="dashCard"></div>
     <div id="dashIrmaos"></div>
 
@@ -516,6 +516,16 @@ textarea.in{resize:vertical}
 
   <!-- ============ VIEW: GUIA DE MANEJO ============ -->
   <section id="view-guia" class="view" hidden>
+    <div class="secao glass">
+      <h3>💗 Janela de Cobertura — Regras</h3>
+      <ul class="guia-lista">
+        <li>♀ <b>Fêmea:</b> 1ª cobertura a partir de <b>~5 meses</b> (150 dias) de idade.</li>
+        <li>🍼 <b>Pós-parto:</b> cobrir a partir do <b>18º dia</b> — janela ideal entre 18 e 35 dias.</li>
+        <li>♂ <b>Macho:</b> usar como reprodutor a partir de <b>~7 meses</b> (210 dias).</li>
+        <li>🚫 Nunca cruzar irmãos de lote (consanguinidade) nem meio-irmãos (mesmo pai/mãe).</li>
+      </ul>
+    </div>
+
     <div class="secao glass">
       <h3>💉 Calendário de Vacinas</h3>
       <div class="tabela-scroll">
@@ -689,6 +699,7 @@ textarea.in{resize:vertical}
       <label class="campo full">Data<input id="cData" class="in" type="date"></label>
     </div>
     <div id="semCobertura" class="sem-cobertura" hidden></div>
+    <div id="janelaCobModal"></div>
     <button class="botao btn-azul" id="cSalvar" style="width:100%;margin-top:14px">REGISTRAR COBERTURA</button>
   </div>
 </div>
@@ -705,6 +716,7 @@ textarea.in{resize:vertical}
     </div>
     <small style="display:block;color:#8fa3c8;font-size:11.5px;margin-top:8px;line-height:1.5">
       🍼 A matriz será classificada automaticamente como <b>Amamentando (0,300 kg/dia)</b> pelos próximos 35 dias.
+      A janela de cobertura reabre a partir do <b>18º dia</b> pós-parto.
     </small>
     <button class="botao btn-verde" id="pSalvar" style="width:100%;margin-top:14px">REGISTRAR PARTO</button>
   </div>
@@ -913,6 +925,16 @@ const VACINAS_PRE = [
 /* Ração automática por categoria (kg/dia — sem valores em dinheiro) */
 const DOSES_RACAO = { 'Amamentando':0.300, 'Matriz':0.180, 'Macho':0.120, 'Crescimento':0.130, 'Engorda':0.160 };
 const ICONE_CAT   = { 'Amamentando':'🍼', 'Matriz':'🟢', 'Macho':'♂️', 'Crescimento':'📈', 'Engorda':'🍖' };
+
+/* ===== JANELA DE COBERTURA — quando o animal pode cruzar =====
+   Regras (ajuste as constantes se sua rotina for diferente):
+   - Fêmea: 1ª cobertura a partir de ~5 meses (150 dias)
+   - Pós-parto: cobrir a partir de 18 dias (janela ideal: 18–35 dias)
+   - Macho: reprodutor a partir de ~7 meses (210 dias) */
+const IDADE_MIN_FEMEA = 150;
+const IDADE_MIN_MACHO = 210;
+const POS_PARTO_MIN   = 18;
+const JANELA_IDEAL    = 35;
 
 /* Foto padrão (coelho Nova Zelândia Branco em SVG inline) */
 var FOTO_PADRAO = 'data:image/svg+xml,' + encodeURIComponent(
@@ -1145,6 +1167,37 @@ function getSanguinidade(c1, c2){
   return 'verde';
 }
 
+/* JANELA DE COBERTURA — semáforo de quando o animal pode cruzar */
+function janelaCobertura(c){
+  if (!c) return null;
+  const idade = idadeDias(c);
+  if (c.sexo === 'F'){
+    if (idade < IDADE_MIN_FEMEA){
+      return { nivel:'vermelho', titulo:'⏳ Muito jovem para cobertura',
+        detalhe:'A 1ª cobertura é recomendada a partir de ~5 meses de idade. Faltam ' + (IDADE_MIN_FEMEA - idade) + ' dia(s).' };
+    }
+    if (c.ultimoParto){
+      const pos = diffDias(c.ultimoParto, hojeISO());
+      if (pos < POS_PARTO_MIN){
+        return { nivel:'amarelo', titulo:'⏳ Aguardar pós-parto (' + pos + 'º dia)',
+          detalhe:'Recomenda-se cobrir a partir de ' + POS_PARTO_MIN + ' dias após o parto — pode cobrir em ' + (POS_PARTO_MIN - pos) + ' dia(s). Parto em ' + fmtDataBR(c.ultimoParto) + '.' };
+      }
+      if (pos <= JANELA_IDEAL){
+        return { nivel:'verde', titulo:'✅ Pronta — JANELA IDEAL pós-parto',
+          detalhe:'Hoje é o ' + pos + 'º dia pós-parto. Janela ideal entre ' + POS_PARTO_MIN + ' e ' + JANELA_IDEAL + ' dias.' };
+      }
+    }
+    return { nivel:'verde', titulo:'✅ Pronta para cobertura',
+      detalhe:(c.ultimoParto ? 'Último parto: ' + fmtDataBR(c.ultimoParto) + '.' : 'Nunca coberta — em idade ideal.') };
+  }
+  /* Macho */
+  if (idade < IDADE_MIN_MACHO){
+    return { nivel:'vermelho', titulo:'⏳ Macho muito jovem',
+      detalhe:'Reprodutores começam a ser usados a partir de ~7 meses. Faltam ' + (IDADE_MIN_MACHO - idade) + ' dia(s).' };
+  }
+  return { nivel:'verde', titulo:'✅ Pronto para reprodução', detalhe:'Idade atual: ' + fmtIdade(c) + '.' };
+}
+
 /* Crescimento % — calculado pelo HISTÓRICO DE PESOS (independente do sexo) */
 function crescimentoPct(c){
   const p = (c.pesos||[]).slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)));
@@ -1201,11 +1254,11 @@ function graficoPesoSVG(pesos){
   const area  = linha + ' L'+X(pts.length-1).toFixed(1)+','+(h-padB)+' L'+X(0).toFixed(1)+','+(h-padB)+' Z';
   const dots = pts.map((p,i)=>'<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(Number(p.kg)).toFixed(1)+'" r="3.6" fill="#16a34a" stroke="#fff" stroke-width="1.4"/>').join('');
   const labels = pts.map((p,i)=>'<text x="'+X(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="9.5" fill="#9ca3af">'+mesCurto(p.data)+'</text>').join('');
+  /* CORREÇÃO: sem <text>kg</text> dentro do SVG — o "kg" do canto é só o span HTML (não fica embaçado/duplicado) */
   return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução de peso">' +
     '<path d="'+area+'" fill="rgba(22,163,74,.12)"/>' +
     '<path d="'+linha+'" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
-    dots + labels +
-    '<text x="'+(w-4)+'" y="11" text-anchor="end" font-size="10" font-weight="700" fill="#6b7280">kg</text></svg>';
+    dots + labels + '</svg>';
 }
 
 /* ===== 9. NAVEGAÇÃO ===== */
@@ -1244,6 +1297,7 @@ function renderDashboard(){
   const c = coelhoAtual();
   if (!c){
     $('#dashConsang').innerHTML = '';
+    $('#dashCobertura').innerHTML = '';
     $('#dashCard').innerHTML = '<div class="vazio glass">🐰 Nenhum animal no plantel ainda.<br>' +
       '<button class="botao btn-azul" id="btnVazioNovo" style="margin-top:10px">+ Cadastrar primeiro coelho</button></div>';
     $('#dashIrmaos').innerHTML = ''; $('#dashStats').innerHTML = '';
@@ -1252,6 +1306,7 @@ function renderDashboard(){
     return;
   }
   blocoSeguro('dashCard',       'Card do Animal',      () => renderCardAnimal(c));
+  blocoSeguro('dashCobertura',  'Janela de Cobertura', () => renderJanelaCobertura(c));
   blocoSeguro('dashConsang',    'Alerta Consanguinidade', () => renderConsanguinidade(c));
   blocoSeguro('dashIrmaos',     'Irmandade',           () => renderIrmaos(c));
   blocoSeguro('dashStats',      'Estatísticas',        () => renderStats(c));
@@ -1277,6 +1332,25 @@ function renderCardAnimal(c){
       '</div>' +
     '</div>';
   $('#cardAnimalT').onclick = () => abrirEditarCoelho(c.id);
+}
+
+/* Janela de Cobertura — card com semáforo no dashboard */
+function renderJanelaCobertura(c){
+  const j = janelaCobertura(c);
+  if (!j){ $('#dashCobertura').innerHTML = ''; return; }
+  const cls = j.nivel === 'verde' ? 'verde' : (j.nivel === 'amarelo' ? 'laranja' : 'vermelho');
+  $('#dashCobertura').innerHTML =
+    '<h2 class="titulo-secao">💗 Janela de Cobertura</h2>' +
+    '<div class="sem-cobertura ' + cls + '" style="margin-top:0">' + esc(j.titulo) + '</div>' +
+    '<small style="display:block;color:#9fb0d0;font-size:12px;margin:8px 2px 0;line-height:1.5">' + esc(j.detalhe) + '</small>' +
+    (j.nivel === 'verde' ? '<button class="botao btn-azul" id="btnCobrirAgora" style="width:100%;margin-top:10px">🤍 Registrar Cobertura</button>' : '');
+  const b = $('#btnCobrirAgora');
+  if (b) b.onclick = () => {
+    abrirModalCobertura();
+    if (c.sexo === 'F') $('#cFemea').value = c.id; else $('#cMacho').value = c.id;
+    atualizarSemaforoCobertura();
+    atualizarJanelaModal();
+  };
 }
 
 function renderConsanguinidade(c){
@@ -1436,6 +1510,9 @@ function renderPlantel(){
 
 /* ===== 12. RENDER: RAÇÃO ===== */
 function renderRacao(){
+  /* CORREÇÃO: popula o select de Lote (antes ficava vazio), preservando a escolha atual */
+  const valorLoteSel = $('#rLote').value;
+  popularSelectLotes($('#rLote'), valorLoteSel);
   const porCat = {}; let total = 0;
   db.coelhos.forEach(c => {
     const cat = categoriaCoelho(c), dose = doseDe(c);
@@ -1513,19 +1590,30 @@ function renderLotes(){
     const matrizes = cs.filter(c => c.matriz && c.sexo==='F').length;
     const kg = cs.reduce((s,c) => s + doseDe(c), 0);
     const ninh = db.ninhadas.filter(n => n.lote === l.nome).length;
+    /* CORREÇÃO de plural: "1 coelho" em vez de "1 coelhos" */
+    const txtCoelhos = cs.length + (cs.length === 1 ? ' coelho' : ' coelhos');
     return '<div class="lote-card"><div class="lc-topo"><b>📦 ' + esc(l.nome) + '</b>' +
-      '<span>' + cs.length + ' coelhos • ' + matrizes + ' matriz(es)</span></div>' +
+      '<span>' + txtCoelhos + ' • ' + matrizes + ' matriz(es)</span></div>' +
       '<small>Consumo: ' + fmtNumBR(kg,3) + ' kg/dia • ' + ninh + ' ninhada(s) registrada(s)</small>' +
       '<div class="lc-acoes"><button data-ren="' + esc(l.nome) + '">✏️ Renomear</button>' +
-      '<button data-del-lote="' + esc(l.nome) + '"' + (cs.length ? ' disabled' : '') + '>🗑️ Excluir</button></div></div>';
+      '<button data-del-lote="' + esc(l.nome) + '">🗑️ Excluir</button></div></div>';
   }).join('') : '<div class="vazio">Nenhum lote. Crie o primeiro com “+ Novo Lote”.</div>';
 
   $$('#listaLotes [data-ren]').forEach(b => { b.onclick = () => abrirRenomearLote(b.dataset.ren); });
+  /* CORREÇÃO: excluir lote agora avisa o motivo quando há animais (antes era disabled silencioso) */
   $$('#listaLotes [data-del-lote]').forEach(b => {
-    b.onclick = () => confirmar('Excluir lote', 'Excluir o lote ' + b.dataset.delLote + '? Ele deve estar vazio.', 'Excluir', () => {
-      db.lotes = db.lotes.filter(l => l.nome !== b.dataset.delLote);
-      salvarDB(); renderLotes(); toast('Lote excluído.','ok');
-    });
+    b.onclick = () => {
+      const nome = b.dataset.delLote;
+      const qtd = db.coelhos.filter(c => c.lote === nome).length;
+      if (qtd > 0){
+        toast('O lote ' + nome + ' ainda tem ' + qtd + ' coelho(s). Mova-os para outro lote antes de excluir.', 'erro');
+        return;
+      }
+      confirmar('Excluir lote', 'Excluir o lote ' + nome + '?', 'Excluir', () => {
+        db.lotes = db.lotes.filter(l => l.nome !== nome);
+        salvarDB(); renderLotes(); toast('Lote excluído.','ok');
+      });
+    };
   });
 }
 
@@ -1655,12 +1743,13 @@ function abrirNovoCoelho(){
   toast('Coelho ' + id + ' cadastrado.','ok');
 });
 
-/* ===== 16. MODAL: COBERTURA + SEMÁFORO ===== */
+/* ===== 16. MODAL: COBERTURA + SEMÁFORO + JANELA ===== */
 function abrirModalCobertura(){
   popularSelectCoelhos($('#cFemea'), c => c.sexo==='F', 'Selecione a fêmea…');
   popularSelectCoelhos($('#cMacho'), c => c.sexo==='M', 'Selecione o macho…');
   $('#cData').value = hojeISO();
   $('#semCobertura').hidden = true;
+  $('#janelaCobModal').innerHTML = '';
   abrirModal('mCobertura');
 }
 function atualizarSemaforoCobertura(){
@@ -1677,14 +1766,37 @@ function atualizarSemaforoCobertura(){
   div.textContent = mapa[nivel][1];
   div.hidden = false;
 }
- $('#cFemea').addEventListener('change', atualizarSemaforoCobertura);
- $('#cMacho').addEventListener('change', atualizarSemaforoCobertura);
+/* Janela de cobertura DENTRO do modal — mostra fêmea e macho escolhidos */
+function atualizarJanelaModal(){
+  const f = porId($('#cFemea').value), m = porId($('#cMacho').value);
+  let html = '';
+  if (f){
+    const j = janelaCobertura(f);
+    const cls = j.nivel==='verde' ? 'verde' : (j.nivel==='amarelo' ? 'laranja' : 'vermelho');
+    html += '<div class="sem-cobertura ' + cls + '" style="margin-top:8px">♀ ' + esc(f.id) + ' — ' + esc(j.titulo) + '</div>' +
+      '<small style="display:block;color:#9fb0d0;font-size:11.5px;margin:5px 2px 0;line-height:1.45">' + esc(j.detalhe) + '</small>';
+  }
+  if (m){
+    const j = janelaCobertura(m);
+    const cls = j.nivel==='verde' ? 'verde' : (j.nivel==='amarelo' ? 'laranja' : 'vermelho');
+    html += '<div class="sem-cobertura ' + cls + '" style="margin-top:8px">♂ ' + esc(m.id) + ' — ' + esc(j.titulo) + '</div>' +
+      '<small style="display:block;color:#9fb0d0;font-size:11.5px;margin:5px 2px 0;line-height:1.45">' + esc(j.detalhe) + '</small>';
+  }
+  $('#janelaCobModal').innerHTML = html;
+}
+ $('#cFemea').addEventListener('change', () => { atualizarSemaforoCobertura(); atualizarJanelaModal(); });
+ $('#cMacho').addEventListener('change', () => { atualizarSemaforoCobertura(); atualizarJanelaModal(); });
  $('#cSalvar').addEventListener('click', () => {
   const f = porId($('#cFemea').value), m = porId($('#cMacho').value);
   if (!f || !m){ toast('Selecione a fêmea e o macho.','erro'); return; }
   if (f.id === m.id){ toast('Fêmea e macho não podem ser o mesmo animal.','erro'); return; }
   const nivel = getSanguinidade(f, m);
   const consang = nivel !== 'verde';
+  /* Aviso de janela reprodutiva (não bloqueia — decisão é do criador) */
+  const jf = janelaCobertura(f);
+  if (jf && jf.nivel !== 'verde'){
+    toast('Atenção: ' + jf.titulo + '. ' + jf.detalhe, 'aviso');
+  }
   if (consang){ f.consanguineo = true; m.consanguineo = true; } /* marca consanguinidade ao salvar */
   db.coberturas.push({ id:uid(), femeaId:f.id, machoId:m.id, data:$('#cData').value || hojeISO(), consanguinea:consang });
   salvarDB(); fecharModal('mCobertura'); renderTudo();
