@@ -880,7 +880,7 @@ L.innerHTML=db.coelhos.map(c=>{const cat=classCoelho(c),ci=CATEMOJI[cat],vb=vacB
 return `<div class="p-row" onclick="selReport(${c.id})">
 <img class="p-foto" src="${esc(c.foto)||RABBIT}" onerror="this.onerror=null;this.src='${RABBIT}'" alt="">
 <div><div class="p-n">${esc(c.nome)} ${c.matriz?'🟢':''} ${riscoCoelho(c)?'⚠️':''}</div>
-<div class="p-s">${ci} ${CATLBL[cat]} • 📦 ${esc(c.lote)||'—'} • ${esc(c.raca)||'—'}</div></div>
+<div class="p-s">${ci} ${CATLBL[cat]} • 📝 ${esc(c.lote)||'—'} • ${esc(c.raca)||'—'}</div></div>
 <span class="badge ${vb.cls}" style="margin-left:auto;flex-shrink:0">${vb.txt}</span>
 <span class="p-arrow">›</span></div>`}).join('')}
 function selReport(id){db.selId=id;save();go('dash')}
