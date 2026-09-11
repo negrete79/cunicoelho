@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CuniCoelho">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -30,7 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .icb{width:44px;height:44px;border:1px solid var(--line);background:var(--glass2);color:#dbe7ff;cursor:pointer;border-radius:15px;line-height:1;font-size:24px;font-weight:600;backdrop-filter:blur(14px);transition:transform .15s}
 .icb:active{transform:scale(.88)}
 #h-dots{letter-spacing:2px;font-size:18px}
-#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 160px}
+#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 160px;max-width:100%}
 .sec{font-size:12px;font-weight:800;color:var(--accent);margin:24px 6px 10px;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(138,180,248,.35),transparent)}
 .sec-t{font-size:19px;font-weight:800;color:#fff;margin:20px 4px 2px}
@@ -43,12 +42,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .hbadge{background:rgba(8,18,38,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:14px}
 .hero-nome{font-size:34px;font-weight:900;color:#fff;margin:16px 4px 4px;line-height:1.05}
 .hero-meta{font-size:14.5px;color:var(--accent);font-weight:600;margin:0 4px}
-.stat2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:38px}
-.stat-card{position:relative;background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:22px;padding:34px 12px 15px;text-align:center;box-shadow:var(--sh)}
+.stat2{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:38px}
+.stat-card{position:relative;background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:22px;padding:34px 6px 14px;text-align:center;box-shadow:var(--sh);min-width:0}
 .stat-ico{position:absolute;top:-27px;left:50%;transform:translateX(-50%);width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 20px rgba(2,8,20,.4)}
-.stat-lbl{display:block;font-size:13px;color:var(--accent);font-weight:700}
-.stat-val{display:block;font-size:25px;font-weight:900;color:#fff;margin:3px 0 4px}
-.stat-foot{display:block;font-size:10.5px;color:var(--sub);font-weight:600}
+.stat-lbl{display:block;font-size:clamp(9.5px,2.4vw,12.5px);color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-val{display:block;font-size:clamp(17px,4.6vw,24px);font-weight:900;color:#fff;margin:3px 0 4px}
+.stat-foot{display:block;font-size:clamp(8.5px,2vw,10px);color:var(--sub);font-weight:600}
+/* Card Crescimento & Irmandade — funciona para MACHO e FÊMEA */
+.gi{margin-top:14px}
+.gi-row{display:flex;align-items:center;gap:13px;padding:10px 0;border-bottom:1px dashed rgba(148,163,184,.15)}
+.gi-row:last-of-type{border-bottom:none}
+.gi-e{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.gi-row b{font-size:14.5px;color:#fff;display:block}
+.gi-row small{font-size:11.5px;color:var(--sub);line-height:1.4;display:block;margin-top:1px}
 .saude{margin-top:16px}
 .saude-top{display:flex;align-items:center;gap:13px}
 .saude-ico{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
@@ -74,9 +80,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .obs{margin-top:14px}
 .obs>b{font-size:16.5px;color:#fff;display:block;margin-bottom:6px}
 .obs p{font-size:13.5px;color:#c7d6ee;line-height:1.6}
-/* ALERTAS CLICÁVEIS */
-.va-row{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:12.5px;line-height:1.55;color:#dbe7ff;cursor:pointer;font-family:inherit;transition:transform .12s,background .15s}
-.va-row:active{transform:scale(.97);background:rgba(138,180,248,.08)}
+.va-row{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:12.5px;line-height:1.55;color:#dbe7ff;cursor:pointer;font-family:inherit;transition:transform .12s}
+.va-row:active{transform:scale(.97)}
 .va-row.vr{border-left-color:var(--red)}
 .va-row.vm{border-left-color:var(--amber)}
 .va-row .ve{font-size:17px;flex-shrink:0;line-height:1.3}
@@ -92,7 +97,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .q-blue{background:linear-gradient(145deg,#60a5fa,#1d4ed8);box-shadow:0 6px 16px rgba(37,99,235,.45)}
 .q-green{background:linear-gradient(145deg,#34d399,#059669);box-shadow:0 6px 16px rgba(16,185,129,.4)}
 .q-mint{background:linear-gradient(145deg,#22d3ee,#0e7490);box-shadow:0 6px 16px rgba(14,116,144,.4)}
-.guia-btn{width:100%;margin-top:12px;background:linear-gradient(145deg,#fbbf24,#d97706);color:#3b2504;border:none;border-radius:16px;padding:13px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px rgba(217,119,6,.4);transition:transform .15s;position:relative;overflow:hidden}
+.guia-btn{width:100%;margin-top:12px;background:linear-gradient(145deg,#fbbf24,#d97706);color:#3b2504;border:none;border-radius:16px;padding:13px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px rgba(217,119,6,.4);position:relative;overflow:hidden}
 .guia-btn::after{content:'';position:absolute;top:0;left:8%;width:84%;height:45%;background:linear-gradient(180deg,rgba(255,255,255,.35),transparent);border-radius:14px}
 .guia-btn:active{transform:translateY(3px)}
 .reg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
@@ -111,16 +116,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .alerta{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.32);border-radius:18px;padding:13px 15px;font-size:13px;line-height:1.55;color:#fde68a;margin-top:16px}
 .empty{text-align:center;color:var(--sub);font-size:14px;padding:42px 18px;line-height:1.7}
 .empty .e{font-size:48px;display:block;margin-bottom:10px}
-.p-row{display:flex;align-items:center;gap:13px;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:20px;padding:12px 15px;box-shadow:var(--sh);cursor:pointer;margin-bottom:10px;transition:transform .15s;position:relative}
+.p-row{display:flex;align-items:center;gap:13px;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:20px;padding:12px 15px;box-shadow:var(--sh);cursor:pointer;margin-bottom:10px;transition:transform .15s;position:relative;min-width:0}
 .p-row:active{transform:scale(.97)}
 .p-foto{width:52px;height:52px;border-radius:15px;object-fit:cover;background:linear-gradient(150deg,#1c3a63,#122748);flex-shrink:0;border:1px solid var(--line2)}
 .p-n{font-size:15.5px;font-weight:800;color:#fff}
 .p-s{font-size:12px;color:var(--sub);margin-top:2px}
-.p-arrow{margin-left:auto;color:#3f5578;font-size:22px;font-weight:800}
+.p-arrow{margin-left:auto;color:#3f5578;font-size:22px;font-weight:800;flex-shrink:0}
 .resumo{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:22px;padding:16px 20px;margin-bottom:16px;box-shadow:0 12px 32px rgba(29,78,216,.4);position:relative;overflow:hidden}
 .resumo::after{content:'';position:absolute;top:-70%;right:-15%;width:55%;height:140%;background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent)}
 .resumo small{font-size:12px;opacity:.9;display:block;font-weight:600;position:relative}
-.resumo b{font-size:22px;font-weight:900;position:relative;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+.resumo b{font-size:22px;font-weight:900;position:relative}
 .auto-card{background:rgba(74,222,128,.07);border:1.5px solid rgba(74,222,128,.25);border-radius:22px;padding:17px;margin-bottom:16px;box-shadow:var(--sh)}
 .auto-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
 .auto-top b{font-size:14.5px;color:#d1fae5}
@@ -155,7 +160,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .tpill{font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px;text-transform:uppercase;margin-right:6px}
 .tp-c{background:rgba(138,180,248,.16);color:var(--accent)}.tp-r{background:rgba(167,139,250,.16);color:#c4b5fd}.tp-e{background:rgba(251,146,60,.16);color:#fdba74}
 .mini-del{width:36px;height:36px;border:1px solid rgba(248,113,113,.3);background:rgba(248,113,113,.14);color:var(--red);border-radius:11px;cursor:pointer;font-size:14px;flex-shrink:0}
-.mini-del:active{transform:scale(.88)}
 .l-card{display:flex;align-items:center;gap:13px;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:20px;padding:15px;margin-bottom:10px;box-shadow:var(--sh)}
 .l-ico{font-size:22px;letter-spacing:-5px;flex-shrink:0}
 .l-info{flex:1;min-width:0}
@@ -163,12 +167,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .l-info span{font-size:12.5px;color:var(--sub)}
 .l-btns{display:flex;gap:8px}
 .l-btns button{width:40px;height:40px;border:1px solid var(--line);background:var(--glass2);border-radius:13px;cursor:pointer;font-size:15px}
-.l-btns button:active{transform:scale(.88)}
 .tabbar{position:fixed;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:50;display:flex;background:rgba(10,24,48,.72);backdrop-filter:blur(26px);border:1px solid rgba(255,255,255,.12);border-radius:26px;box-shadow:0 14px 40px rgba(2,8,20,.55);padding:9px 6px;max-width:520px;margin:0 auto}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;font-size:20px;color:#5b729a;cursor:pointer;font-family:inherit;transition:all .18s;filter:grayscale(.55);border-radius:18px;padding:4px 0}
 .tab span{font-size:10px;font-weight:800}
 .tab.act{color:var(--accent);filter:grayscale(0);background:rgba(138,180,248,.10);transform:translateY(-2px)}
-.tab:active{transform:scale(.9)}
 #fab{position:fixed;right:18px;bottom:calc(98px + env(safe-area-inset-bottom));width:62px;height:62px;border-radius:50%;background:linear-gradient(145deg,#60a5fa,#1d4ed8);color:#fff;font-size:34px;font-weight:300;border:none;cursor:pointer;box-shadow:0 14px 34px rgba(37,99,235,.55),inset 0 2px 6px rgba(255,255,255,.3);z-index:60;display:flex;align-items:center;justify-content:center;transition:transform .3s;line-height:1;padding-bottom:4px}
 #fab.open{transform:rotate(135deg)}
 #fov{position:fixed;inset:0;background:rgba(4,10,22,.62);backdrop-filter:blur(5px);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -189,29 +191,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .fm:active{background:rgba(138,180,248,.10)}
 .fm-ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 5px 12px rgba(2,8,20,.5),inset 0 1px 3px rgba(255,255,255,.25)}
 .fi-blue{background:linear-gradient(145deg,#60a5fa,#1d4ed8)}.fi-green{background:linear-gradient(145deg,#34d399,#059669)}.fi-cyan{background:linear-gradient(145deg,#22d3ee,#0e7490)}.fi-amber{background:linear-gradient(145deg,#fbbf24,#d97706)}
-.fm-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.fm-t b{font-size:14.5px;font-weight:800;color:#fff}
+.fm-t{flex:1;min-width:0}
+.fm-t b{font-size:14.5px;font-weight:800;color:#fff;display:block}
 .fm-t small{font-size:11px;color:var(--sub);font-weight:600}
 .fm-arrow{color:#3f5578;font-size:20px;font-weight:800;flex-shrink:0}
 .ov{position:fixed;inset:0;background:rgba(3,8,18,.66);backdrop-filter:blur(7px);z-index:80;opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:flex-end;justify-content:center}
 .ov.open{opacity:1;pointer-events:auto}
-.sheet{background:rgba(12,26,48,.96);backdrop-filter:blur(32px);border:1px solid rgba(255,255,255,.10);border-bottom:none;width:100%;max-height:92%;border-radius:28px 28px 0 0;padding:8px 18px 22px;padding-bottom:calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.25,1);overflow-y:auto;box-shadow:0 -14px 60px rgba(2,8,20,.6)}
+.sheet{background:rgba(12,26,48,.96);backdrop-filter:blur(32px);border:1px solid rgba(255,255,255,.10);width:100%;max-height:92%;border-radius:28px 28px 0 0;padding:8px 18px 22px;padding-bottom:calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.25,1);overflow-y:auto;box-shadow:0 -14px 60px rgba(2,8,20,.6)}
 .ov.open .sheet{transform:none}
 .grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.22);margin:8px auto 14px;flex-shrink:0}
 .sheet h2{font-size:clamp(17px,4.5vw,19px);font-weight:900;text-align:center;margin-bottom:6px;color:#fff}
 .hint{font-size:11.5px;color:var(--sub);text-align:center;margin-bottom:6px}
 .lbl{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.7px;margin:13px 2px 5px}
-.inp{width:100%;padding:13px 15px;border:1.5px solid transparent;border-radius:14px;background:rgba(255,255,255,.07);font-size:16px;font-family:inherit;outline:none;color:var(--txt);box-shadow:inset 0 1px 4px rgba(0,0,0,.25);transition:border .2s}
+.inp{width:100%;padding:13px 15px;border:1.5px solid transparent;border-radius:14px;background:rgba(255,255,255,.07);font-size:16px;font-family:inherit;outline:none;color:var(--txt);box-shadow:inset 0 1px 4px rgba(0,0,0,.25)}
 .inp::placeholder{color:#5b729a}
-.inp:focus{border-color:var(--accent);background:rgba(255,255,255,.10);box-shadow:0 0 0 4px rgba(138,180,248,.14)}
+.inp:focus{border-color:var(--accent);background:rgba(255,255,255,.10)}
 select.inp option{background:#0d1c36;color:#fff}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn-primary{width:100%;background:linear-gradient(145deg,#60a5fa,#1d4ed8);color:#fff;border:none;border-radius:16px;padding:15px;font-size:15.5px;font-weight:800;cursor:pointer;margin-top:16px;font-family:inherit;box-shadow:0 6px 16px rgba(37,99,235,.45);transition:transform .15s}
 .btn-primary:active{transform:translateY(3px) scale(.98)}
-.btn-green{background:linear-gradient(145deg,#34d399,#059669);box-shadow:0 6px 16px rgba(16,185,129,.4)}
+.btn-green{background:linear-gradient(145deg,#34d399,#059669)}
 .btn-gray{background:rgba(255,255,255,.10);color:var(--txt);border:1px solid var(--line)}
 .btn-add{width:100%;background:rgba(138,180,248,.08);color:var(--accent);border:1.5px dashed rgba(138,180,248,.4);border-radius:14px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;font-family:inherit}
-.btn-primary:active,.btn-add:active{transform:scale(.97)}
 .btn-primary:disabled{opacity:.55;pointer-events:none}
 .sw-row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;font-size:15px;font-weight:800;color:#fff}
 .sw{position:relative;width:52px;height:31px;flex-shrink:0;display:inline-block}
@@ -222,7 +223,6 @@ select.inp option{background:#0d1c36;color:#fff}
 .sw input:checked+i::after{left:23px}
 .prev{width:66px;height:66px;border-radius:16px;object-fit:cover;background:#16304f;flex-shrink:0;border:1px solid var(--line2)}
 .act-btn{width:100%;padding:16px;background:var(--glass2);border:1px solid var(--line);border-radius:16px;font-size:16px;font-weight:800;margin-bottom:10px;cursor:pointer;font-family:inherit;color:#fff}
-.act-btn:active{transform:scale(.97)}
 .act-btn.danger{color:var(--red);background:rgba(248,113,113,.10);border-color:rgba(248,113,113,.28)}
 .act-btn.cancel{background:rgba(255,255,255,.06)}
 .nl-ico{font-size:38px;text-align:center;letter-spacing:-9px;margin:12px 0 4px}
@@ -242,7 +242,7 @@ select.inp option{background:#0d1c36;color:#fff}
 .g-row .ge{font-size:20px;flex-shrink:0}
 .g-row b{color:#fff}
 .g-row .gf{display:inline-block;background:rgba(138,180,248,.14);color:var(--accent);border-radius:99px;padding:2px 10px;font-size:10.5px;font-weight:800;margin-top:4px}
-.g-row.gr{border-bottom:1px dashed rgba(248,113,113,.25);background:linear-gradient(90deg,rgba(248,113,113,.06),transparent)}
+.g-row.gr{border-bottom:1px dashed rgba(248,113,113,.25)}
 .g-row.gr .gf{background:rgba(248,113,113,.14);color:var(--red)}
 .g-row.gd{border-bottom:1px dashed rgba(251,191,36,.25)}
 #toast{position:fixed;left:50%;bottom:calc(120px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:rgba(255,255,255,.10);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.16);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 12px 32px rgba(2,8,20,.5);max-width:88%;overflow:hidden;text-overflow:ellipsis}
@@ -250,10 +250,10 @@ select.inp option{background:#0d1c36;color:#fff}
 #ib{display:none;align-items:center;gap:11px;background:var(--glass2);border:1px solid var(--line2);color:#fff;border-radius:18px;padding:13px 15px;margin-bottom:16px;box-shadow:var(--sh)}
 #ib b{font-size:13.5px;display:block}
 #ib small{font-size:11px;opacity:.75;display:block}
-.ib-btn{background:linear-gradient(145deg,#60a5fa,#1d4ed8);color:#fff;border:none;border-radius:99px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap}
+.ib-btn{background:linear-gradient(145deg,#60a5fa,#1d4ed8);color:#fff;border:none;border-radius:99px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
 .ib-x{background:none;border:none;color:var(--sub);font-size:16px;cursor:pointer;padding:4px}
 .tipo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.tipo-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--glass);backdrop-filter:blur(18px);border:1.5px solid var(--line);border-radius:20px;padding:18px 10px 14px;cursor:pointer;font-family:inherit;color:var(--txt);transition:all .2s}
+.tipo-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--glass);border:1.5px solid var(--line);border-radius:20px;padding:18px 10px 14px;cursor:pointer;font-family:inherit;color:var(--txt)}
 .tipo-btn .tipo-ico{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:4px}
 .tipo-btn b{font-size:13.5px;color:#fff}
 .tipo-btn small{font-size:11px;color:var(--sub);font-weight:600}
@@ -273,22 +273,40 @@ select.inp option{background:#0d1c36;color:#fff}
 .pills{display:flex;flex-wrap:wrap;gap:8px}
 .check-pill{position:relative;display:inline-block}
 .check-pill input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;margin:0}
-.check-pill span{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:99px;border:1.5px solid var(--line);background:var(--glass);font-size:13px;font-weight:700;color:var(--sub);transition:all .18s}
+.check-pill span{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:99px;border:1.5px solid var(--line);background:var(--glass);font-size:13px;font-weight:700;color:var(--sub)}
 .check-pill span::before{content:'✓';font-size:11px;opacity:0}
 .check-pill input:checked+span{border-color:var(--accent);background:rgba(138,180,248,.14);color:var(--accent)}
 .check-pill input:checked+span::before{opacity:1}
 .rel-foot{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:20px}
 .rel-foot .btn-primary{margin-top:0}
-@media(min-width:834px){
-#main{max-width:760px;margin:0 auto;padding:22px 24px 160px;width:100%}
+/* ===== RESPONSIVO PRO ===== */
+/* TABLET ≥768px: 3 colunas nas listas */
+@media(min-width:768px){
+#main{max-width:960px;margin:0 auto;padding:22px 24px 160px;width:100%}
+.hdr{max-width:960px}
 .stat2{gap:16px}
-#p-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-#p-list .p-row{margin-bottom:0}
-#rc-form{max-width:760px}
+#p-list,#d-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+#p-list .p-row,#d-list .p-row{margin-bottom:0}
+#rc-form{max-width:960px}
 .ov{align-items:center;padding:24px}
-.sheet{max-width:560px;border-radius:28px;border-bottom:1px solid rgba(255,255,255,.10);max-height:86vh}
+.sheet{max-width:560px;border-radius:28px;max-height:86vh;border-bottom:1px solid rgba(255,255,255,.10)}
 .grab{display:none}
 #toast{bottom:100px}
+}
+/* DESKTOP ≥1024px: SIDEBAR FIXA 280px (.top vira sidebar) */
+@media(min-width:1024px){
+.blob{display:none}
+.top{position:fixed;left:0;top:0;bottom:0;width:280px;border-right:1px solid var(--line);border-bottom:none;background:rgba(10,24,48,.78);backdrop-filter:blur(20px);padding-top:22px;z-index:51;overflow-y:auto}
+.hdr{display:flex;flex-direction:column;gap:14px;padding:0 18px;max-width:none}
+.hdr-t{text-align:left;font-size:20px}
+.tabbar{position:fixed;left:0;top:190px;right:auto;bottom:auto;width:280px;max-width:none;margin:0;flex-direction:column;gap:4px;background:none;border:none;border-radius:0;box-shadow:none;padding:8px 12px}
+.tab{flex-direction:row;justify-content:flex-start;gap:13px;padding:14px 16px;font-size:19px;border-radius:14px}
+.tab span{font-size:13.5px}
+.tab.act{transform:none;background:rgba(138,180,248,.12)}
+#main{margin-left:280px;max-width:1100px;padding:28px 34px 60px}
+#fab{right:44px;bottom:44px}
+#fm{right:44px;bottom:118px}
+#toast{bottom:44px}
 }
 </style>
 </head>
@@ -320,13 +338,20 @@ select.inp option{background:#0d1c36;color:#fff}
 <div class="stat2">
 <div class="stat-card"><span class="stat-ico">🐇</span><span class="stat-lbl">Peso Atual</span><span class="stat-val" id="d-peso">—</span><span class="stat-foot" id="d-peso-foot">Sem registros</span></div>
 <div class="stat-card"><span class="stat-ico">📅</span><span class="stat-lbl">Idade</span><span class="stat-val" id="d-idade">—</span><span class="stat-foot" id="d-nasc-foot">Nasc. —</span></div>
+<div class="stat-card"><span class="stat-ico">📈</span><span class="stat-lbl">Crescimento</span><span class="stat-val" id="d-cres">—</span><span class="stat-foot">desde a 1ª pesagem</span></div>
+</div>
+
+<!-- Crescimento (2+ pesagens, ambos os sexos) + Irmãos pelo LOTE (ambos os sexos) -->
+<div class="card gi">
+<div class="gi-row"><span class="gi-e">📈</span><div><b id="gi-cres">—</b><small id="gi-cres-sub">Crescimento desde a 1ª pesagem</small></div></div>
+<div class="gi-row"><span class="gi-e">👥</span><div><b id="gi-irm">—</b><small id="gi-irm-sub">Irmãos do mesmo lote</small></div></div>
 </div>
 
 <div class="card saude"><div class="saude-top"><span class="saude-ico">💊</span><div><b>Status de Saúde</b><div class="saude-st" id="d-saud">—</div></div></div><div class="saude-sub" id="d-saud-sub">—</div></div>
 
 <div class="card vac"><div class="vac-head"><span class="saude-ico">💉</span><div><b>Vacinas & Prevenção</b><small id="vac-animal">—</small></div></div>
 <div id="vac-list"></div>
-<p class="vac-note">🪱 <b>Prevenção:</b> Ivermectina 1% — 0,2 mg/kg SC, repetir em 15 dias • 🧾 Sulfaquinoxalina — na água 5–7 dias • 💉 AD3E — pré/pós-parto e desmame.</p>
+<p class="vac-note">🪱 <b>Prevenção:</b> Ivermectina 1% — 0,2 mg/kg SC, repetir em 15 dias • 💣 Sulfaquinoxalina — na água 5–7 dias • 💉 AD3E — pré/pós-parto e desmame.</p>
 </div>
 
 <div class="card obs"><b>Observações</b><p id="d-obs">—</p></div>
@@ -359,12 +384,12 @@ select.inp option{background:#0d1c36;color:#fff}
 <section id="v-plantel" class="view hidden"><div id="p-list"></div></section>
 
 <section id="v-racao" class="view hidden">
-<div class="resumo"><div><small>🧾 Ração lançada hoje</small><b id="rc-kg">0,000 kg</b></div><small id="rc-count" style="font-size:11px;text-align:right;position:relative">0 lançamentos hoje</small></div>
+<div class="resumo"><div><small>📦 Ração lançada hoje</small><b id="rc-kg">0,000 kg</b></div><small id="rc-count" style="font-size:11px;text-align:right;position:relative">0 lançamentos hoje</small></div>
 <p class="sec">🤖 Ração Automática — Plantel Total</p>
 <div id="auto-card"></div>
 <p class="sec">⚖️ Automático por Lote</p>
 <div id="ideal-list"></div>
-<p class="dose-note">Doses por coelho/dia: 🐇 Amamentando 0,300 kg • 🐇 Matriz 0,180 kg • 🐰 Macho 0,120 kg • 🐇 Crescimento (até 90d) 0,130 kg • 🍖 Engorda 0,160 kg.<br>🐇 Amamentando = parto há menos de 35 dias.</p>
+<p class="dose-note">Doses por coelho/dia: 🐇 Amamentando 0,300 kg • 🐇 Matriz 0,180 kg • 🐰 Macho 0,120 kg • 🌱 Crescimento (até 90d, M e F) 0,130 kg • 🍖 Engorda 0,160 kg.</p>
 <p class="sec">📝 Lançamento de Ração</p>
 <div class="rc-form" id="rc-form">
 <div class="row2">
@@ -383,8 +408,8 @@ select.inp option{background:#0d1c36;color:#fff}
 </main>
 
 <nav class="tabbar">
-<button class="tab act" data-v="dash" onclick="go('dash')">🏡<span>Dashboard</span></button>
-<button class="tab" data-v="plantel" onclick="go('plantel')">🐇<span>Plantel</span></button>
+<button class="tab act" data-v="dash" onclick="go('dash')">🏠<span>Dashboard</span></button>
+<button class="tab" data-v="plantel" onclick="go('plantel')">🐰<span>Plantel</span></button>
 <button class="tab" data-v="racao" onclick="go('racao')">🌾<span>Ração</span></button>
 <button class="tab" data-v="lotes" onclick="go('lotes')">🗂️<span>Lotes</span></button>
 </nav>
@@ -490,7 +515,7 @@ select.inp option{background:#0d1c36;color:#fff}
 <button class="tipo-btn active" id="tb-completo" onclick="setTipoRelatorio('completo')"><span class="tipo-ico">📊</span><b>Relatório Completo</b><small>Todas as baias</small></button>
 <button class="tipo-btn" id="tb-baia" onclick="setTipoRelatorio('baia')"><span class="tipo-ico">🐰</span><b>Por Baia</b><small>1 baia específica</small></button>
 </div>
-<div id="rel-completo"><div class="card rel-info" style="margin-top:14px"><p>📄 PDF com <b>todas as baias ativas</b>: resumo do plantel, animais com pesos, ninhadas, mortalidade, ração e status de vacinas do período.</p></div></div>
+<div id="rel-completo"><div class="card rel-info" style="margin-top:14px"><p>📄 PDF com <b>todas as baias ativas</b>: resumo do plantel, animais com pesos, crescimento, ninhadas, mortalidade, ração e status de vacinas do período.</p></div></div>
 <div id="rel-baia" class="hidden">
 <input type="text" id="rel-busca" class="inp" placeholder="🔍 Buscar baia..." style="margin-top:14px" oninput="filtrarBaias()">
 <div class="baia-list" id="rel-baia-list"></div>
@@ -504,7 +529,7 @@ select.inp option{background:#0d1c36;color:#fff}
 <div class="pills">
 <label class="check-pill"><input type="checkbox" id="ck-ninhadas" checked><span>🍼 Ninhadas</span></label>
 <label class="check-pill"><input type="checkbox" id="ck-peso" checked><span>⚖️ Peso</span></label>
-<label class="check-pill"><input type="checkbox" id="ck-mortalidade" checked><span>🐇Mortalidade</span></label>
+<label class="check-pill"><input type="checkbox" id="ck-mortalidade" checked><span>⚰️ Mortalidade</span></label>
 <label class="check-pill"><input type="checkbox" id="ck-racao" checked><span>🌾 Ração</span></label>
 <label class="check-pill"><input type="checkbox" id="ck-vacinas" checked><span>💉 Vacinas</span></label>
 </div>
@@ -520,21 +545,20 @@ select.inp option{background:#0d1c36;color:#fff}
 <div class="g-row"><span class="ge">🛡️</span><div><b>Mixomatose</b> — 1ª dose aos <b>45 dias</b>, reforço <b>anual</b>. Obrigatória.</div></div>
 <div class="g-row"><span class="ge">🩸</span><div><b>VHD</b> — junto com a mixomatose aos <b>45 dias</b>, reforço <b>anual</b>. Muito letal.</div></div>
 <div class="g-row"><span class="ge">🪱</span><div><b>Ivermectina 1%</b> — sarna, piolhos, vermes. <b>0,2 mg/kg</b> SC, <b>repetir em 15 dias</b>. Preventivo 4–6 meses.</div></div>
-<div class="g-row"><span class="ge">🌿</span><div><b>Sulfaquinoxalina</b> — coccidiose. Na água por <b>5–7 dias</b>, pausa 5 dias.</div></div>
+<div class="g-row"><span class="ge">💣</span><div><b>Sulfaquinoxalina</b> — coccidiose. Na água por <b>5–7 dias</b>, pausa 5 dias.</div></div>
 <div class="g-row"><span class="ge">🦠</span><div><b>Enrofloxacino (Baytril)</b> — só com veterinário.</div></div>
 <div class="g-row"><span class="ge">💉</span><div><b>AD3E</b> — pré-parto, pós-parto e desmame.</div></div>
 <div class="g-tit">✅ CUIDADOS NA APLICAÇÃO</div>
 <div class="g-row"><span class="ge">🪡</span><div><b>Agulha nova</b> por animal. Aplique na <b>prega do pescoço</b>.</div></div>
-<div class="g-row"><span class="ge">📝</span><div><b>Anote sempre</b> no app: data, vacina e lote.</div></div>
 <div class="g-row"><span class="ge">🍼</span><div><b>Nunca</b> abaixo de 45 dias. Quarentena 15–20 dias para novos.</div></div>
 <div class="g-row"><span class="ge">🧊</span><div>Vacinas na geladeira <b>2–8 °C</b>. Nunca congele.</div></div>
 <div class="g-tit">🌿 VEGETAIS — QUANTO E QUANDO</div>
 <div class="g-row"><span class="ge">🌾</span><div><b>Feno</b> — base da dieta (≈70%). <span class="gf">SEMPRE À VONTADE</span></div></div>
-<div class="g-row"><span class="ge">🌿</span><div><b>Braquiária / Capim-açú</b> — forrageiras excelentes. <span class="gf">TODO DIA</span></div></div>
+<div class="g-row"><span class="ge">🌱</span><div><b>Braquiária / Capim-açú</b> — forrageiras excelentes. <span class="gf">TODO DIA</span></div></div>
 <div class="g-row"><span class="ge">🫐</span><div><b>Folha de amora</b> — proteína; galhos gastam dentes. <span class="gf">TODO DIA</span></div></div>
 <div class="g-row"><span class="ge">🍌</span><div><b>Folha de bananeira</b> — fibras, intestino. <span class="gf">TODO DIA</span></div></div>
-<div class="g-row"><span class="ge">🌿</span><div><b>Ora-pro-nóbis</b> — folha mais proteica do Brasil. <span class="gf">DIÁRIA NO MIX</span></div></div>
-<div class="g-row"><span class="ge">🌱</span><div><b>Assa-peixe</b> — nativa; pouca quantidade. <span class="gf">POUCAS VEZES</span></div></div>
+<div class="g-row"><span class="ge">🥗</span><div><b>Ora-pro-nóbis</b> — folha mais proteica do Brasil. <span class="gf">DIÁRIA NO MIX</span></div></div>
+<div class="g-row"><span class="ge">🐟</span><div><b>Assa-peixe</b> — nativa; pouca quantidade. <span class="gf">POUCAS VEZES</span></div></div>
 <div class="g-row"><span class="ge">🥬</span><div><b>Couve</b> — <span class="gf">2–3×/SEMANA</span> • <b>Abóbora/Cenoura</b> — <span class="gf">2×/SEMANA</span></div></div>
 <div class="g-row"><span class="ge">🥭</span><div><b>Manga / Pitanga</b> — petisco, sem caroço. <span class="gf">1–2×/SEMANA</span></div></div>
 <div class="g-tit">🚫 NUNCA DÊ</div>
@@ -544,7 +568,7 @@ select.inp option{background:#0d1c36;color:#fff}
 <div class="g-row gr"><span class="ge">☠️</span><div><b>Tóxicas</b>: comigo-ninguém-pode, azaleia, samambaia, pothos.</div></div>
 <div class="g-tit">💧 ROTINA DIÁRIA</div>
 <div class="g-row"><span class="ge">🚰</span><div>Água fresca todo dia • Fezes firmes e redondinhas • Ninho sempre seco • Nunca pegue pela orelha.</div></div>
-<div class="g-row gd"><span class="ge">🌿</span><div><b>Regra de ouro:</b> verde novo = 1 por vez, observar fezes 24–48h.</div></div>
+<div class="g-row gd"><span class="ge">🥗</span><div><b>Regra de ouro:</b> verde novo = 1 por vez, observar fezes 24–48h.</div></div>
 <button class="btn-primary" onclick="clSh('m-guia')">Entendi, fechar guia</button>
 </div></div>
 
@@ -626,12 +650,31 @@ const racaOptions=sel=>'<option value="">Raça...</option>'+RACAS.map(r=>`<optio
 function idadeTxt(iso){if(!iso)return'—';const n=new Date(iso+'T12:00'),h=new Date();let m=(h.getFullYear()-n.getFullYear())*12+(h.getMonth()-n.getMonth());if(h.getDate()<n.getDate())m--;if(m<1){const d=Math.max(0,Math.round((h-n)/864e5));return d+(d===1?' dia':' dias')}if(m<12)return m+(m===1?' mês':' meses');const a=Math.floor(m/12),r=m%12;return a+(a===1?' ano':' anos')+(r?' e '+r+'m':'')}
 const diasDe=iso=>iso?Math.round((new Date(hojeISO()+'T12:00')-new Date(iso+'T12:00'))/864e5):null;
 
-/* ==================== 2. VACINAS PRÉ-DEFINIDAS ==================== */
+/* ==================== 2. CRESCIMENTO E IRMÃOS — CORRIGIDO (ambos os sexos) ==================== */
+/* Crescimento: INDEPENDENTE de sexo — usa apenas o histórico de pesos.
+   Com 2+ pesagens retorna o % de ganho da 1ª para a última. */
+function calcCrescimento(c){
+  const ps=(c.pesos||[]).filter(p=>isFinite(+p.v)&&+p.v>0).sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+  if(ps.length<2)return null;
+  const ini=+ps[0].v,fim=+ps[ps.length-1].v;
+  if(!(ini>0))return null;
+  return{pct:Math.round((fim-ini)/ini*100),de:ini,para:fim,n:ps.length}}
+
+/* Irmãos: verifica PELO CAMPO LOTE — para MACHO e FÊMEA.
+   coelho.lote === outro.lote e id diferente = irmão de lote. */
+function irmaosNoLote(c){
+  if(!c.lote)return[];
+  return db.coelhos.filter(o=>o.id!==c.id&&norm(o.lote)===norm(c.lote))}
+function txtIrmaos(c){
+  const ir=irmaosNoLote(c);
+  return ir.length?(ir.length+(ir.length===1?' irmão no lote ':' irmãos no lote ')+(c.lote||'—')):null}
+
+/* ==================== 3. VACINAS PRÉ-DEFINIDAS ==================== */
 const VACINAS=[
 {nome:'Mixomatose',emoji:'🛡️',intervalo:365,desc:'1ª dose aos 45 dias • reforço anual'},
 {nome:'VHD',emoji:'🩸',intervalo:365,desc:'1ª dose aos 45 dias • reforço anual'},
 {nome:'Ivermectina 1%',emoji:'🪱',intervalo:150,desc:'preventivo 4–6 meses • repetir 15d após 1ª'},
-{nome:'Sulfaquinoxalina',emoji:'💊',intervalo:90,desc:'preventivo coccidiose • época úmida'}];
+{nome:'Sulfaquinoxalina',emoji:'💣',intervalo:90,desc:'preventivo coccidiose • época úmida'}];
 function statusVacina(c,v){
 const aplic=(c.vac||[]).find(x=>norm(x.nome)===norm(v.nome)||norm(x.nome).includes(norm(v.nome))||norm(v.nome).includes(norm(x.nome)));
 if(!aplic)return{status:'pendente',txt:'Pendente',last:null,prox:null};
@@ -646,16 +689,15 @@ if(atras)return{cls:'b-amber',txt:'Vacinar'};
 if(ok)return{cls:'b-green',txt:'Saudável'};
 return{cls:'b-amber',txt:'Checar'}}
 
-/* ==================== 3. DADOS ==================== */
+/* ==================== 4. DADOS ==================== */
 function seedData(){const t=hojeISO();return{selId:1,
 lotes:[{id:1,nome:'L001'},{id:2,nome:'L002'},{id:3,nome:'L003'}],
 coelhos:[
 {id:1,foto:'',nome:'GN-1279',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:1,pesos:[{d:addMonths(t,-3),v:0.7,h:'09:12'},{d:addMonths(t,-2),v:0.82,h:'10:05'},{d:addMonths(t,-1),v:0.94,h:'09:40'},{d:addDays(t,-2),v:1,h:'09:12'}],nasc:addDays(t,-240),paiNome:'RZ-800',paiLote:'L002',paiRaca:'Califórnia',maeNome:'RZ-712',maeLote:'L001',maeRaca:'Nova Zelândia Branco',matriz:false,consang:true,vac:[{nome:'VHD',data:addDays(t,-8),local:'Vetsul'}],cob:[],par:[],obs:'Comportamento ativo e normal. Alimentação controlada.'},
-{id:2,foto:'',nome:'RZ-2001',lote:'L002',raca:'Califórnia',sexo:'M',peso:3.4,pesos:[{d:addMonths(t,-3),v:2.9,h:'08:30'},{d:addMonths(t,-2),v:3.1,h:'08:30'},{d:addMonths(t,-1),v:3.3,h:'08:45'},{d:addDays(t,-3),v:3.4,h:'08:50'}],nasc:addDays(t,-300),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:false,consang:false,vac:[{nome:'Mixomatose',data:addDays(t,-40),local:'Fazenda'}],cob:[],par:[],obs:''},
-{id:3,foto:'',nome:'RZ-712',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:4.1,pesos:[{d:addMonths(t,-3),v:3.8,h:'07:55'},{d:addMonths(t,-2),v:3.9,h:'07:55'},{d:addMonths(t,-1),v:4.0,h:'08:10'},{d:addDays(t,-4),v:4.1,h:'08:10'}],nasc:addDays(t,-420),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:true,consang:false,vac:[{nome:'VHD',data:addDays(t,-370),local:'Vetsul'}],cob:[],par:[{data:addDays(t,-10),vivos:7,mortos:1,paiId:2,paiNome:'RZ-2001',paiRaca:'Califórnia'}],obs:''},
+{id:2,foto:'',nome:'GN-1280',lote:'L001',raca:'Nova Zelândia Branco',sexo:'M',peso:1,pesos:[{d:addMonths(t,-3),v:0.72,h:'09:15'},{d:addMonths(t,-2),v:0.84,h:'10:00'},{d:addMonths(t,-1),v:0.95,h:'09:45'},{d:addDays(t,-2),v:1,h:'09:14'}],nasc:addDays(t,-240),paiNome:'RZ-800',paiLote:'L002',paiRaca:'Califórnia',maeNome:'RZ-712',maeLote:'L001',maeRaca:'Nova Zelândia Branco',matriz:false,consang:true,vac:[],cob:[],par:[],obs:'Irmão de lote da GN-1279 (mesmo peso e mesma baia).'},
+{id:3,foto:'',nome:'RZ-712',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:4.1,pesos:[{d:addMonths(t,-3),v:3.8,h:'07:55'},{d:addMonths(t,-2),v:3.9,h:'07:55'},{d:addMonths(t,-1),v:4.0,h:'08:10'},{d:addDays(t,-4),v:4.1,h:'08:10'}],nasc:addDays(t,-420),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:true,consang:false,vac:[{nome:'VHD',data:addDays(t,-370),local:'Vetsul'}],cob:[],par:[{data:addDays(t,-10),vivos:7,mortos:1,paiId:2,paiNome:'GN-1280',paiRaca:'Califórnia'}],obs:''},
 {id:4,foto:'',nome:'RZ-800',lote:'L002',raca:'Califórnia',sexo:'M',peso:3.8,pesos:[{d:addMonths(t,-2),v:3.5,h:'09:00'},{d:addMonths(t,-1),v:3.7,h:'09:00'},{d:addDays(t,-5),v:3.8,h:'09:05'}],nasc:addDays(t,-500),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''},
-{id:5,foto:'',nome:'RZ-1030',lote:'L001',raca:'Nova Zelândia Branco',sexo:'F',peso:0.9,pesos:[{d:addMonths(t,-2),v:0.6,h:'11:00'},{d:addMonths(t,-1),v:0.75,h:'11:00'},{d:addDays(t,-3),v:0.9,h:'11:10'}],nasc:addDays(t,-65),paiNome:'RZ-800',paiLote:'L002',paiRaca:'Califórnia',maeNome:'RZ-712',maeLote:'L001',maeRaca:'Nova Zelândia Branco',matriz:false,consang:true,vac:[],cob:[],par:[],obs:''},
-{id:6,foto:'',nome:'RZ-1150',lote:'L003',raca:'Chinchila',sexo:'M',peso:2.7,pesos:[{d:addMonths(t,-2),v:2.1,h:'14:00'},{d:addMonths(t,-1),v:2.4,h:'14:00'},{d:addDays(t,-6),v:2.7,h:'14:10'}],nasc:addDays(t,-150),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''}],
+{id:5,foto:'',nome:'RZ-1150',lote:'L003',raca:'Chinchila',sexo:'M',peso:2.7,pesos:[{d:addMonths(t,-2),v:2.1,h:'14:00'},{d:addMonths(t,-1),v:2.4,h:'14:00'},{d:addDays(t,-6),v:2.7,h:'14:10'}],nasc:addDays(t,-150),paiNome:'',paiLote:'',paiRaca:'',maeNome:'',maeLote:'',maeRaca:'',matriz:false,consang:false,vac:[],cob:[],par:[],obs:''}],
 racao:[{id:1,tipo:'Crescimento',qtd:2.5,lote:'L001',data:t},{id:2,tipo:'Reprodução',qtd:1.2,lote:'L002',data:t},{id:3,tipo:'Engorda',qtd:3.0,lote:'L003',data:addDays(t,-1)}]}}
 function load(){try{const d=JSON.parse(localStorage.getItem(LS));if(d&&Array.isArray(d.coelhos)){d.coelhos.forEach(c=>{if(!Array.isArray(c.pesos))c.pesos=[];if(!Array.isArray(c.vac))c.vac=[];if(!Array.isArray(c.cob))c.cob=[];if(!Array.isArray(c.par))c.par=[];if(!('obs'in c))c.obs='';if(!('paiRaca'in c))c.paiRaca='';if(!('maeRaca'in c))c.maeRaca=''});return d}}catch(e){}return seedData()}
 let db=load();
@@ -664,11 +706,11 @@ const coelhoSel=()=>db.coelhos.find(c=>c.id===db.selId)||db.coelhos[0]||null;
 const byNome=n=>db.coelhos.find(c=>norm(c.nome)===norm(n))||null;
 const loteOptions=sel=>'<option value="">Sem lote</option>'+db.lotes.map(l=>`<option value="${esc(l.nome)}"${l.nome===sel?' selected':''}>${esc(l.nome)}</option>`).join('');
 
-/* ==================== 4. CONSANGUINIDADE ==================== */
+/* ==================== 5. CONSANGUINIDADE ==================== */
 function saoParentes(a,b){if(!a||!b||a.id===b.id)return false;const na=norm(a.nome),nb=norm(b.nome);if(!na||!nb)return false;const pA=[norm(a.paiNome),norm(a.maeNome)].filter(Boolean),pB=[norm(b.paiNome),norm(b.maeNome)].filter(Boolean);if(pA.includes(nb)||pB.includes(na))return true;if(pA.length&&pB.length&&pA.some(p=>pB.includes(p)))return true;return false}
 function riscoCoelho(c){if(!c)return false;if(c.consang)return true;const pf=norm(c.paiNome),pm=norm(c.maeNome);if(pf&&pm){if(pf===pm)return true;const p=byNome(pf),m=byNome(pm);if(p&&m&&saoParentes(p,m))return true}return db.coelhos.some(o=>o.id!==c.id&&o.lote&&o.lote===c.lote&&saoParentes(c,o))}
 
-/* ==================== 5. UI ==================== */
+/* ==================== 6. UI ==================== */
 let tmToast=null;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tmToast);tmToast=setTimeout(()=>t.classList.remove('show'),2600)}
 const openSh=id=>$(id).classList.add('open');
@@ -680,12 +722,12 @@ function cfYes(){clSh('m-cf');if(cbConf)cbConf()}
 let fabOpen=false;
 function toggleFab(f){fabOpen=(f!==undefined)?f:!fabOpen;$('fab').classList.toggle('open',fabOpen);$('fm').classList.toggle('open',fabOpen);$('fov').classList.toggle('open',fabOpen)}
 
-/* ==================== 6. NAVEGAÇÃO ==================== */
+/* ==================== 7. NAVEGAÇÃO ==================== */
 const TITLES={dash:'Detalhe do Animal',plantel:'Meu Plantel',racao:'Controle de Ração',lotes:'Lotes'};
 let vis='dash';
 function go(v){vis=v;document.querySelectorAll('.view').forEach(s=>s.classList.add('hidden'));$('v-'+v).classList.remove('hidden');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('act',b.dataset.v===v));$('h-title').textContent=TITLES[v];$('h-back').style.visibility=v==='dash'?'visible':'hidden';$('h-dots').style.visibility=v==='dash'?'visible':'hidden';toggleFab(false);({dash:renderDash,plantel:renderPlantel,racao:renderRacao,lotes:renderLotes})[v]();$('main').scrollTop=0}
 
-/* ==================== 7. GRÁFICO ==================== */
+/* ==================== 8. GRÁFICO ==================== */
 function chartSVG(regs){
 const box=$('chart');if(!box)return;
 const rs=(regs||[]).filter(r=>r&&isFinite(+r.v)&&+r.v>0).sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
@@ -706,7 +748,7 @@ for(let i=0;i<n;i+=step){const p=pts[i];g+=`<text x="${Math.max(Math.min(p[0],W-
 const lp=pts[n-1];g+=`<text x="${Math.min(lp[0],W-44).toFixed(1)}" y="${(lp[1]-12).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="900" fill="#8ab4f8">${fmtPesoBR(vals[n-1])}</text>`;
 box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;aspect-ratio:${W}/${H}"><defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa" stop-opacity=".35"/><stop offset="1" stop-color="#60a5fa" stop-opacity=".02"/></linearGradient><linearGradient id="ln" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#8ab4f8"/></linearGradient></defs>${g}</svg>`}
 
-/* ==================== 8. DASHBOARD ==================== */
+/* ==================== 9. DASHBOARD ==================== */
 function lastReg(c){const r=[];(c.vac||[]).forEach(v=>r.push({t:'vacina',d:v.data,v}));(c.cob||[]).forEach(v=>r.push({t:'cob',d:v.data,v}));(c.par||[]).forEach(v=>r.push({t:'parto',d:v.data,v}));r.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));return r[r.length-1]||null}
 function renderDash(){
 const c=coelhoSel();
@@ -718,12 +760,27 @@ if(!c)return;
  $('d-badge-raca').textContent='🐇 '+(c.raca||'Raça não definida');
  $('d-id').textContent=c.nome;
 const pesoTxt=c.peso?fmtPesoBR(c.peso):'—';
- $('d-meta').textContent='Lote '+(c.lote||'—')+' • '+pesoTxt+' • '+(c.sexo==='M'?'Macho':'Fêmea')+' • '+idadeTxt(c.nasc);
+/* Linha de meta agora inclui IRMÃOS DO LOTE — para ambos os sexos */
+const irTxt=txtIrmaos(c);
+ $('d-meta').textContent='Lote '+(c.lote||'—')+' • '+pesoTxt+' • '+(c.sexo==='M'?'Macho':'Fêmea')+' • '+idadeTxt(c.nasc)+(irTxt?' • 👥 '+irTxt:'');
  $('d-peso').textContent=pesoTxt;
 const ps=[...(c.pesos||[])].sort((a,b)=>a.d.localeCompare(b.d));
 if(ps.length){const lp=ps[ps.length-1];$('d-peso-foot').textContent=lp.d===hojeISO()?('Atualizado hoje'+(lp.h?' • '+lp.h:'')):('Atualizado em '+fmtBR(lp.d))}else $('d-peso-foot').textContent='Sem registros';
  $('d-idade').textContent=idadeTxt(c.nasc);
  $('d-nasc-foot').textContent='Nasc. '+fmtBR(c.nasc);
+/* CRESCIMENTO — independente do sexo: usa só o histórico de pesos */
+const gr=calcCrescimento(c);
+if(gr){$('d-cres').textContent=(gr.pct>0?'+':'')+gr.pct+'%';
+ $('d-cres-foot').textContent=fmtPesoBR(gr.de)+' → '+fmtPesoBR(gr.para)}
+else{$('d-cres').textContent='—';$('d-cres-foot').textContent='Precisa de 2+ pesagens'}
+ $('gi-cres').textContent=gr?((gr.pct>0?'+':'')+gr.pct+'% de crescimento ('+gr.n+' pesagens)'):'Sem dados suficientes';
+ $('gi-cres-sub').textContent=gr?('De '+fmtPesoBR(gr.de)+' para '+fmtPesoBR(gr.para)+' — válido para macho e fêmea'):'Adicione 2 ou mais pesagens para calcular o % (ambos os sexos)';
+/* IRMÃOS — pelo campo LOTE, para macho e fêmea */
+const ir=irmaosNoLote(c);
+if(ir.length){$('gi-irm').textContent=ir.length+(ir.length===1?' irmão no lote ':' irmãos no lote ')+(c.lote||'—');
+ $('gi-irm-sub').textContent='Mesma baia: '+ir.map(x=>esc(x.nome)).join(', ')}
+else{$('gi-irm').textContent='Nenhum irmão no lote';
+ $('gi-irm-sub').textContent='Cadastre outro coelho no lote '+(c.lote||'—')+' (macho ou fêmea) para vincular'}
 /* Status de Saúde */
 let pior='',nomePior='';
 VACINAS.forEach(v=>{const s=statusVacina(c,v);
@@ -754,26 +811,18 @@ else{t='🐇 Parto';s='Ocorrido em: '+fmtBR(r.v.data)+' • '+r.v.vivos+' vivo(s
 }else{head.classList.add('hidden');dv.classList.add('hidden')}
 try{chartSVG(c.pesos)}catch(e){$('chart').innerHTML='<p style="text-align:center;color:#8ea3c2;font-size:12px;padding:10px">Gráfico indisponível</p>'}}
 
-/* ==================== 8b. ALERTAS CLICÁVEIS DE VACINAÇÃO ==================== */
+/* Alertas clicáveis */
 function renderVacAlertas(){
 const al=[];
 db.coelhos.forEach(cc=>{const idade=cc.nasc?diasDe(cc.nasc):999;
 VACINAS.forEach(v=>{const s=statusVacina(cc,v);
-if(s.status==='atrasada')al.push({cl:'vr',e:'🚨',cid:cc.id,vnome:v.nome,
-h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' <b>'+v.nome+'</b> ATRASADA há '+s.txt.replace('Atrasada ',''),
-s:'Toque para registrar a dose agora • Última: '+fmtBR(s.last)});
-else if(s.status==='pendente'&&idade>=45)al.push({cl:'vr',e:'❓',cid:cc.id,vnome:v.nome,
-h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' <b>'+v.nome+'</b> PENDENTE (nunca aplicada)',
-s:'Animal com 45+ dias: toque para aplicar a 1ª dose'});
-else if(s.status==='proxima')al.push({cl:'vm',e:'⏳',cid:cc.id,vnome:v.nome,
-h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' '+v.nome+' '+s.txt.toLowerCase(),
-s:'Próxima dose: '+fmtBR(s.prox)+' • Toque para registrar'})})});
+if(s.status==='atrasada')al.push({cl:'vr',e:'🚨',cid:cc.id,vnome:v.nome,h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' <b>'+v.nome+'</b> ATRASADA há '+s.txt.replace('Atrasada ',''),s:'Toque para registrar a dose agora • Última: '+fmtBR(s.last)});
+else if(s.status==='pendente'&&idade>=45)al.push({cl:'vr',e:'❓',cid:cc.id,vnome:v.nome,h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' <b>'+v.nome+'</b> PENDENTE (nunca aplicada)',s:'Animal com 45+ dias: toque para aplicar a 1ª dose'});
+else if(s.status==='proxima')al.push({cl:'vm',e:'⏳',cid:cc.id,vnome:v.nome,h:'<b>'+esc(cc.nome)+'</b> — '+v.emoji+' '+v.nome+' '+s.txt.toLowerCase(),s:'Próxima dose: '+fmtBR(s.prox)+' • Toque para registrar'})})});
 al.sort((a,b)=>(a.cl==='vr'?0:1)-(b.cl==='vr'?0:1));
  $('vac-alertas').innerHTML=al.length?
-al.map((a,i)=>`<button class="va-row ${a.cl}" onclick="resolverAlerta(${a.cid},'${esc(a.vnome).replace(/'/g,"\\'")}')"><span class="ve">${a.e}</span><div>${a.h}<small>${a.s}</small></div><span class="vgo">›</span></button>`).join('')
+al.map(a=>`<button class="va-row ${a.cl}" onclick="resolverAlerta(${a.cid},'${esc(a.vnome).replace(/'/g,"\\'")}')"><span class="ve">${a.e}</span><div>${a.h}<small>${a.s}</small></div><span class="vgo">›</span></button>`).join('')
 :'<div class="va-ok">✅ Todas as vacinas pré-definidas estão em dia no plantel!</div>'}
-
-/* Tocou no alerta → abre o modal de vacina já pronto com coelho + vacina selecionados */
 function resolverAlerta(cid,vnome){
 db.selId=cid;save();
  $('vc-alvo').innerHTML=alvoOptions();
@@ -785,7 +834,7 @@ if($('vc-pre').value==='Outra')$('vc-outra').value=vnome;
 openSh('m-vc');
 toast('Registrar '+vnome+' — salve para limpar o alerta ✅')}
 
-/* ==================== 9. RELATÓRIO DO ANIMAL ==================== */
+/* ==================== 10. RELATÓRIO DO ANIMAL ==================== */
 let tempPesos=[];
 function renderPesosRel(){$('r-pesos-list').innerHTML=tempPesos.length?tempPesos.map((p,i)=>`<div class="pw-row"><span>📅 ${fmtBR(p.d)}</span><b>${fmtPesoBR(p.v)}</b><button onclick="delPesoRel(${i})">✕</button></div>`).join(''):'<p class="hint">Nenhum peso registrado ainda</p>'}
 function addPesoRel(){const d=$('r-pd').value||hojeISO(),v=parseFloat(String($('r-pv').value).replace(',','.'));if(!(v>0))return toast('Informe um peso válido',1);const ex=tempPesos.findIndex(p=>p.d===d);if(ex>=0){tempPesos[ex].v=v;tempPesos[ex].h=agoraH()}else tempPesos.push({d,v,h:agoraH()});tempPesos.sort((a,b)=>a.d.localeCompare(b.d));$('r-pv').value='';renderPesosRel();toast('Peso adicionado ⚖️')}
@@ -818,7 +867,7 @@ c.pesos=tempPesos;c.peso=tempPesos.length?tempPesos[tempPesos.length-1].v:c.peso
 save();clSh('m-rel');renderDash();toast('Relatório salvo ✅')}
 function askDelCoelho(){const c=coelhoSel();if(!c)return;confirmar('Excluir '+c.nome+' permanentemente?',()=>{db.coelhos=db.coelhos.filter(x=>x.id!==c.id);db.selId=db.coelhos[0]?db.coelhos[0].id:null;save();renderDash();toast('Coelho excluído 🗑️')})}
 
-/* ==================== 10. PESO RÁPIDO ==================== */
+/* ==================== 11. PESO RÁPIDO ==================== */
 function abrirPesoRapido(){if(!db.coelhos.length)return toast('Cadastre um coelho primeiro',1);
  $('pw-c').innerHTML=db.coelhos.map(c=>`<option value="${c.id}"${c.id===db.selId?' selected':''}>${esc(c.nome)} • ${esc(c.raca)||'—'}</option>`).join('');
  $('pw-d').value=hojeISO();$('pw-v').value='';openSh('m-peso');setTimeout(()=>$('pw-v').focus(),350)}
@@ -830,7 +879,7 @@ if(ex>=0){c.pesos[ex].v=v;c.pesos[ex].h=agoraH()}else c.pesos.push({d,v,h:agoraH
 c.pesos.sort((a,b)=>a.d.localeCompare(b.d));c.peso=c.pesos[c.pesos.length-1].v;
 save();clSh('m-peso');renderDash();toast('Peso de '+c.nome+': '+fmtPesoBR(v)+' ⚖️')}
 
-/* ==================== 11. COBERTURA / PARTO / VACINA / GUIA ==================== */
+/* ==================== 12. COBERTURA / PARTO / VACINA / GUIA ==================== */
 function openCob(){const fs=db.coelhos.filter(x=>x.sexo==='F'),ms=db.coelhos.filter(x=>x.sexo==='M');if(!fs.length||!ms.length)return toast('Precisa de 1 fêmea e 1 macho',1);const cur=coelhoSel();
  $('cz-f').innerHTML=fs.map(f=>`<option value="${f.id}"${cur&&f.id===cur.id?' selected':''}>${esc(f.nome)} • ${esc(f.raca)||'—'}</option>`).join('');
  $('cz-m').innerHTML=ms.map(m=>`<option value="${m.id}">${esc(m.nome)} • ${esc(m.raca)||'—'}</option>`).join('');
@@ -853,7 +902,7 @@ mae.par.push({data:$('pt-d').value||hojeISO(),vivos:v,mortos:mt,paiId:pai.id,pai
 const par=saoParentes(mae,pai);if(par)mae.consang=true;
 db.selId=mae.id;save();clSh('m-pt');renderDash();toast(par?'⚠️ Parto — pais PARENTES!':'Parto registrado 🐇')}
 function alvoOptions(){let h='<optgroup label="🐇 Coelho individual">';db.coelhos.forEach(c=>{h+=`<option value="c:${c.id}"${c.id===db.selId?' selected':''}>${esc(c.nome)} • ${esc(c.raca)||'—'}</option>`});h+='</optgroup>';
-if(db.lotes.length){h+='<optgroup label="🧾 Lote inteiro">';db.lotes.forEach(l=>{const n=db.coelhos.filter(c=>c.lote===l.nome).length;h+=`<option value="l:${l.id}">Lote ${esc(l.nome)} — ${n} coelho(s)</option>`});h+='</optgroup>'}return h}
+if(db.lotes.length){h+='<optgroup label="📦 Lote inteiro">';db.lotes.forEach(l=>{const n=db.coelhos.filter(c=>c.lote===l.nome).length;h+=`<option value="l:${l.id}">Lote ${esc(l.nome)} — ${n} coelho(s)</option>`});h+='</optgroup>'}return h}
 function openVacina(){if(!db.coelhos.length)return toast('Cadastre coelhos primeiro',1);$('vc-alvo').innerHTML=alvoOptions();$('vc-pre').value='Mixomatose';$('vc-outra').value='';$('vc-outra').classList.add('hidden');$('vc-l').value='';$('vc-d').value=hojeISO();openSh('m-vc')}
 function saveVac(){const val=$('vc-alvo').value||'',data=$('vc-d').value||hojeISO(),local=$('vc-l').value.trim();
 const nome=$('vc-pre').value==='Outra'?$('vc-outra').value.trim():$('vc-pre').value;
@@ -861,31 +910,41 @@ if(!nome)return toast('Digite o nome da vacina',1);
 if(val.startsWith('c:')){const c=db.coelhos.find(x=>x.id===+val.slice(2));if(!c)return;c.vac.push({nome,data,local});toast('Vacina p/ '+c.nome+' 💉')}
 else if(val.startsWith('l:')){const lt=db.lotes.find(x=>x.id===+val.slice(2));if(!lt)return;const cs=db.coelhos.filter(c=>c.lote===lt.nome);if(!cs.length)return toast('Lote vazio',1);cs.forEach(c=>c.vac.push({nome,data,local}));toast('Vacina p/ '+cs.length+' coelhos 💉')}
 else return toast('Escolha o alvo',1);
-save();clSh('m-vc');
-/* Reabre o dashboard já SEM o alerta resolvido — pronto para o próximo */
-renderDash();
-if(vis==='plantel')renderPlantel();
+save();clSh('m-vc');renderDash();if(vis==='plantel')renderPlantel();
 toast('Vacina registrada! Alerta atualizado ✅')}
 function openGuia(){openSh('m-guia')}
 
-/* ==================== 12. PLANTEL / CATEGORIAS ==================== */
+/* ==================== 13. PLANTEL / CATEGORIAS (CORRIGIDO) ==================== */
 const DOSES={lactante:0.300,matriz:0.180,macho:0.120,crescimento:0.130,engorda:0.160};
 const CATLBL={lactante:'Amamentando',matriz:'Matriz',macho:'Macho',crescimento:'Crescimento',engorda:'Engorda'};
-const CATEMOJI={lactante:'🐇🍼',matriz:'🐇',macho:'🐰',crescimento:'🐇',engorda:'🍖'};
+const CATEMOJI={lactante:'🐇🍼',matriz:'🐇',macho:'🐰',crescimento:'🌱',engorda:'🍖'};
 const LACT_DIAS=35,CRESC_DIAS=90;
-function classCoelho(c){if(c.matriz&&c.sexo==='F'){const lact=(c.par||[]).some(p=>{const d=diasDe(p.data);return d!==null&&d>=0&&d<=LACT_DIAS});return lact?'lactante':'matriz'}if(c.sexo==='M')return'macho';const d=diasDe(c.nasc);if(d!==null&&d<CRESC_DIAS)return'crescimento';return'engorda'}
+/* CORREÇÃO DO BUG: Crescimento calculado INDEPENDENTE do sexo.
+   Antes: macho jovem caía direto em 'macho' e nunca aparecia como Crescimento.
+   Agora: qualquer animal (M ou F) com menos de 90 dias = Crescimento.
+   Só matriz amamentando = lactante; matriz seca = matriz; macho adulto = macho. */
+function classCoelho(c){
+  if(c.matriz&&c.sexo==='F'){
+    const lact=(c.par||[]).some(p=>{const d=diasDe(p.data);return d!==null&&d>=0&&d<=LACT_DIAS});
+    return lact?'lactante':'matriz'}
+  const d=diasDe(c.nasc);
+  if(d!==null&&d<CRESC_DIAS)return'crescimento';   /* M e F jovens = Crescimento */
+  if(c.sexo==='M')return'macho';
+  return'engorda'}
 function renderPlantel(){const L=$('p-list');
 if(!db.coelhos.length){L.innerHTML='<div class="card empty"><span class="e">🐰</span>Nenhum coelho no plantel.<br>Toque no <b>+</b> para cadastrar.</div>';return}
 L.innerHTML=db.coelhos.map(c=>{const cat=classCoelho(c),ci=CATEMOJI[cat],vb=vacBadge(c);
+const ir=irmaosNoLote(c),gr=calcCrescimento(c);
 return `<div class="p-row" onclick="selReport(${c.id})">
 <img class="p-foto" src="${esc(c.foto)||RABBIT}" onerror="this.onerror=null;this.src='${RABBIT}'" alt="">
-<div><div class="p-n">${esc(c.nome)} ${c.matriz?'🟢':''} ${riscoCoelho(c)?'⚠️':''}</div>
-<div class="p-s">${ci} ${CATLBL[cat]} • 📝 ${esc(c.lote)||'—'} • ${esc(c.raca)||'—'}</div></div>
+<div style="min-width:0"><div class="p-n">${esc(c.nome)} ${c.matriz?'🟢':''} ${riscoCoelho(c)?'⚠️':''}</div>
+<div class="p-s">${ci} ${CATLBL[cat]} • 📦 ${esc(c.lote)||'—'} • ${esc(c.raca)||'—'}</div>
+<div class="p-s">${ir.length?'👥 '+ir.length+' irmão(s) no lote • ':''}${gr?(gr.pct>0?'📈 +'+gr.pct+'%':'📈 '+gr.pct+'%'):'📈 —'}</div></div>
 <span class="badge ${vb.cls}" style="margin-left:auto;flex-shrink:0">${vb.txt}</span>
 <span class="p-arrow">›</span></div>`}).join('')}
 function selReport(id){db.selId=id;save();go('dash')}
 
-/* ==================== 13. RAÇÃO AUTOMÁTICA (sem custo) ==================== */
+/* ==================== 14. RAÇÃO AUTOMÁTICA (sem custo) ==================== */
 function calcCats(cs){const cats={lactante:0,matriz:0,macho:0,crescimento:0,engorda:0};cs.forEach(c=>cats[classCoelho(c)]++);let kg=0;for(const k in cats)kg+=cats[k]*DOSES[k];return{cats,kg}}
 function tipoRacao(cats){if(cats.lactante>0||cats.matriz>0)return'Reprodução';if(cats.engorda>=cats.crescimento&&cats.engorda>0)return'Engorda';if(cats.crescimento>0)return'Crescimento';return'Reprodução'}
 function linhasCats(cats){const out=[];for(const k of['lactante','matriz','macho','crescimento','engorda']){if(!cats[k])continue;out.push({k,qtd:cats[k],kg:cats[k]*DOSES[k]})}return out}
@@ -894,14 +953,14 @@ if(!db.coelhos.length){box.innerHTML='<p style="text-align:center;color:#86efac;
 const{cats,kg}=calcCats(db.coelhos),lin=linhasCats(cats),sacos=(kg*30/25);
 box.innerHTML=`<div class="auto-top"><b>⚡ Necessidade do Plantel</b><div class="auto-tot">${fmtPesoBR(kg,true)}<small>por dia • ≈ ${sacos.toLocaleString('pt-BR',{maximumFractionDigits:1})} sacos 25kg/mês</small></div></div>
  ${lin.map(l=>`<div class="cat-row"><span class="cat-l">${CATEMOJI[l.k]} ${CATLBL[l.k]}<span class="cat-q">${l.qtd} × ${fmtPesoBR(DOSES[l.k],true)}</span></span><span class="cat-k">${fmtPesoBR(l.kg,true)}</span></div>`).join('')}
-<div class="auto-foot">🤖 Automático: matrizes com parto há menos de ${LACT_DIAS} dias = <b>amamentando</b> (dose de lactação). Atualiza sozinho.</div>`}
+<div class="auto-foot">🤖 Automático: M e F com menos de ${CRESC_DIAS} dias = <b>Crescimento</b> (independente do sexo). Matrizes com parto há menos de ${LACT_DIAS} dias = <b>amamentando</b>.</div>`}
 function renderIdeal(){const L=$('ideal-list');
 if(!db.lotes.length){L.innerHTML='<p class="dose-note">Crie um lote para ver o cálculo por lote 🐰</p>';return}
 L.innerHTML=db.lotes.map(l=>{const cs=db.coelhos.filter(c=>c.lote===l.nome);
-if(!cs.length)return `<div class="lote-card"><div class="lote-top"><b>🐇 ${esc(l.nome)}</b><span class="lote-k">—</span></div><div class="lote-vazio">Lote vazio — sem cálculo</div></div>`;
+if(!cs.length)return `<div class="lote-card"><div class="lote-top"><b>🐰🐰🐰 ${esc(l.nome)}</b><span class="lote-k">—</span></div><div class="lote-vazio">Lote vazio — sem cálculo</div></div>`;
 const{cats,kg}=calcCats(cs),lin=linhasCats(cats),tipo=tipoRacao(cats);
 return `<div class="lote-card">
-<div class="lote-top"><b>🐇 ${esc(l.nome)} <small>(${cs.length})</small></b><span class="lote-k">${fmtPesoBR(kg,true)} <em>/dia</em></span></div>
+<div class="lote-top"><b>🐰🐰🐰 ${esc(l.nome)} <small>(${cs.length})</small></b><span class="lote-k">${fmtPesoBR(kg,true)} <em>/dia</em></span></div>
  ${lin.map(x=>`<div class="cat-row-l"><span class="cat-l">${CATEMOJI[x.k]} ${CATLBL[x.k]}<span class="cat-q">${x.qtd} × ${fmtPesoBR(DOSES[x.k],true)}</span></span><span class="cat-k">${fmtPesoBR(x.kg,true)}</span></div>`).join('')}
 <button class="lote-btn" onclick="usarIdeal('${esc(l.nome)}')">⚡ USAR NO LANÇAMENTO → “${tipo}”</button></div>`}).join('')}
 function usarIdeal(nomeLote){const cs=db.coelhos.filter(c=>c.lote===nomeLote);if(!cs.length)return toast('Lote vazio',1);const{cats,kg}=calcCats(cs);$('rc-tipo').value=tipoRacao(cats);$('rc-lote').value=nomeLote;$('rc-qtd').value=kg.toFixed(2);$('rc-form').scrollIntoView({behavior:'smooth',block:'center'});toast('⚡ '+fmtPesoBR(kg,true)+' por dia para '+nomeLote)}
@@ -916,16 +975,16 @@ if(!db.racao.length){L.innerHTML='<div class="card empty"><span class="e">🌾</
 L.innerHTML=[...db.racao].sort((a,b)=>a.data.localeCompare(b.data)).reverse().map(r=>`
 <div class="rc-row">
 <div class="rc-mid"><div class="rc-info"><span class="tpill tp-${r.tipo.charAt(0).toLowerCase()}">${esc(r.tipo)}</span><b>${fmtPesoBR(r.qtd,true)}/dia</b></div>
-<span class="rc-d">🧾 ${esc(r.lote)||'—'} • ${fmtBR(r.data)}</span></div>
+<span class="rc-d">📦 ${esc(r.lote)||'—'} • ${fmtBR(r.data)}</span></div>
 <button class="mini-del" onclick="delRacao(${r.id})">🗑️</button></div>`).join('')}
 function addRacao(){const qtd=parseFloat(String($('rc-qtd').value).replace(',','.'));if(!(qtd>0))return toast('Informe a quantidade em kg/dia',1);db.racao.push({id:Date.now(),tipo:$('rc-tipo').value,qtd,lote:$('rc-lote').value,data:$('rc-data').value||hojeISO()});$('rc-qtd').value='';save();renderRacao();toast('Ração lançada 🌾')}
 function delRacao(id){db.racao=db.racao.filter(r=>r.id!==id);save();renderRacao()}
 
-/* ==================== 14. LOTES ==================== */
+/* ==================== 15. LOTES ==================== */
 function renderLotes(){const L=$('l-list');
 if(!db.lotes.length){L.innerHTML='<div class="card empty"><span class="e">🐰</span>Nenhum lote ainda.<br>Toque no <b>+</b> → <b>Novo Lote</b>.</div>';return}
 L.innerHTML=db.lotes.map(l=>{const n=db.coelhos.filter(c=>c.lote===l.nome).length;
-return `<div class="l-card"><div class="l-ico">🐇</div>
+return `<div class="l-card"><div class="l-ico">🐰🐰🐰</div>
 <div class="l-info"><b>${esc(l.nome)}</b><span>${n} coelho${n===1?'':'s'}</span></div>
 <div class="l-btns"><button onclick="openRenomear(${l.id})">✏️</button><button onclick="apagarLote(${l.id})">🗑️</button></div></div>`}).join('')}
 function novoLoteModal(){$('nl-nome').value='';openSh('m-nl');setTimeout(()=>$('nl-nome').focus(),350)}
@@ -935,14 +994,14 @@ function openRenomear(id){renId=id;const l=db.lotes.find(x=>x.id===id);$('rn-nom
 function saveRen(){const l=db.lotes.find(x=>x.id===renId),n=$('rn-nome').value.trim();if(!l||!n)return;if(db.lotes.some(x=>x.id!==renId&&norm(x.nome)===norm(n)))return toast('Lote já existe',1);const old=l.nome;l.nome=n;db.coelhos.forEach(c=>{if(c.lote===old)c.lote=n});db.racao.forEach(r=>{if(r.lote===old)r.lote=n});save();clSh('m-rn');renderLotes();toast('Renomeado ✏️')}
 function apagarLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n=db.coelhos.filter(c=>c.lote===l.nome).length;confirmar('Apagar lote '+l.nome+'?'+(n?' '+n+' coelho(s) ficarão sem lote.':''),()=>{db.lotes=db.lotes.filter(x=>x.id!==id);db.coelhos.forEach(c=>{if(c.lote===l.nome)c.lote=''});save();renderLotes();toast('Lote apagado 🗑️')})}
 
-/* ==================== 15. NOVO COELHO ==================== */
+/* ==================== 16. NOVO COELHO ==================== */
 function novoCoelhoModal(){$('nc-foto').value='';$('nc-id').value='';$('nc-peso').value='';$('nc-nasc').value='';$('nc-pai').value='';$('nc-mae').value='';$('nc-raca').innerHTML=racaOptions('');$('nc-lote').innerHTML=loteOptions('');$('nc-matriz').checked=false;openSh('m-nc');setTimeout(()=>$('nc-id').focus(),350)}
 function saveNewCoelho(){const nome=$('nc-id').value.trim();if(!nome)return toast('Informe o ID/nome',1);
 const peso=parseFloat(String($('nc-peso').value).replace(',','.'))||0;
 const c={id:Date.now(),foto:$('nc-foto').value.trim(),nome,lote:$('nc-lote').value,raca:$('nc-raca').value,sexo:$('nc-sexo').value,peso,pesos:peso>0?[{d:hojeISO(),v:peso,h:agoraH()}]:[],nasc:$('nc-nasc').value,paiNome:$('nc-pai').value.trim(),paiLote:'',paiRaca:'',maeNome:$('nc-mae').value.trim(),maeLote:'',maeRaca:'',matriz:$('nc-matriz').checked,consang:false,vac:[],cob:[],par:[],obs:''};
 db.coelhos.push(c);db.selId=c.id;save();clSh('m-nc');go('dash');toast('Coelho cadastrado 🐰')}
 
-/* ==================== 16. MODAL RELATÓRIO PDF ==================== */
+/* ==================== 17. MODAL RELATÓRIO PDF ==================== */
 let TODAS_BAIAS=[],tipoRelatorio='completo',baiaSelecionada=null;
 function carregarBaias(){TODAS_BAIAS=db.lotes.map(l=>{const cs=db.coelhos.filter(c=>c.lote===l.nome);return{id:l.id,nome:l.nome,matriz:cs.filter(c=>c.matriz).length,total:cs.length}})}
 function renderBaias(f){const L=$('rel-baia-list');const q=(f||'').trim().toLowerCase();const arr=TODAS_BAIAS.filter(b=>!q||b.nome.toLowerCase().includes(q));
@@ -957,7 +1016,7 @@ function setTipoRelatorio(t){tipoRelatorio=t;$('tb-completo').classList.toggle('
 function filtrarBaias(){renderBaias($('rel-busca').value)}
 function selecionarBaia(id){baiaSelecionada=id;renderBaias($('rel-busca').value);const b=TODAS_BAIAS.find(x=>x.id===id);toast('Baia: '+b.nome+' ('+b.total+' coelhos)')}
 
-/* ==================== 17. PDF — HELPERS ==================== */
+/* ==================== 18. PDF — HELPERS ==================== */
 const P_NAVY=[10,24,48],P_AZUL=[37,99,235],P_TXT=[30,41,59],P_SUB=[100,116,139],P_LINHA=[226,232,240],P_ZEBRA=[241,245,249],P_BOX=[248,250,252];
 const P_VERDE=[22,163,74],P_VERM=[220,38,38],P_AMBAR=[217,119,6];
 const pdfTrunc=(s,n)=>{s=String(s??'—');return s.length>n?s.slice(0,n-1)+'…':s};
@@ -1006,7 +1065,7 @@ y+=H});return y+6}
 function pdfBarraTotal(doc,y,txt){doc.setFillColor(...P_NAVY);doc.rect(14,y,182,7,'F');
 doc.setFont(undefined,'bold');doc.setFontSize(8);doc.setTextColor(255);doc.text(txt,17,y+4.8);return y+11}
 
-/* ==================== 18. GERAR PDF (só dados) ==================== */
+/* ==================== 19. GERAR PDF ==================== */
 function gerarPDF(){
 if(tipoRelatorio==='baia'&&!baiaSelecionada)return toast('Selecione uma baia primeiro ⚠️');
 const ini=$('rel-ini').value,fim=$('rel-fim').value;
@@ -1033,10 +1092,17 @@ pdfKPI(doc,14+(kw+gp)*2,y,kw,kh,String(totV),'NASCIDOS VIVOS',P_AZUL);
 pdfKPI(doc,14+(kw+gp)*3,y,kw,kh,mort+'%','MORTALIDADE',mort>15?P_VERM:mort>8?P_AMBAR:P_VERDE);
 y+=kh+6;
 y=pdfSecao(doc,y,'Plantel'+(ltSel?' — Baia '+ltSel.nome:''));
-const cPl=[{t:'ID / NOME',w:36},{t:'RACA',w:38},{t:'LOTE',w:20},{t:'SX',w:14},{t:'PESO',w:26,a:'right'},{t:'IDADE',w:22},{t:'CATEGORIA',w:26}];
+const cPl=[{t:'ID / NOME',w:36},{t:'RACA',w:38},{t:'LOTE',w:20},{t:'SX',w:14},{t:'PESO',w:26,a:'right'},{t:'CRESC.',w:24,a:'right'},{t:'CATEGORIA',w:24}];
 const rPl=coelhos.map(c=>{const ps=(c.pesos||[]).slice().sort((a,b)=>a.d.localeCompare(b.d));const pv=ps.length?ps[ps.length-1].v:c.peso;
-return[{t:c.nome},{t:c.raca||'—'},{t:c.lote||'—'},{t:c.sexo==='M'?'M':'F'},{t:pv?fmtPesoBR(pv):'—'},{t:idadeTxt(c.nasc)},{t:CATLBL[classCoelho(c)]}]});
+const gr=calcCrescimento(c);
+return[{t:c.nome},{t:c.raca||'—'},{t:c.lote||'—'},{t:c.sexo==='M'?'M':'F'},{t:pv?fmtPesoBR(pv):'—'},{t:gr?((gr.pct>0?'+':'')+gr.pct+'%'):'—'},{t:CATLBL[classCoelho(c)]}]});
 y=pdfTabela(doc,y,cPl,rPl,'Nenhum coelho nesta baia.');
+/* Irmãos por lote */
+y=pdfSecao(doc,y,'Irmaos por Lote');
+const cIr=[{t:'LOTE',w:40},{t:'COELHOS',w:142}];
+const rIr=db.lotes.map(l=>{const cs=db.coelhos.filter(c=>norm(c.lote)===norm(l.nome));
+return[{t:l.nome},{t:cs.length?cs.map(c=>c.nome).join(', '):'—'}]}).filter(r=>r[1].t!=='—');
+y=pdfTabela(doc,y,cIr,rIr,'Nenhum lote com coelhos.');
 if(incluir.ninhadas){y=pdfSecao(doc,y,'Ninhadas / Partos do Periodo');
 const cNi=[{t:'MAE',w:38},{t:'PAI',w:38},{t:'DATA',w:28},{t:'VIVOS',w:24,a:'right'},{t:'MORTOS',w:28,a:'right'},{t:'APROV.',w:26,a:'right'}];
 const rNi=partos.map(p=>[{t:p.mae},{t:p.pai},{t:fmtBR(p.data)},{t:String(p.vivos)},{t:String(p.mortos)},{t:(p.vivos+p.mortos)?Math.round(p.vivos/(p.vivos+p.mortos)*100)+'%':'—'}]);
@@ -1064,7 +1130,7 @@ toast('PDF profissional gerado 📄');fecharModalRelatorio();
 setTimeout(()=>{const b=$('btn-gerar');if(b){b.disabled=false;b.textContent='📄 Gerar PDF'}},400);
 }
 
-/* ==================== 19. PWA ==================== */
+/* ==================== 20. PWA ==================== */
 const ehIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 const jaInstalado=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 let dPrompt=null;
@@ -1087,7 +1153,7 @@ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(jaReload)ret
 let rzT=null;
 addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(vis==='dash')renderDash()},250)});
 
-/* ==================== 20. INICIALIZAÇÃO ==================== */
+/* ==================== 21. INICIALIZAÇÃO ==================== */
 save();
 go('dash');
 </script>
