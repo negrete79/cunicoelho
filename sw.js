@@ -63,7 +63,6 @@ self.addEventListener('fetch', (event) => {
       try {
         const rede = await fetch(req);
         const cache = await caches.open(CACHE_NAME);
-        // guarda a versão mais nova do HTML para o próximo offline
         cache.put('./index.html', rede.clone());
         return rede;
       } catch (err) {
@@ -95,7 +94,6 @@ self.addEventListener('fetch', (event) => {
 
     try {
       const rede = await fetch(req);
-      // Cacha em runtime: same-origin ok e cross-origin opaco (ex.: CDN jsPDF)
       if (rede && (rede.ok || rede.type === 'opaque')) {
         cache.put(req, rede.clone());
       }
