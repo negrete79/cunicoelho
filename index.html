@@ -591,7 +591,7 @@ select.inp option{background:#0d1c36;color:#fff}
 </div>
 
 <script>
-/* ==================== BASE ==================== */
+/* ==================== 1. BASE ==================== */
 const LS='cunicoelho_v2';
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
@@ -609,7 +609,7 @@ const racaOptions=sel=>'<option value="">Raça...</option>'+RACAS.map(r=>`<optio
 function idadeTxt(iso){if(!iso)return'—';const n=new Date(iso+'T12:00'),h=new Date();let m=(h.getFullYear()-n.getFullYear())*12+(h.getMonth()-n.getMonth());if(h.getDate()<n.getDate())m--;if(m<1){const d=Math.max(0,Math.round((h-n)/864e5));return d+(d===1?' dia':' dias')}if(m<12)return m+(m===1?' mês':' meses');const a=Math.floor(m/12),r=m%12;return a+(a===1?' ano':' anos')+(r?' e '+r+(r===1?' mês':' meses'):'')}
 const diasDe=iso=>iso?Math.round((new Date(hojeISO()+'T12:00')-new Date(iso+'T12:00'))/864e5):null;
 
-/* ==================== DADOS ==================== */
+/* ==================== 2. DADOS ==================== */
 function seedData(){const t=hojeISO();return{selId:1,
 lotes:[{id:1,nome:'L001'},{id:2,nome:'L002'},{id:3,nome:'L003'}],
 coelhos:[
@@ -627,11 +627,11 @@ const coelhoSel=()=>db.coelhos.find(c=>c.id===db.selId)||db.coelhos[0]||null;
 const byNome=n=>db.coelhos.find(c=>norm(c.nome)===norm(n))||null;
 const loteOptions=sel=>'<option value="">Sem lote</option>'+db.lotes.map(l=>`<option value="${esc(l.nome)}"${l.nome===sel?' selected':''}>${esc(l.nome)}</option>`).join('');
 
-/* ==================== CONSANGUINIDADE ==================== */
+/* ==================== 3. CONSANGUINIDADE ==================== */
 function saoParentes(a,b){if(!a||!b||a.id===b.id)return false;const na=norm(a.nome),nb=norm(b.nome);if(!na||!nb)return false;const pA=[norm(a.paiNome),norm(a.maeNome)].filter(Boolean),pB=[norm(b.paiNome),norm(b.maeNome)].filter(Boolean);if(pA.includes(nb)||pB.includes(na))return true;if(pA.length&&pB.length&&pA.some(p=>pB.includes(p)))return true;return false}
 function riscoCoelho(c){if(!c)return false;if(c.consang)return true;const pf=norm(c.paiNome),pm=norm(c.maeNome);if(pf&&pm){if(pf===pm)return true;const p=byNome(pf),m=byNome(pm);if(p&&m&&saoParentes(p,m))return true}return db.coelhos.some(o=>o.id!==c.id&&o.lote&&o.lote===c.lote&&saoParentes(c,o))}
 
-/* ==================== UI ==================== */
+/* ==================== 4. UI ==================== */
 let tmToast=null;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tmToast);tmToast=setTimeout(()=>t.classList.remove('show'),2600)}
 const openSh=id=>$(id).classList.add('open');
@@ -643,12 +643,12 @@ function cfYes(){clSh('m-cf');if(cbConf)cbConf()}
 let fabOpen=false;
 function toggleFab(f){fabOpen=(f!==undefined)?f:!fabOpen;$('fab').classList.toggle('open',fabOpen);$('fm').classList.toggle('open',fabOpen);$('fov').classList.toggle('open',fabOpen)}
 
-/* ==================== NAVEGAÇÃO ==================== */
+/* ==================== 5. NAVEGAÇÃO ==================== */
 const TITLES={dash:'Detalhe do Animal',plantel:'Meu Plantel',racao:'Controle de Ração',lotes:'Lotes'};
 let vis='dash';
 function go(v){vis=v;document.querySelectorAll('.view').forEach(s=>s.classList.add('hidden'));$('v-'+v).classList.remove('hidden');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('act',b.dataset.v===v));$('h-title').textContent=TITLES[v];$('h-back').style.visibility=v==='dash'?'visible':'hidden';$('h-dots').style.visibility=v==='dash'?'visible':'hidden';toggleFab(false);({dash:renderDash,plantel:renderPlantel,racao:renderRacao,lotes:renderLotes})[v]();$('main').scrollTop=0}
 
-/* ==================== GRÁFICO ==================== */
+/* ==================== 6. GRÁFICO ==================== */
 function chartSVG(regs){const box=$('chart');if(!box)return;
 const rs=(regs||[]).filter(r=>r&&isFinite(+r.v)&&+r.v>0).sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(!rs.length){box.innerHTML='<div style="text-align:center;color:#8ea3c2;font-size:13px;padding:16px 8px;line-height:1.6">📉 Nenhum peso registrado ainda.<br><small>Toque no card do animal → ✏️ para adicionar pesos com data.</small></div>';return}
@@ -668,7 +668,7 @@ for(let i=0;i<n;i+=step){const p=pts[i];g+=`<text x="${Math.max(Math.min(p[0],W-
 const lp=pts[n-1];g+=`<text x="${Math.min(lp[0],W-30).toFixed(1)}" y="${(lp[1]-12).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="900" fill="#8ab4f8">${vals[n-1].toLocaleString('pt-BR',{maximumFractionDigits:2})} kg</text>`;
 box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;aspect-ratio:${W}/${H}"><defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa" stop-opacity=".35"/><stop offset="1" stop-color="#60a5fa" stop-opacity=".02"/></linearGradient><linearGradient id="ln" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#8ab4f8"/></linearGradient></defs>${g}</svg>`}
 
-/* ==================== DASHBOARD ==================== */
+/* ==================== 7. DASHBOARD ==================== */
 function lastReg(c){const r=[];(c.vac||[]).forEach(v=>r.push({t:'vacina',d:v.data,v}));(c.cob||[]).forEach(v=>r.push({t:'cob',d:v.data,v}));(c.par||[]).forEach(v=>r.push({t:'parto',d:v.data,v}));r.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));return r[r.length-1]||null}
 function renderDash(){const c=coelhoSel();
  $('d-empty').classList.toggle('hidden',!!c);
@@ -704,7 +704,7 @@ else{t='🐇 Parto';s='Ocorrido em: '+fmtBR(r.v.data)+' • '+r.v.vivos+' vivo(s
 }else{head.classList.add('hidden');dv.classList.add('hidden')}
 try{chartSVG(c.pesos)}catch(e){$('chart').innerHTML='<p style="text-align:center;color:#8ea3c2;font-size:12px;padding:10px">Gráfico indisponível</p>'}}
 
-/* ==================== RELATÓRIO (pesos/vacinas/obs) ==================== */
+/* ==================== 8. RELATÓRIO (pesos/vacinas/obs) ==================== */
 let tempPesos=[];
 function renderPesosRel(){$('r-pesos-list').innerHTML=tempPesos.length?tempPesos.map((p,i)=>`<div class="pw-row"><span>📅 ${fmtBR(p.d)}</span><b>${(+p.v).toLocaleString('pt-BR',{maximumFractionDigits:2})} kg</b><button onclick="delPesoRel(${i})">✕</button></div>`).join(''):'<p class="hint">Nenhum peso registrado ainda</p>'}
 function addPesoRel(){const d=$('r-pd').value||hojeISO(),v=parseFloat(String($('r-pv').value).replace(',','.'));if(!(v>0))return toast('Informe um peso válido',1);const ex=tempPesos.findIndex(p=>p.d===d);if(ex>=0){tempPesos[ex].v=v;tempPesos[ex].h=agoraH()}else tempPesos.push({d,v,h:agoraH()});tempPesos.sort((a,b)=>String(a.d).localeCompare(String(b.d)));$('r-pv').value='';renderPesosRel();toast('Peso adicionado ⚖️')}
@@ -742,7 +742,7 @@ if(vn)c.vac.push({nome:vn,data:$('r-vdata').value||hojeISO(),local:$('r-vlocal')
 save();clSh('m-rel');renderDash();toast('Relatório salvo ✅')}
 function askDelCoelho(){const c=coelhoSel();if(!c)return;confirmar('Excluir '+c.nome+' do plantel permanentemente?',()=>{db.coelhos=db.coelhos.filter(x=>x.id!==c.id);db.selId=db.coelhos[0]?db.coelhos[0].id:null;save();renderDash();toast('Coelho excluído 🗑️')})}
 
-/* ==================== COBERTURA / PARTO / VACINA ==================== */
+/* ==================== 9. COBERTURA / PARTO / VACINA ==================== */
 function openCob(){const femeas=db.coelhos.filter(x=>x.sexo==='F'),machos=db.coelhos.filter(x=>x.sexo==='M');if(!femeas.length||!machos.length)return toast('Precisa de ao menos 1 fêmea e 1 macho',1);const cur=coelhoSel();
  $('cz-f').innerHTML=femeas.map(f=>`<option value="${f.id}"${cur&&f.id===cur.id?' selected':''}>${esc(f.nome)} • ${esc(f.raca)||'—'} (${esc(f.lote)||'sem lote'})</option>`).join('');
  $('cz-m').innerHTML=machos.map(m=>`<option value="${m.id}">${esc(m.nome)} • ${esc(m.raca)||'—'} (${esc(m.lote)||'sem lote'})</option>`).join('');
@@ -772,7 +772,7 @@ else return toast('Escolha para quem é a vacina',1);
 save();clSh('m-vc');renderDash();if(vis==='plantel')renderPlantel()}
 function openGuia(){openSh('m-guia')}
 
-/* ==================== PLANTEL ==================== */
+/* ==================== 10. PLANTEL ==================== */
 function renderPlantel(){const L=$('p-list');
 if(!db.coelhos.length){L.innerHTML='<div class="card empty"><span class="e">🐰</span>Nenhum coelho no plantel.<br>Toque no <b>+</b> para cadastrar.</div>';return}
 L.innerHTML=db.coelhos.map(c=>{const cat=classCoelho(c);const ci={lactante:'🐇🍼',matriz:'🐇',macho:'🐰',crescimento:'🌱',engorda:'🍖'}[cat];
@@ -783,7 +783,7 @@ return `<div class="p-row" onclick="selCoelho(${c.id})">
 <span class="p-arrow">›</span></div>`}).join('')}
 function selCoelho(id){db.selId=id;save();go('dash')}
 
-/* ==================== RAÇÃO AUTOMÁTICA ==================== */
+/* ==================== 11. RAÇÃO AUTOMÁTICA ==================== */
 const DOSES={lactante:0.300,matriz:0.180,macho:0.120,crescimento:0.130,engorda:0.160};
 const CATLBL={lactante:'Amamentando',matriz:'Matriz',macho:'Macho',crescimento:'Crescimento',engorda:'Engorda'};
 const CATEMOJI={lactante:'🐇🍼',matriz:'🐇',macho:'🐰',crescimento:'🌱',engorda:'🍖'};
@@ -825,7 +825,7 @@ L.innerHTML=[...db.racao].sort((a,b)=>String(a.data).localeCompare(String(b.data
 function addRacao(){const qtd=parseFloat(String($('rc-qtd').value).replace(',','.')),custo=parseFloat(String($('rc-custo').value).replace(',','.'));if(!(qtd>0)||!(custo>0))return toast('Informe kg/dia e custo',1);db.racao.push({id:Date.now(),tipo:$('rc-tipo').value,qtd,lote:$('rc-lote').value,custo,data:$('rc-data').value||hojeISO()});$('rc-qtd').value='';$('rc-custo').value='';save();renderRacao();toast('Ração lançada 🌾')}
 function delRacao(id){db.racao=db.racao.filter(r=>r.id!==id);save();renderRacao();toast('Lançamento excluído')}
 
-/* ==================== LOTES ==================== */
+/* ==================== 12. LOTES ==================== */
 function renderLotes(){const L=$('l-list');
 if(!db.lotes.length){L.innerHTML='<div class="card empty"><span class="e">🐰</span>Nenhum lote ainda.<br>Toque no <b>+</b> → <b>🐰 Novo Lote</b>.</div>';return}
 L.innerHTML=db.lotes.map(l=>{const n=db.coelhos.filter(c=>c.lote===l.nome).length;
@@ -839,14 +839,14 @@ function openRenomear(id){renId=id;const l=db.lotes.find(x=>x.id===id);$('rn-nom
 function saveRen(){const l=db.lotes.find(x=>x.id===renId),n=$('rn-nome').value.trim();if(!l||!n)return toast('Nome inválido',1);if(db.lotes.some(x=>x.id!==renId&&norm(x.nome)===norm(n)))return toast('Já existe um lote com esse nome',1);const old=l.nome;l.nome=n;db.coelhos.forEach(c=>{if(c.lote===old)c.lote=n});db.racao.forEach(r=>{if(r.lote===old)r.lote=n});save();clSh('m-rn');renderLotes();toast('Lote renomeado ✏️')}
 function apagarLote(id){const l=db.lotes.find(x=>x.id===id);if(!l)return;const n=db.coelhos.filter(c=>c.lote===l.nome).length;confirmar('Apagar o lote '+l.nome+'?'+(n?' '+n+' coelho(s) ficarão sem lote.':''),()=>{db.lotes=db.lotes.filter(x=>x.id!==id);db.coelhos.forEach(c=>{if(c.lote===l.nome)c.lote=''});save();renderLotes();toast('Lote apagado 🗑️')})}
 
-/* ==================== NOVO COELHO ==================== */
+/* ==================== 13. NOVO COELHO ==================== */
 function novoCoelhoModal(){$('nc-foto').value='';$('nc-id').value='';$('nc-peso').value='';$('nc-nasc').value='';$('nc-pai').value='';$('nc-mae').value='';$('nc-raca').innerHTML=racaOptions('');$('nc-lote').innerHTML=loteOptions('');$('nc-matriz').checked=false;openSh('m-nc');setTimeout(()=>$('nc-id').focus(),350)}
 function saveNewCoelho(){const nome=$('nc-id').value.trim();if(!nome)return toast('Informe o ID/nome do coelho',1);
 const peso=parseFloat(String($('nc-peso').value).replace(',','.'))||0;
 const c={id:Date.now(),foto:$('nc-foto').value.trim(),nome,lote:$('nc-lote').value,raca:$('nc-raca').value,sexo:$('nc-sexo').value,peso,pesos:peso>0?[{d:hojeISO(),v:peso,h:agoraH()}]:[],nasc:$('nc-nasc').value,paiNome:$('nc-pai').value.trim(),paiLote:'',paiRaca:'',maeNome:$('nc-mae').value.trim(),maeLote:'',maeRaca:'',matriz:$('nc-matriz').checked,consang:false,vac:[],cob:[],par:[],obs:''};
 db.coelhos.push(c);db.selId=c.id;save();clSh('m-nc');go('dash');toast('Coelho cadastrado 🐰')}
 
-/* ==================== MODAL RELATÓRIO PDF ==================== */
+/* ==================== 14. MODAL RELATÓRIO PDF ==================== */
 let TODAS_BAIAS=[],tipoRelatorio='completo',baiaSelecionada=null;
 function carregarBaias(){TODAS_BAIAS=db.lotes.map(l=>{const cs=db.coelhos.filter(c=>c.lote===l.nome);return{id:l.id,nome:l.nome,matriz:cs.filter(c=>c.matriz).length,total:cs.length}})}
 function renderBaias(filtro){const L=$('rel-baia-list');const f=(filtro||'').trim().toLowerCase();const arr=TODAS_BAIAS.filter(b=>!f||b.nome.toLowerCase().includes(f));
@@ -860,52 +860,158 @@ function fecharModalRelatorio(){clSh('ov-relatorio')}
 function setTipoRelatorio(t){tipoRelatorio=t;$('tb-completo').classList.toggle('active',t==='completo');$('tb-baia').classList.toggle('active',t==='baia');$('rel-completo').classList.toggle('hidden',t!=='completo');$('rel-baia').classList.toggle('hidden',t!=='baia')}
 function filtrarBaias(){renderBaias($('rel-busca').value)}
 function selecionarBaia(id){baiaSelecionada=id;renderBaias($('rel-busca').value);const b=TODAS_BAIAS.find(x=>x.id===id);toast('Baia selecionada: '+b.nome+' ('+b.total+' coelhos)')}
+
+/* ==================== 15. PDF — HELPERS DE LAYOUT PROFISSIONAL ==================== */
+const P_NAVY=[10,24,48],P_AZUL=[37,99,235],P_TXT=[30,41,59],P_SUB=[100,116,139],P_LINHA=[226,232,240],P_ZEBRA=[241,245,249],P_BOX=[248,250,252];
+const P_VERDE=[22,163,74],P_VERM=[220,38,38],P_AMBAR=[217,119,6];
+const pdfTrunc=(s,n)=>{s=String(s??'—');return s.length>n?s.slice(0,n-1)+'…':s};
+
+function pdfCabecalho(doc,titulo,subtitulo){
+doc.setFillColor(...P_NAVY);doc.rect(0,0,210,30,'F');
+doc.setFillColor(...P_AZUL);doc.rect(0,30,210,1.2,'F');
+doc.setFillColor(...P_AZUL);doc.circle(17,15,7.5,'F');
+doc.setTextColor(255);doc.setFont(undefined,'bold');doc.setFontSize(10);
+doc.text('C',17,17,{align:'center'});
+doc.setFontSize(15);doc.text('CuniCoelho',28,12.5);
+doc.setFont(undefined,'normal');doc.setFontSize(9.5);doc.setTextColor(138,180,248);
+doc.text(titulo,28,19);
+doc.setFontSize(7.5);doc.setTextColor(180,200,230);
+doc.text(subtitulo,28,24.5);
+return 40}
+
+function pdfRodape(doc){
+const total=doc.internal.getNumberOfPages();
+for(let i=1;i<=total;i++){doc.setPage(i);
+doc.setDrawColor(...P_LINHA);doc.line(14,284,196,284);
+doc.setFont(undefined,'normal');doc.setFontSize(7.5);doc.setTextColor(...P_SUB);
+doc.text('Gerado pelo app CuniCoelho • '+new Date().toLocaleDateString('pt-BR'),14,288);
+doc.text('Pagina '+i+' de '+total,196,288,{align:'right'})}}
+
+function pdfKPI(doc,x,y,w,h,valor,label,cor){
+doc.setFillColor(...P_BOX);doc.setDrawColor(...P_LINHA);
+doc.roundedRect(x,y,w,h,2,2,'FD');
+doc.setFillColor(...cor);doc.rect(x,y,1.5,h,'F');
+doc.setFont(undefined,'bold');doc.setFontSize(14);doc.setTextColor(...P_NAVY);
+doc.text(valor,x+w/2+0.8,y+7.5,{align:'center'});
+doc.setFont(undefined,'normal');doc.setFontSize(6.8);doc.setTextColor(...P_SUB);
+doc.text(label,x+w/2+0.8,y+h-2.5,{align:'center'})}
+
+function pdfSecao(doc,y,titulo){
+if(y>255){doc.addPage();y=20}
+doc.setFillColor(...P_AZUL);doc.rect(14,y-3.5,1.8,6.5,'F');
+doc.setFont(undefined,'bold');doc.setFontSize(11.5);doc.setTextColor(...P_NAVY);
+doc.text(titulo,19,y+1.5);
+return y+6}
+
+function pdfTabela(doc,y,colunas,dados,vazioMsg){
+const H=6.5;
+const desenhaCab=()=>{doc.setFillColor(...P_NAVY);doc.rect(14,y,182,H,'F');
+doc.setFont(undefined,'bold');doc.setFontSize(7.5);doc.setTextColor(255);
+let x=14;colunas.forEach(c=>{doc.text(c.t,x+2,y+H-2);x+=c.w});y+=H};
+desenhaCab();
+doc.setFont(undefined,'normal');doc.setFontSize(7.8);
+if(!dados.length){doc.setTextColor(...P_SUB);doc.rect(14,y,182,H,'FD');
+doc.text(vazioMsg||'Nenhum registro no periodo.',16,y+H-2);return y+H+6}
+dados.forEach((row,i)=>{
+if(y>276){doc.addPage();y=18;desenhaCab();doc.setFont(undefined,'normal');doc.setFontSize(7.8)}
+if(i%2===0){doc.setFillColor(...P_ZEBRA);doc.rect(14,y,182,H,'F')}
+doc.setDrawColor(...P_LINHA);doc.line(14,y+H,196,y+H);
+doc.setTextColor(...P_TXT);
+let x=14;
+row.forEach((cell,ci)=>{const c=colunas[ci];
+const txt=cell&&cell.o?cell.t:pdfTrunc(cell&&cell.t!==undefined?cell.t:cell,c.tch||20);
+doc.text(txt,x+2,y+H-2,{align:c.a||'left'});
+x+=c.w});
+y+=H});
+return y+6}
+
+function pdfBarraTotal(doc,y,txt){
+doc.setFillColor(...P_NAVY);doc.rect(14,y,182,7,'F');
+doc.setFont(undefined,'bold');doc.setFontSize(8);doc.setTextColor(255);
+doc.text(txt,17,y+4.8);
+return y+11}
+
+/* ==================== 16. GERAR PDF ==================== */
 function gerarPDF(){
 if(tipoRelatorio==='baia'&&!baiaSelecionada)return toast('Selecione uma baia primeiro ⚠️');
 const ini=$('rel-ini').value,fim=$('rel-fim').value;
 if(ini&&fim&&ini>fim)return toast('Data Início não pode ser maior que a Data Fim');
-const payload={tipo:tipoRelatorio,baiaId:tipoRelatorio==='baia'?baiaSelecionada:null,periodo:{inicio:ini||null,fim:fim||null},incluir:{ninhadas:$('ck-ninhadas').checked,peso:$('ck-peso').checked,mortalidade:$('ck-mortalidade').checked,racao:$('ck-racao').checked}};
+const incluir={ninhadas:$('ck-ninhadas').checked,peso:$('ck-peso').checked,mortalidade:$('ck-mortalidade').checked,racao:$('ck-racao').checked};
 const btn=$('btn-gerar');btn.disabled=true;btn.textContent='⏳ Gerando...';
 try{
-const{jsPDF}=window.jspdf,doc=new jsPDF();let y=18;
-const chk=n=>{if(y>n){doc.addPage();y=18}};
-const baiaSel=payload.baiaId?TODAS_BAIAS.find(b=>b.id===payload.baiaId):null;
-let coelhos=db.coelhos;
-if(baiaSel){const lt=db.lotes.find(l=>l.id===payload.baiaId);coelhos=coelhos.filter(c=>c.lote===lt.nome)}
-doc.setFillColor(10,24,48);doc.rect(0,0,210,18,'F');
-doc.setTextColor(255);doc.setFontSize(15);doc.setFont(undefined,'bold');
-doc.text('CuniCoelho — Relatório '+(payload.tipo==='baia'?'Baia '+baiaSel.nome:'Completo'),14,11.5);
-doc.setTextColor(180,200,230);doc.setFontSize(9);doc.setFont(undefined,'normal');
-doc.text('Periodo: '+(ini?fmtBR(ini):'inicio')+' ate '+(fim?fmtBR(fim):'hoje')+'  •  Emitido em '+new Date().toLocaleString('pt-BR'),14,15.5);
-doc.setTextColor(0);y=28;
-const mats=coelhos.filter(c=>c.matriz).length,laps=coelhos.filter(c=>classCoelho(c)==='crescimento'||classCoelho(c)==='engorda').length;
-let totNasc=0,totMort=0,ninhadas=0;
-coelhos.forEach(c=>(c.par||[]).forEach(p=>{if((!ini||p.data>=ini)&&(!fim||p.data<=fim)){ninhadas++;totNasc+=p.vivos;totMort+=p.mortos}}));
-doc.setFontSize(12);doc.setFont(undefined,'bold');doc.text('1. Resumo do Plantel',14,y);y+=6;
-doc.setFontSize(10);doc.setFont(undefined,'normal');
-doc.text(`Coelhos: ${coelhos.length} | Matrizes: ${mats} | Láparos (jovens/engorda): ${laps}`,14,y);y+=6;
-doc.text(`Ninhadas no período: ${ninhadas} | Nascidos vivos: ${totNasc} | Mortos: ${totMort} | Mortalidade: ${totNasc?Math.round(totMort/totNasc*100):0}%`,14,y);y+=10;
-if(payload.incluir.peso&&coelhos.length){chk(250);doc.setFontSize(12);doc.setFont(undefined,'bold');doc.text('2. Animais e Evolução de Peso',14,y);y+=6;doc.setFontSize(9);doc.setFont(undefined,'normal');
-coelhos.forEach(c=>{chk(282);doc.setFont(undefined,'bold');doc.text(`${c.nome} [${c.tipo||c.raca}]`,14,y);doc.setFont(undefined,'normal');
-const ps=(c.pesos||[]).filter(p=>(!ini||p.d>=ini)&&(!fim||p.d<=fim));
-const ev=ps.length?ps.map(p=>p.v).join(' -> ')+' kg':'sem registros no periodo';
-doc.text(`Raca: ${c.raca||'-'} | Lote: ${c.lote||'-'} | ${ev}`,80,y,{maxWidth:116});y+=6});y+=4}
-if(payload.incluir.ninhadas){chk(250);doc.setFontSize(12);doc.setFont(undefined,'bold');doc.text('3. Ninhadas / Partos',14,y);y+=6;doc.setFontSize(9);doc.setFont(undefined,'normal');
-let tem=false;
-coelhos.forEach(c=>(c.par||[]).forEach(p=>{if(((!ini||p.data>=ini)&&(!fim||p.data<=fim))){tem=true;chk(282);doc.text(`${c.nome} x ${p.paiNome||'-'} | ${fmtBR(p.data)} | Vivos: ${p.vivos} | Mortos: ${p.mortos}`,14,y,{maxWidth:180});y+=6}}));
-if(!tem){doc.text('Nenhuma ninhada no período.',14,y);y+=6}y+=4}
-if(payload.incluir.racao){chk(250);doc.setFontSize(12);doc.setFont(undefined,'bold');doc.text('4. Ração no Período',14,y);y+=6;doc.setFontSize(9);doc.setFont(undefined,'normal');
-const rs=db.racao.filter(r=>(!ini||r.data>=ini)&&(!fim||r.data<=fim)&&(!baiaSel||r.lote===baiaSel.nome));
-if(rs.length){rs.forEach(r=>{chk(282);doc.text(`${fmtBR(r.data)} | ${r.tipo} | Lote: ${r.lote||'-'} | ${(+r.qtd).toLocaleString('pt-BR')} kg/dia | ${fmtBRL(r.custo)}`,14,y,{maxWidth:180});y+=6});
-const tot=rs.reduce((s,r)=>s+r.custo,0);doc.setFont(undefined,'bold');doc.text('Custo total do período: '+fmtBRL(tot),14,y);doc.setFont(undefined,'normal')}
-else{doc.text('Nenhum lançamento no período.',14,y);y+=6}}
-doc.save('cunicoelho-relatorio-'+hojeISO()+'.pdf');
-toast('PDF gerado com sucesso 📄');fecharModalRelatorio();
+const{jsPDF}=window.jspdf,doc=new jsPDF();
+const noPeriodo=d=>(!ini||d>=ini)&&(!fim||d<=fim);
+const ltSel=tipoRelatorio==='baia'?db.lotes.find(l=>l.id===baiaSelecionada):null;
+const coelhos=ltSel?db.coelhos.filter(c=>c.lote===ltSel.nome):db.coelhos;
+
+/* --- Coleta --- */
+const partos=[];
+coelhos.forEach(c=>(c.par||[]).forEach(p=>{if(noPeriodo(p.data))partos.push({mae:c.nome,pai:p.paiNome||'—',data:p.data,vivos:p.vivos,mortos:p.mortos})}));
+partos.sort((a,b)=>a.data.localeCompare(b.data));
+const totVivos=partos.reduce((s,p)=>s+p.vivos,0),totMortos=partos.reduce((s,p)=>s+p.mortos,0);
+const mortalidade=totVivos?Math.round(totMortos/totVivos*100):0;
+const mats=coelhos.filter(c=>c.matriz).length;
+const racao=(ltSel?db.racao.filter(r=>r.lote===ltSel.nome):db.racao.slice()).filter(r=>noPeriodo(r.data)).sort((a,b)=>a.data.localeCompare(b.data));
+const custoTot=racao.reduce((s,r)=>s+r.custo,0);
+
+/* --- CAPA --- */
+let y=pdfCabecalho(doc,
+(tipoRelatorio==='baia'?'Relatório da Baia '+ltSel.nome:'Relatório Completo do Plantel'),
+'Periodo: '+(ini?fmtBR(ini):'Inicio')+' ate '+(fim?fmtBR(fim):'Hoje')+'  •  Emitido em '+new Date().toLocaleString('pt-BR'));
+
+/* --- KPIs --- */
+doc.setFont(undefined,'bold');doc.setFontSize(10);doc.setTextColor(...P_NAVY);
+doc.text('Resumo Geral',14,y);y+=4;
+const kw=42.5,kh=16,gap=4;
+pdfKPI(doc,14,y,kw,kh,String(coelhos.length),'COELHOS NA LISTA',P_AZUL);
+pdfKPI(doc,14+kw+gap,y,kw,kh,String(mats),'MATRIZES',P_VERDE);
+pdfKPI(doc,14+(kw+gap)*2,y,kw,kh,String(totVivos),'NASCIDOS VIVOS',P_AZUL);
+pdfKPI(doc,14+(kw+gap)*3,y,kw,kh,mortalidade+'%','MORTALIDADE',mortalidade>15?P_VERM:mortalidade>8?P_AMBAR:P_VERDE);
+y+=kh+6;
+
+/* --- PLANTIL --- */
+y=pdfSecao(doc,y,'Plantel'+(ltSel?' — Baia '+ltSel.nome:''));
+const colPl=[{t:'ID / NOME',w:36},{t:'RACA',w:38},{t:'LOTE',w:20},{t:'SX',w:14},{t:'PESO',w:22,a:'right'},{t:'IDADE',w:26},{t:'CATEGORIA',w:26}];
+const rowsPl=coelhos.map(c=>{
+const ps=(c.pesos||[]).slice().sort((a,b)=>a.d.localeCompare(b.d));
+const pv=ps.length?ps[ps.length-1].v:c.peso;
+return[{t:c.nome},{t:c.raca||'—'},{t:c.lote||'—'},{t:c.sexo==='M'?'M':'F'},{t:pv?(+pv).toLocaleString('pt-BR',{maximumFractionDigits:2})+' kg':'—'},{t:idadeTxt(c.nasc)},{t:CATLBL[classCoelho(c)]}]});
+y=pdfTabela(doc,y,colPl,rowsPl,'Nenhum coelho nesta baia.');
+
+/* --- NINHADAS --- */
+if(incluir.ninhadas){
+y=pdfSecao(doc,y,'Ninhadas / Partos do Periodo');
+const colNi=[{t:'MAE',w:38},{t:'PAI',w:38},{t:'DATA',w:28},{t:'VIVOS',w:24,a:'right'},{t:'MORTOS',w:28,a:'right'},{t:'APROV.',w:26,a:'right'}];
+const rowsNi=partos.map(p=>[{t:p.mae},{t:p.pai},{t:fmtBR(p.data)},{t:String(p.vivos)},{t:String(p.mortos)},{t:(p.vivos+p.mortos)?Math.round(p.vivos/(p.vivos+p.mortos)*100)+'%':'—'}]);
+y=pdfTabela(doc,y,colNi,rowsNi,'Nenhuma ninhada registrada no periodo.');
+if(partos.length)y=pdfBarraTotal(doc,y,'TOTAL: '+partos.length+' ninhada(s)  •  '+totVivos+' nascidos vivos  •  '+totMortos+' mortos  •  Mortalidade: '+mortalidade+'%');
+}else if(incluir.mortalidade&&partos.length){
+y=pdfSecao(doc,y,'Mortalidade do Periodo');
+doc.setFontSize(9);doc.setFont(undefined,'normal');doc.setTextColor(...P_TXT);
+doc.text('Nascidos vivos: '+totVivos+'  |  Mortos: '+totMortos+'  |  Taxa de mortalidade: '+mortalidade+'%',14,y+2);y+=10}
+
+/* --- RAÇÃO --- */
+if(incluir.racao){
+y=pdfSecao(doc,y,'Controle de Racao do Periodo');
+const colRa=[{t:'DATA',w:28},{t:'TIPO',w:44},{t:'LOTE',w:28},{t:'KG/DIA',w:38,a:'right'},{t:'CUSTO',w:44,a:'right'}];
+const rowsRa=racao.map(r=>[{t:fmtBR(r.data)},{t:r.tipo},{t:r.lote||'—'},{t:(+r.qtd).toLocaleString('pt-BR',{minimumFractionDigits:1})+' kg'},{t:fmtBRL(r.custo)}]);
+y=pdfTabela(doc,y,colRa,rowsRa,'Nenhum lancamento de racao no periodo.');
+if(racao.length)y=pdfBarraTotal(doc,y,'CUSTO TOTAL DO PERIODO: '+fmtBRL(custoTot)+'   ('+racao.length+' lancamento(s))')}
+
+/* --- OBSERVAÇÕES --- */
+if(y>230){doc.addPage();y=20}
+y=pdfSecao(doc,y,'Observacoes');
+doc.setFontSize(8.5);doc.setFont(undefined,'normal');doc.setTextColor(...P_TXT);
+['Vacinas obrigatorias: Mixomatose e VHD aos 45 dias, reforco anual.','NUNCA oferecer abacate (persina — toxica) em nenhuma parte.','Feno deve representar cerca de 70% da dieta, sempre a vontade.',tipoRelatorio==='baia'?'Relatorio restrito a baia selecionada.':'Relatorio contempla todas as baias do plantel.'].forEach(o=>{doc.text('• '+o,17,y+2);y+=5});
+
+pdfRodape(doc);
+doc.save('cunicoelho-'+(ltSel?'baia-'+ltSel.nome.toLowerCase():'completo')+'-'+hojeISO()+'.pdf');
+toast('PDF profissional gerado 📄');fecharModalRelatorio();
 }catch(e){console.error(e);toast('Erro ao gerar PDF: '+e.message,1)}
 setTimeout(()=>{const b=$('btn-gerar');if(b){b.disabled=false;b.textContent='📄 Gerar PDF'}},400);
 }
 
-/* ==================== PWA ==================== */
+/* ==================== 17. PWA ==================== */
 const ehIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 const jaInstalado=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 let dPrompt=null;
@@ -924,7 +1030,7 @@ setInterval(()=>reg.update().catch(()=>{}),60000);reg.update().catch(()=>{})}).c
 let rzT=null;
 addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(vis==='dash')renderDash()},250)});
 
-/* ==================== INIT ==================== */
+/* ==================== 18. INIT ==================== */
 save();
 go('dash');
 </script>
