@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CuniCoelho — Manejo de Coelhos</title>
-<meta name="description" content="App PWA offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração e vacinas.">
+<meta name="description" content="App PWA offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração, vacinas e financeiro.">
 <meta name="theme-color" content="#0a1830">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -295,12 +295,12 @@ textarea.in{resize:vertical}
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:11px;cursor:pointer}
 .check-grid input{accent-color:#16a34a;width:17px;height:17px}
 
-/* ---- Tab bar flutuante ---- */
+/* ---- Tab bar flutuante (5 abas) ---- */
 #tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));
-  width:min(440px,calc(100% - 20px));display:grid;grid-template-columns:repeat(4,1fr);padding:8px 6px;z-index:85;
+  width:min(470px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px;z-index:85;
   background:rgba(13,27,54,.92);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
   border:1px solid rgba(255,255,255,.11);border-radius:24px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
-.tab-btn{background:none;border:0;color:#8fa3c8;font-size:10.5px;font-weight:700;display:flex;flex-direction:column;
+.tab-btn{background:none;border:0;color:#8fa3c8;font-size:10px;font-weight:700;display:flex;flex-direction:column;
   align-items:center;gap:3px;padding:7px 2px;border-radius:16px;cursor:pointer;transition:.15s}
 .tab-btn .ico{font-size:19px;line-height:1}
 .tab-btn.ativo{color:#8ab4f8;background:rgba(138,180,248,.13)}
@@ -353,6 +353,11 @@ textarea.in{resize:vertical}
 .tabela-guia td{padding:8px;border-bottom:1px solid rgba(255,255,255,.07);color:#cdd9f2}
 .tabela-guia tr:nth-child(even) td{background:rgba(255,255,255,.03)}
 
+/* ---- Financeiro (CSS mínimo novo — reutiliza classes existentes) ---- */
+#cvLucro{width:100%;display:block;border-radius:12px}
+.nota-prev{margin-top:8px}
+.nota-prev img{max-width:120px;border-radius:12px;border:1px solid rgba(255,255,255,.15)}
+
 /* ================================================================
    Responsivo
    ================================================================ */
@@ -365,6 +370,7 @@ textarea.in{resize:vertical}
   .btn-acao{font-size:11px;padding:11px 3px}
   .stats-grid{gap:7px}
   .stat-card b{font-size:13.5px}
+  .tab-btn{font-size:9px}
 }
 /* Celulares estreitos (até 360px): formulários em 1 coluna */
 @media (max-width:360px){
@@ -377,6 +383,7 @@ textarea.in{resize:vertical}
   #listaLotes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   #lotesRacao{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
   #lotesRacao .lote-row{margin-bottom:0}
+  #listaVendidos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
   .overlay{align-items:center;padding:20px}
   .modal{max-width:560px;border-radius:24px;border-bottom:1px solid rgba(255,255,255,.12);animation:pop .2s}
 }
@@ -404,12 +411,13 @@ textarea.in{resize:vertical}
     <img id="sideLogoImg" alt="Logo CuniCoelho">
     <div><b>CuniCoelho</b><small>Manejo de Coelhos</small></div>
   </div>
-  <button class="side-btn" data-aba="dashboard"><span>🏡</span> Dashboard</button>
-  <button class="side-btn" data-aba="plantel"><span>🐇</span> Plantel</button>
+  <button class="side-btn" data-aba="dashboard"><span>🏠</span> Dashboard</button>
+  <button class="side-btn" data-aba="plantel"><span>🐰</span> Plantel</button>
   <button class="side-btn" data-aba="racao"><span>🌾</span> Ração</button>
+  <button class="side-btn" data-aba="vendas"><span>💰</span> Vendas</button>
   <button class="side-btn" data-aba="lotes"><span>🗂️</span> Lotes</button>
   <button class="side-btn" data-aba="guia"><span>📖</span> Guia de Manejo</button>
-  <div class="sidebar-rodape">CuniCoelho v1.1<br>Funciona offline • Dados no aparelho</div>
+  <div class="sidebar-rodape">CuniCoelho v1.3<br>Funciona offline • Dados no aparelho</div>
 </aside>
 
 <!-- ============ HEADER ============ -->
@@ -423,7 +431,7 @@ textarea.in{resize:vertical}
 <div id="menuMais">
   <button class="menu-item" data-acao="guia">📖 Guia de Manejo</button>
   <button class="menu-item" data-acao="pdf">📄 Gerar Relatório PDF</button>
-  <button class="menu-item" data-acao="criatorio">📀 Dados do Criatório (PDF)</button>
+  <button class="menu-item" data-acao="criatorio">🏢 Dados do Criatório (PDF)</button>
   <button class="menu-item" id="miInstalar" data-acao="instalar" style="display:none">📲 Instalar App</button>
   <button class="menu-item" data-acao="icones">🖼️ Baixar Ícones do App (PNG)</button>
   <button class="menu-item" data-acao="atualizar">🔄 Verificar Atualizações</button>
@@ -473,7 +481,7 @@ textarea.in{resize:vertical}
       <div id="categoriasRacao"></div>
     </div>
     <div class="secao glass">
-      <h3>📝 Consumo por lote</h3>
+      <h3>📦 Consumo por lote</h3>
       <div id="lotesRacao"></div>
     </div>
     <div class="secao glass">
@@ -500,6 +508,76 @@ textarea.in{resize:vertical}
     <div class="secao glass">
       <h3>🗂️ Lançamentos <span class="cont" id="totalHoje">Hoje: 0,000 kg</span></h3>
       <div id="listaRacao"></div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: VENDAS (FINANCEIRO) ============ -->
+  <section id="view-vendas" class="view" hidden>
+
+    <!-- Dashboard financeiro: 3 cards (reutiliza .stats-grid / .stat-card) -->
+    <div class="secao glass" style="margin-top:6px">
+      <div class="plantel-topo">
+        <h3 style="margin:0">💰 Financeiro</h3>
+        <span class="cont" id="finPeriodoLabel">Todos os meses</span>
+      </div>
+      <div class="stats-grid" id="finKpis"></div>
+      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+        <button class="botao btn-verde" id="btnNovaVenda" style="flex:1;min-width:140px">💵 Registrar Venda</button>
+        <button class="botao btn-azul" id="btnNovaCompra" style="flex:1;min-width:140px">🛒 Registrar Compra</button>
+      </div>
+      <!-- Preço do kg da ração: usado para calcular o custo de ração dentro do LUCRO -->
+      <div class="form-grid" style="margin-top:12px">
+        <label class="campo">Custo da ração (R$ / kg)
+          <input id="inpPrecoKgRacao" class="in" type="number" step="0.01" min="0" placeholder="2,50">
+        </label>
+        <label class="campo" style="justify-content:flex-end">
+          <small style="color:#8fa3c8;font-weight:600;line-height:1.5">Multiplicado pelos kg lançados no módulo Ração no período filtrado. Fica salvo no aparelho.</small>
+        </label>
+      </div>
+    </div>
+
+    <!-- Gráfico de Lucro Acumulado (canvas puro, sem libs) -->
+    <div class="secao glass">
+      <h3>📈 Lucro Acumulado</h3>
+      <div style="position:relative"><canvas id="cvLucro" height="150" aria-label="Gráfico de lucro acumulado"></canvas></div>
+    </div>
+
+    <!-- Tabela de Lucro por Ninhada (paramétrica) -->
+    <div class="secao glass">
+      <h3>🐰 Lucro por Ninhada — ciclo de corte</h3>
+      <div class="form-grid">
+        <label class="campo">Filhotes / ninhada<input id="simQtd" class="in" type="number" min="1" value="12"></label>
+        <label class="campo">Preço por filhote (R$)<input id="simPreco" class="in" type="number" step="0.01" min="0" value="60"></label>
+        <label class="campo">Custo ração / ciclo (R$)<input id="simCusto" class="in" type="number" step="0.01" min="0" value="200"></label>
+        <label class="campo">Dias do ciclo<input id="simDias" class="in" type="number" min="1" value="45"></label>
+      </div>
+      <div class="tabela-scroll" style="margin-top:10px">
+        <table class="tabela-guia">
+          <tbody id="simLinhas"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Filtros + Lista de vendas -->
+    <div class="secao glass">
+      <h3>🧾 Vendas <span class="cont" id="contVendas">0</span></h3>
+      <input id="finBusca" class="in busca" type="search" placeholder="🔎 Buscar por cliente…">
+      <label class="campo" style="margin-bottom:10px">Filtrar por mês
+        <select id="finMes" class="in"></select>
+      </label>
+      <div id="listaVendas"></div>
+    </div>
+
+    <!-- Lista de compras -->
+    <div class="secao glass">
+      <h3>🛒 Compras <span class="cont" id="contCompras">0</span></h3>
+      <div id="listaCompras"></div>
+    </div>
+
+    <!-- Histórico: coelhos vendidos (nunca apagados do banco) -->
+    <div class="secao glass">
+      <h3>📦 Coelhos Vendidos <span class="cont" id="contVendidos">0</span></h3>
+      <div id="listaVendidos" class="lista-plantel"></div>
     </div>
   </section>
 
@@ -535,7 +613,7 @@ textarea.in{resize:vertical}
             <tr><td>🛡️ Mixomatose</td><td>a partir de 45–50 dias</td><td>a cada 365 dias</td><td>SC • 0,5 ml</td></tr>
             <tr><td>🩸 VHD (Doença Hemorrágica)</td><td>a partir de 45–50 dias</td><td>a cada 365 dias</td><td>SC • 0,5 ml</td></tr>
             <tr><td>🪱 Ivermectina 1% (preventiva)</td><td>a partir de 45 dias</td><td>a cada 150 dias</td><td>SC • 0,1 ml/kg</td></tr>
-            <tr><td>💉 Sulfaquinoxalina (preventiva)</td><td>a partir de 45 dias</td><td>a cada 90 dias</td><td>Água • 0,5–1 ml/L por 5 dias</td></tr>
+            <tr><td>💣 Sulfaquinoxalina (preventiva)</td><td>a partir de 45 dias</td><td>a cada 90 dias</td><td>Água • 0,5–1 ml/L por 5 dias</td></tr>
           </tbody>
         </table>
       </div>
@@ -547,7 +625,7 @@ textarea.in{resize:vertical}
         <li>💉 Use sempre <b>agulha nova</b> para cada animal — evita transmissão de doenças.</li>
         <li>🖐️ Aplique na <b>prega do pescoço</b> (subcutânea): levante a pele, introduza a agulha e aspire antes de injetar.</li>
         <li>🚫 <b>Nunca vacine abaixo de 45 dias de vida</b> — o sistema imune do filhote ainda não responde à vacina.</li>
-        <li>🏡 Animal novo? Faça <b>quarentena de 15 a 20 dias</b> antes de juntar ao plantel.</li>
+        <li>🏠 Animal novo? Faça <b>quarentena de 15 a 20 dias</b> antes de juntar ao plantel.</li>
         <li>🧊 Vacinas vivem na <b>geladeira entre 2 °C e 8 °C</b> — nunca congele nem deixe no sol.</li>
         <li>📝 Anote sempre: produto, lote do frasco, dose, data e responsável pela aplicação.</li>
       </ul>
@@ -563,7 +641,7 @@ textarea.in{resize:vertical}
         <div class="veg-item">🌾 Capim-açú <span class="freq freq-d">DIÁRIO</span></div>
         <div class="veg-item">🥬 Couve <span class="freq freq-d">DIÁRIO</span></div>
         <div class="veg-item">🌿 Assa-peixe <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🌱 Abóbora (fruto) <span class="freq freq-s">SEMANAL</span></div>
+        <div class="veg-item">🎃 Abóbora (fruto) <span class="freq freq-s">SEMANAL</span></div>
         <div class="veg-item">🥭 Manga <span class="freq freq-s">SEMANAL</span></div>
         <div class="veg-item">🍒 Pitanga <span class="freq freq-s">SEMANAL</span></div>
       </div>
@@ -604,6 +682,8 @@ textarea.in{resize:vertical}
 
 <!-- ============ FAB + SPEED DIAL ============ -->
 <div id="speedDial">
+  <div class="sd-item"><span>Registrar Venda</span><button data-sd="venda">💰</button></div>
+  <div class="sd-item"><span>Registrar Compra</span><button data-sd="compra">🛒</button></div>
   <div class="sd-item"><span>Novo Coelho</span><button data-sd="novo-coelho">🐰</button></div>
   <div class="sd-item"><span>Novo Lote</span><button data-sd="novo-lote">🗂️</button></div>
   <div class="sd-item"><span>Registrar Peso</span><button data-sd="peso">⚖️</button></div>
@@ -614,11 +694,12 @@ textarea.in{resize:vertical}
 </div>
 <button id="fab" aria-label="Adicionar">+</button>
 
-<!-- ============ TAB BAR ============ -->
+<!-- ============ TAB BAR (5 abas) ============ -->
 <nav id="tabbar">
-  <button class="tab-btn ativo" data-aba="dashboard"><span class="ico">🏡</span>Dashboard</button>
-  <button class="tab-btn" data-aba="plantel"><span class="ico">🐇</span>Plantel</button>
+  <button class="tab-btn ativo" data-aba="dashboard"><span class="ico">🏠</span>Dashboard</button>
+  <button class="tab-btn" data-aba="plantel"><span class="ico">🐰</span>Plantel</button>
   <button class="tab-btn" data-aba="racao"><span class="ico">🌾</span>Ração</button>
+  <button class="tab-btn" data-aba="vendas"><span class="ico">💰</span>Vendas</button>
   <button class="tab-btn" data-aba="lotes"><span class="ico">🗂️</span>Lotes</button>
 </nav>
 
@@ -634,8 +715,9 @@ textarea.in{resize:vertical}
       <label class="campo">Lote<select id="eLote" class="in"></select></label>
       <label class="campo">Raça<select id="eRaca" class="in"></select></label>
       <label class="campo">Sexo<select id="eSexo" class="in"><option value="F">♀ Fêmea</option><option value="M">♂ Macho</option></select></label>
+      <label class="campo">Linhagem<select id="eLinhagem" class="in"><option value="">—</option><option>Azul</option><option>Vermelha</option></select></label>
       <label class="campo">Nascimento<input id="eNasc" class="in" type="date"></label>
-      <label class="campo check"><input id="eMatriz" type="checkbox"> É Matriz </label>
+      <label class="campo check"><input id="eMatriz" type="checkbox"> É Matriz 🟢</label>
     </div>
     <div class="form-grid" style="margin-top:10px">
       <label class="campo">Pai — nome + lote
@@ -677,6 +759,7 @@ textarea.in{resize:vertical}
       <label class="campo">Lote<select id="nLote" class="in"></select></label>
       <label class="campo">Raça<select id="nRaca" class="in"></select></label>
       <label class="campo">Sexo<select id="nSexo" class="in"><option value="F">♀ Fêmea</option><option value="M">♂ Macho</option></select></label>
+      <label class="campo">Linhagem<select id="nLinhagem" class="in"><option value="">—</option><option>Azul</option><option>Vermelha</option></select></label>
       <label class="campo">Nascimento<input id="nNasc" class="in" type="date"></label>
       <label class="campo">Peso inicial (kg)<input id="nPeso" class="in" type="number" step="0.001" min="0" placeholder="0,500"></label>
       <label class="campo">Pai — nome<input id="nPaiNome" class="in" placeholder="Nome"></label>
@@ -749,6 +832,58 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
+<!-- ============ MODAL: REGISTRAR VENDA ============ -->
+<div class="overlay" id="mVenda" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3>💵 Registrar Venda</h3><button class="fechar" data-fechar="mVenda">✕</button></div>
+    <div class="form-grid">
+      <label class="campo full">Coelho (do plantel)<select id="sCoelho" class="in"></select></label>
+      <label class="campo">Tipo<select id="sTipo" class="in"><option>Carne</option><option>Reprodutor</option><option>Pet</option></select></label>
+      <label class="campo">Peso na venda (kg)<input id="sPeso" class="in" type="number" step="0.001" min="0" placeholder="2,800"></label>
+      <label class="campo">Preço por kg (R$)<input id="sPrecoKg" class="in" type="number" step="0.01" min="0" placeholder="16,00"></label>
+      <label class="campo">Preço TOTAL (R$) — auto<input id="sTotal" class="in" type="number" step="0.01" min="0" placeholder="44,80"></label>
+      <label class="campo">Cliente<input id="sCliente" class="in" type="text" placeholder="Nome do cliente"></label>
+      <label class="campo">Lote (rastreio)<select id="sLote" class="in"></select></label>
+      <label class="campo">Pago?<select id="sPago" class="in"><option>Sim</option><option>Não</option></select></label>
+      <label class="campo">Data<input id="sData" class="in" type="date"></label>
+    </div>
+    <small style="display:block;color:#8fa3c8;font-size:11.5px;margin-top:8px;line-height:1.5">
+      📌 O total é calculado automaticamente (peso × preço/kg), mas você pode digitar outro valor.
+      O coelho vai para <b>Vendidos</b> com histórico preservado — nunca é apagado do banco.
+    </small>
+    <button class="botao btn-verde" id="salvarVenda" style="width:100%;margin-top:14px">REGISTRAR VENDA</button>
+  </div>
+</div>
+
+<!-- ============ MODAL: REGISTRAR COMPRA ============ -->
+<div class="overlay" id="mCompra" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3>🛒 Registrar Compra</h3><button class="fechar" data-fechar="mCompra">✕</button></div>
+    <div class="form-grid">
+      <label class="campo">Tipo<select id="coTipo" class="in"><option>Matriz</option><option>Reprodutor</option><option>Ração</option></select></label>
+      <label class="campo">Linhagem<select id="coLinhagem" class="in"><option value="">—</option><option>Azul</option><option>Vermelha</option></select></label>
+      <label class="campo" id="coCampoId">ID no plantel (opcional)<input id="coId" class="in" type="text" placeholder="Vazio = automático"></label>
+      <label class="campo" id="coCampoRaca">Raça<select id="coRaca" class="in"></select></label>
+      <label class="campo">Fornecedor<input id="coForn" class="in" type="text" placeholder="Nome do fornecedor"></label>
+      <label class="campo">Valor (R$)<input id="coValor" class="in" type="number" step="0.01" min="0" placeholder="150,00"></label>
+      <label class="campo">Lote (rastreio)<select id="coLote" class="in"></select></label>
+      <label class="campo">Data<input id="coData" class="in" type="date"></label>
+      <label class="campo full">Foto da nota (opcional)<input id="coFoto" class="in" type="file" accept="image/*" style="padding:8px"></label>
+    </div>
+    <!-- CORREÇÃO: campo invisível que guarda a foto da nota em base64 (estava faltando e travava o modal) -->
+    <input type="hidden" id="coNotaFoto">
+    <div class="nota-prev" id="coFotoPrev" hidden>
+      <img id="coFotoImg" alt="Nota fiscal">
+      <button class="btn-mini" id="btnRemoveFoto" type="button" style="margin-top:6px">✕ Remover foto</button>
+    </div>
+    <small style="display:block;color:#8fa3c8;font-size:11.5px;margin-top:8px;line-height:1.5">
+      📌 Compra de <b>Matriz</b> ou <b>Reprodutor</b> já cria o animal no plantel com a linhagem.
+      Compra de <b>Ração</b> vira custo no financeiro.
+    </small>
+    <button class="botao btn-azul" id="salvarCompra" style="width:100%;margin-top:14px">REGISTRAR COMPRA</button>
+  </div>
+</div>
+
 <!-- ============ MODAL: NOVO LOTE ============ -->
 <div class="overlay" id="mLote" hidden>
   <div class="modal">
@@ -812,6 +947,7 @@ textarea.in{resize:vertical}
       <label><input type="checkbox" id="ckMortalidade" checked> Mortalidade</label>
       <label><input type="checkbox" id="ckRacao" checked> Ração</label>
       <label><input type="checkbox" id="ckVacinas" checked> Vacinas</label>
+      <label><input type="checkbox" id="ckFinanceiro" checked> Financeiro</label>
       <label><input type="checkbox" id="ckCriatorio" checked> Dados do criatório</label>
     </div>
     <button class="botao btn-verde" id="pdfGerar" style="width:100%;margin-top:14px">GERAR PDF</button>
@@ -879,8 +1015,9 @@ function mesCurto(iso){
   }catch(_){ return '?'; }
 }
 
-/* Formatação brasileira de números/pesos */
+/* Formatação brasileira de números/pesos/dinheiro */
 function fmtNumBR(n, dec){ return Number(n).toFixed(dec).replace('.', ','); }
+function fmtBRL(n){ return 'R$ ' + fmtNumBR(Number(n)||0, 2); }
 /* Formato curto do card: "1,2 kg" */
 function fmtPesoCurto(kg){
   if (kg==null || isNaN(kg)) return '—';
@@ -909,6 +1046,9 @@ function fmtIdade(c){
 
 /* ===== 2. CONSTANTES ===== */
 const STORAGE_KEY = 'cunicoelho_db_v1';
+/* FINANCEIRO: chaves separadas conforme requisito */
+const KEY_VENDAS  = 'cunicoelho_vendas';
+const KEY_COMPRAS = 'cunicoelho_compras';
 const CHAVES_ANTIGAS = ['cunicoelho_data','cunicoelho_db_v0','cunicoelho_v1','cunicoelho'];
 
 const RAÇAS = ['Nova Zelândia Branco','Califórnia','Chinchila','Gigante de Flandres','Borboleta',
@@ -927,7 +1067,6 @@ const DOSES_RACAO = { 'Amamentando':0.300, 'Matriz':0.180, 'Macho':0.120, 'Cresc
 const ICONE_CAT   = { 'Amamentando':'🍼', 'Matriz':'🟢', 'Macho':'♂️', 'Crescimento':'📈', 'Engorda':'🍖' };
 
 /* ===== JANELA DE COBERTURA — quando o animal pode cruzar =====
-   Regras (ajuste as constantes se sua rotina for diferente):
    - Fêmea: 1ª cobertura a partir de ~5 meses (150 dias)
    - Pós-parto: cobrir a partir de 18 dias (janela ideal: 18–35 dias)
    - Macho: reprodutor a partir de ~7 meses (210 dias) */
@@ -953,7 +1092,7 @@ var FOTO_PADRAO = 'data:image/svg+xml,' + encodeURIComponent(
 );
 
 /* Ícone do app (SVG inline — coelho branco em fundo #0a1830).
-   Pode ser baixado como icon-192.png / icon-512.png pelo menu ••• */
+   Baixável como icon-192.png / icon-512.png pelo menu ••• */
 var ICONE_APP_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
   '<rect width="512" height="512" rx="112" fill="#0a1830"/>' +
@@ -981,6 +1120,9 @@ function normalizarDB(d){
   d.coberturas = Array.isArray(d.coberturas) ? d.coberturas : [];
   d.ninhadas   = Array.isArray(d.ninhadas)   ? d.ninhadas   : [];
   d.racao      = Array.isArray(d.racao)      ? d.racao      : [];
+  /* FINANCEIRO: vendas e compras */
+  d.vendas  = Array.isArray(d.vendas)  ? d.vendas  : [];
+  d.compras = Array.isArray(d.compras) ? d.compras : [];
   d.coelhos.forEach(c => {
     c.vacinas = Array.isArray(c.vacinas) ? c.vacinas : [];
     c.pesos   = Array.isArray(c.pesos)   ? c.pesos   : [];
@@ -990,65 +1132,93 @@ function normalizarDB(d){
     c.consanguineo = !!c.consanguineo;
     c.pai = c.pai || {nome:'',lote:''};
     c.mae = c.mae || {nome:'',lote:''};
+    c.status   = c.status   || 'ativo';   /* 'ativo' | 'vendido' — vendido NUNCA é apagado */
+    c.linhagem = c.linhagem || '';        /* '' | 'Azul' | 'Vermelha' */
   });
   d.lotes = d.lotes.map(l => (typeof l === 'string' ? {nome:l} : l));
   /* Dados do criatório (nome + WhatsApp) — exibidos nos relatórios PDF */
   d.criatorio = (d.criatorio && typeof d.criatorio === 'object') ? d.criatorio : {};
   d.criatorio.nome = d.criatorio.nome || '';
   d.criatorio.whatsapp = d.criatorio.whatsapp || '';
+  /* Configurações gerais (preço do kg da ração, simulador de ninhada) */
+  d.config = (d.config && typeof d.config === 'object') ? d.config : {};
+  if (d.config.precoKgRacao == null) d.config.precoKgRacao = 2.50;
+  d.config.sim = (d.config.sim && typeof d.config.sim === 'object') ? d.config.sim : { qtd:12, preco:60, custo:200, dias:45 };
   return d;
 }
 function salvarDB(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
-  catch(e){ toast('Erro ao salvar no aparelho.','erro'); }
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    salvarFinanceiro(); /* espelha vendas/compras nas chaves próprias */
+  }
+  catch(e){ toast('Erro ao salvar no aparelho (armazenamento cheio?).','erro'); }
+}
+/* FINANCEIRO: grava nas chaves pedidas cunicoelho_vendas / cunicoelho_compras */
+function salvarFinanceiro(){
+  try{
+    localStorage.setItem(KEY_VENDAS,  JSON.stringify(db.vendas  || []));
+    localStorage.setItem(KEY_COMPRAS, JSON.stringify(db.compras || []));
+  }catch(e){ console.warn('[Financeiro] Falha ao salvar chaves separadas:', e); }
 }
 function carregarDB(){
   try{
+    let dados = null;
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return normalizarDB(JSON.parse(raw));
-    /* Migração de versões antigas (chaves antigas → chave única atual) */
-    for (const antiga of CHAVES_ANTIGAS){
-      const rawAntigo = localStorage.getItem(antiga);
-      if (rawAntigo){
-        const migrado = normalizarDB(JSON.parse(rawAntigo));
-        migrado.migradoDe = antiga;
-        localStorage.removeItem(antiga);
-        console.info('[CuniCoelho] Dados migrados de:', antiga);
-        return migrado;
+    if (raw) dados = JSON.parse(raw);
+    else {
+      /* Migração de versões antigas (chaves antigas → chave única atual) */
+      for (const antiga of CHAVES_ANTIGAS){
+        const rawAntigo = localStorage.getItem(antiga);
+        if (rawAntigo){
+          dados = JSON.parse(rawAntigo);
+          dados.migradoDe = antiga;
+          localStorage.removeItem(antiga);
+          console.info('[CuniCoelho] Dados migrados de:', antiga);
+          break;
+        }
       }
     }
+    const d = normalizarDB(dados);
+    /* As chaves separadas de vendas/compras têm prioridade (fonte de verdade) */
+    try{
+      const rv = localStorage.getItem(KEY_VENDAS);
+      const rc = localStorage.getItem(KEY_COMPRAS);
+      if (rv) d.vendas  = JSON.parse(rv) || [];
+      if (rc) d.compras = JSON.parse(rc) || [];
+    }catch(_){}
+    return d;
   }catch(e){ console.warn('[CuniCoelho] Falha ao ler dados:', e); }
   return gerarSeed();
 }
 
-/* ===== 4. SEED (dados de exemplo fiéis ao layout) ===== */
+/* ===== 4. SEED (dados de exemplo) ===== */
 function gerarSeed(){
   const atras = (n) => diasAtrasISO(n);
   return normalizarDB({
     coelhos: [
-      { id:'RZ-1024', lote:'L001', sexo:'F', raca:'Nova Zelândia Branco', nascimento:atras(92),
+      { id:'RZ-1024', lote:'L001', sexo:'F', raca:'Nova Zelândia Branco', nascimento:atras(92), linhagem:'Azul',
         matriz:false, foto:'', pai:{nome:'GN-2201',lote:'L010'}, mae:{nome:'GN-1188',lote:'L010'},
         pesos:[{data:atras(80),kg:0.42},{data:atras(58),kg:0.66},{data:atras(31),kg:0.94},{data:atras(9),kg:1.2}],
         vacinas:[{tipo:'VHD', data:'2024-10-02', local:'Vetsul Clínica'}],
         observacoes:'Destinada à reprodução — melhor crescimento do lote L001.', consanguineo:false, ultimoParto:null },
-      { id:'GN-1280', lote:'L001', sexo:'M', raca:'Nova Zelândia Branco', nascimento:atras(92),
+      { id:'GN-1280', lote:'L001', sexo:'M', raca:'Nova Zelândia Branco', nascimento:atras(92), linhagem:'Azul',
         matriz:false, foto:'', pai:{nome:'GN-2201',lote:'L010'}, mae:{nome:'GN-1188',lote:'L010'},
         pesos:[{data:atras(78),kg:0.45},{data:atras(50),kg:0.7},{data:atras(22),kg:1.02},{data:atras(6),kg:1.28}],
         vacinas:[{tipo:'Mixomatose', data:atras(25), local:'Vetsul Clínica'}], observacoes:'', consanguineo:false },
-      { id:'GN-1281', lote:'L001', sexo:'F', raca:'Nova Zelândia Branco', nascimento:atras(92),
+      { id:'GN-1281', lote:'L001', sexo:'F', raca:'Nova Zelândia Branco', nascimento:atras(92), linhagem:'Azul',
         matriz:false, foto:'', pai:{nome:'GN-2201',lote:'L010'}, mae:{nome:'GN-1188',lote:'L010'},
         pesos:[{data:atras(76),kg:0.4},{data:atras(48),kg:0.64},{data:atras(20),kg:0.95},{data:atras(5),kg:1.18}],
         vacinas:[{tipo:'VHD', data:atras(30), local:'Vetsul Clínica'},
                  {tipo:'Mixomatose', data:atras(395), local:'Fazenda'},
                  {tipo:'Ivermectina 1%', data:atras(140), local:'Fazenda'}], observacoes:'', consanguineo:false },
-      { id:'GN-2201', lote:'L010', sexo:'M', raca:'Nova Zelândia Branco', nascimento:atras(700),
+      { id:'GN-2201', lote:'L010', sexo:'M', raca:'Nova Zelândia Branco', nascimento:atras(700), linhagem:'Vermelha',
         matriz:false, foto:'', pai:{nome:'GN-0500',lote:'L010'}, mae:{nome:'GN-0412',lote:'L010'},
         pesos:[{data:atras(60),kg:4.1},{data:atras(10),kg:4.2}],
         vacinas:[{tipo:'Mixomatose', data:atras(40), local:'Vetsul Clínica'},
                  {tipo:'VHD', data:atras(40), local:'Vetsul Clínica'},
                  {tipo:'Ivermectina 1%', data:atras(45), local:'Fazenda'},
                  {tipo:'Sulfaquinoxalina', data:atras(50), local:'Fazenda'}], observacoes:'Reprodutor principal.', consanguineo:false },
-      { id:'GN-1188', lote:'L010', sexo:'F', raca:'Nova Zelândia Branco', nascimento:atras(650),
+      { id:'GN-1188', lote:'L010', sexo:'F', raca:'Nova Zelândia Branco', nascimento:atras(650), linhagem:'Vermelha',
         matriz:true, foto:'', pai:{nome:'GN-0410',lote:'L010'}, mae:{nome:'GN-0388',lote:'L010'},
         pesos:[{data:atras(60),kg:3.9},{data:atras(14),kg:4.0}],
         vacinas:[{tipo:'Mixomatose', data:atras(60), local:'Vetsul Clínica'},
@@ -1056,7 +1226,7 @@ function gerarSeed(){
                  {tipo:'Ivermectina 1%', data:atras(70), local:'Fazenda'},
                  {tipo:'Sulfaquinoxalina', data:atras(95), local:'Fazenda'}],
         observacoes:'Matriz de alta prolificidade.', consanguineo:false, ultimoParto:atras(14) },
-      { id:'CL-3001', lote:'L002', sexo:'F', raca:'Califórnia', nascimento:atras(150),
+      { id:'CL-3001', lote:'L002', sexo:'F', raca:'Califórnia', nascimento:atras(150), linhagem:'Azul',
         matriz:true, foto:'', pai:{nome:'CL-0101',lote:'L002'}, mae:{nome:'CL-0090',lote:'L002'},
         pesos:[{data:atras(40),kg:3.4},{data:atras(12),kg:3.5}],
         vacinas:[{tipo:'Mixomatose', data:atras(80), local:'Vetsul Clínica'},
@@ -1064,12 +1234,12 @@ function gerarSeed(){
                  {tipo:'Ivermectina 1%', data:atras(60), local:'Fazenda'},
                  {tipo:'Sulfaquinoxalina', data:atras(55), local:'Fazenda'}],
         observacoes:'', consanguineo:false, ultimoParto:atras(50) },
-      { id:'CL-3002', lote:'L002', sexo:'M', raca:'Califórnia', nascimento:atras(140),
+      { id:'CL-3002', lote:'L002', sexo:'M', raca:'Califórnia', nascimento:atras(140), linhagem:'Vermelha',
         matriz:false, foto:'', pai:{nome:'CL-0101',lote:'L002'}, mae:{nome:'CL-0095',lote:'L002'},
         pesos:[{data:atras(30),kg:3.2}],
         vacinas:[{tipo:'Mixomatose', data:atras(70), local:'Vetsul Clínica'},
                  {tipo:'VHD', data:atras(70), local:'Vetsul Clínica'}], observacoes:'', consanguineo:false },
-      { id:'CH-4100', lote:'L003', sexo:'F', raca:'Chinchila', nascimento:atras(60),
+      { id:'CH-4100', lote:'L003', sexo:'F', raca:'Chinchila', nascimento:atras(60), linhagem:'',
         matriz:false, foto:'', pai:{nome:'CH-0200',lote:'L003'}, mae:{nome:'CH-0198',lote:'L003'},
         pesos:[{data:atras(30),kg:0.6},{data:atras(8),kg:0.9}],
         vacinas:[], observacoes:'', consanguineo:false }
@@ -1089,13 +1259,18 @@ function gerarSeed(){
       { id:uid(), tipo:'Peletizada',      kgDia:1.2,  lote:'L002', data:atras(1) },
       { id:uid(), tipo:'Forragem verde',  kgDia:0.8,  lote:'L003', data:atras(2) }
     ],
+    vendas: [], compras: [],
     criatorio: { nome:'', whatsapp:'' }
   });
 }
 
 /* ===== 5. ESTADO + REGRAS DE NEGÓCIO ===== */
-const state = { aba:'dashboard', coelhoId:null, busca:'', editCtx:null, cbConfirm:null, swReg:null };
+const state = { aba:'dashboard', coelhoId:null, busca:'', editCtx:null, cbConfirm:null, swReg:null,
+                finMes:'', finCliente:'' }; /* filtros do financeiro */
 let deferredPrompt = null; /* evento de instalação PWA nativo */
+
+/* Apenas animais ativos (não vendidos) entram em plantel/cálculos/alertas */
+const ativos = () => db.coelhos.filter(c => c.status !== 'vendido');
 
 const porId = (id) => db.coelhos.find(c => c.id === id) || null;
 function coelhoAtual(){
@@ -1147,6 +1322,7 @@ function statusGeral(c){
 
 /* Categoria de ração automática */
 function categoriaCoelho(c){
+  if (c.status === 'vendido') return '—'; /* vendido sai do consumo */
   if (c.matriz && c.sexo === 'F'){
     if (c.ultimoParto && diffDias(c.ultimoParto, hojeISO()) < 35) return 'Amamentando';
     return 'Matriz';
@@ -1155,7 +1331,7 @@ function categoriaCoelho(c){
   if (c.sexo === 'M') return 'Macho';
   return 'Engorda';
 }
-const doseDe = (c) => DOSES_RACAO[categoriaCoelho(c)] || 0;
+const doseDe = (c) => (c.status === 'vendido' ? 0 : (DOSES_RACAO[categoriaCoelho(c)] || 0));
 
 /* SEMÁFORO DE CONSANGUINIDADE — getSanguinidade(c1,c2) */
 function getSanguinidade(c1, c2){
@@ -1165,6 +1341,23 @@ function getSanguinidade(c1, c2){
   const mesmaMae = c1.mae && c2.mae && c1.mae.nome && norm(c1.mae.nome) === norm(c2.mae.nome);
   if (mesmoPai || mesmaMae) return 'laranja'; /* mesmo pai ou mesma mãe */
   return 'verde';
+}
+
+/* FINANCEIRO: regra de venda de Matriz Ativa.
+   Bloqueia se a matriz for da mesma linhagem/baia de algum macho reprodutor ativo
+   (usa getSanguinidade: vermelho = mesmo lote; laranja = parente direto). */
+function bloqueioVendaMatriz(c){
+  if (!c || !c.matriz) return null;
+  for (const m of ativos()){
+    if (m.sexo !== 'M' || m.id === c.id) continue;
+    const sang = getSanguinidade(c, m);
+    const mesmaLinh = !!(c.linhagem && m.linhagem && c.linhagem === m.linhagem);
+    if (sang !== 'verde' || mesmaLinh){
+      return '⛔ ' + c.id + ' é Matriz Ativa da mesma linhagem/baia do macho ' + m.id +
+             '. Venda bloqueada para não parar a reprodução (desmarque "É Matriz" no cadastro se realmente deseja vender).';
+    }
+  }
+  return null;
 }
 
 /* JANELA DE COBERTURA — semáforo de quando o animal pode cruzar */
@@ -1233,9 +1426,10 @@ function fecharTodosModais(){ $$('.overlay').forEach(o => o.hidden = true); }
 function popularSelectLotes(sel, valor){
   sel.innerHTML = db.lotes.map(l => '<option value="'+esc(l.nome)+'"'+(l.nome===valor?' selected':'')+'>'+esc(l.nome)+'</option>').join('') || '<option value="">— cadastre um lote —</option>';
 }
+/* Só animais ATIVOS aparecem nos selects (vendidos não podem ser revendidos/cobertos) */
 function popularSelectCoelhos(sel, filtroFn, placeholder){
   sel.innerHTML = '<option value="">' + (placeholder||'Selecione…') + '</option>' +
-    db.coelhos.filter(filtroFn || (()=>true))
+    ativos().filter(filtroFn || (()=>true))
       .map(c => '<option value="'+esc(c.id)+'">'+esc(c.id)+' · '+esc(c.raca)+' · '+esc(c.lote)+(c.sexo==='F'?' ♀':' ♂')+'</option>')
       .join('');
 }
@@ -1254,7 +1448,6 @@ function graficoPesoSVG(pesos){
   const area  = linha + ' L'+X(pts.length-1).toFixed(1)+','+(h-padB)+' L'+X(0).toFixed(1)+','+(h-padB)+' Z';
   const dots = pts.map((p,i)=>'<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(Number(p.kg)).toFixed(1)+'" r="3.6" fill="#16a34a" stroke="#fff" stroke-width="1.4"/>').join('');
   const labels = pts.map((p,i)=>'<text x="'+X(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="9.5" fill="#9ca3af">'+mesCurto(p.data)+'</text>').join('');
-  /* CORREÇÃO: sem <text>kg</text> dentro do SVG — o "kg" do canto é só o span HTML (não fica embaçado/duplicado) */
   return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução de peso">' +
     '<path d="'+area+'" fill="rgba(22,163,74,.12)"/>' +
     '<path d="'+linha+'" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
@@ -1262,7 +1455,7 @@ function graficoPesoSVG(pesos){
 }
 
 /* ===== 9. NAVEGAÇÃO ===== */
-const TITULOS = { dashboard:'Detalhe do Animal', plantel:'Plantel', racao:'Ração', lotes:'Lotes', guia:'Guia de Manejo' };
+const TITULOS = { dashboard:'Detalhe do Animal', plantel:'Plantel', racao:'Ração', vendas:'Vendas', lotes:'Lotes', guia:'Guia de Manejo' };
 function trocarAba(aba){
   state.aba = aba;
   $$('.view').forEach(v => v.hidden = (v.id !== 'view-' + aba));
@@ -1275,12 +1468,14 @@ function trocarAba(aba){
   if (aba==='dashboard') renderDashboard();
   else if (aba==='plantel') renderPlantel();
   else if (aba==='racao') renderRacao();
+  else if (aba==='vendas') renderVendas();
   else if (aba==='lotes') renderLotes();
 }
 function renderTudo(){
   if (state.aba==='dashboard') renderDashboard();
   else if (state.aba==='plantel') renderPlantel();
   else if (state.aba==='racao') renderRacao();
+  else if (state.aba==='vendas') renderVendas();
   else if (state.aba==='lotes') renderLotes();
 }
 
@@ -1317,13 +1512,15 @@ function renderDashboard(){
 
 function renderCardAnimal(c){
   const peso = pesoAtualKg(c);
+  const tagLinh = c.linhagem ? ' • Linhagem ' + esc(c.linhagem) : '';
+  const tagStatus = c.status === 'vendido' ? ' • VENDIDO' : '';
   $('#dashCard').innerHTML =
     '<div class="card-animal" id="cardAnimalT" role="button" tabindex="0" aria-label="Editar relatório completo">' +
       '<img class="foto-animal" src="' + esc(c.foto || FOTO_PADRAO) + '" alt="Foto de ' + esc(c.id) + '" ' +
         'onerror="this.onerror=null;this.src=FOTO_PADRAO">' +
       '<div class="animal-info">' +
         '<div class="id-animal">' + esc(c.id) + '</div>' +
-        '<span class="tag-lote-cinza">🏷️ Lote: ' + esc(c.lote) + '</span>' +
+        '<span class="tag-lote-cinza">🏷️ Lote: ' + esc(c.lote) + tagLinh + tagStatus + '</span>' +
         '<div class="stats-linha">' +
           '<div class="st-col"><small>⚖️ Peso</small><b>' + fmtPesoCurto(peso) + '</b></div>' +
           '<div class="st-col"><small>' + (c.sexo==='F'?'♀':'♂') + ' Sexo</small><b>' + (c.sexo==='F'?'Fêmea':'Macho') + '</b></div>' +
@@ -1337,7 +1534,7 @@ function renderCardAnimal(c){
 /* Janela de Cobertura — card com semáforo no dashboard */
 function renderJanelaCobertura(c){
   const j = janelaCobertura(c);
-  if (!j){ $('#dashCobertura').innerHTML = ''; return; }
+  if (!j || c.status === 'vendido'){ $('#dashCobertura').innerHTML = ''; return; }
   const cls = j.nivel === 'verde' ? 'verde' : (j.nivel === 'amarelo' ? 'laranja' : 'vermelho');
   $('#dashCobertura').innerHTML =
     '<h2 class="titulo-secao">💗 Janela de Cobertura</h2>' +
@@ -1375,7 +1572,7 @@ function renderIrmaos(c){
     '<span class="tag-irmaos">' + qtdTxt + '</span></div>' +
     '<div class="irmaos-chips">' +
     (irmaos.length
-      ? irmaos.map(i => '<button class="chip-irmao" data-id="' + esc(i.id) + '">' + esc(i.id) + ' ' + (i.sexo==='F'?'♀':'♂') + '</button>').join('')
+      ? irmaos.map(i => '<button class="chip-irmao" data-id="' + esc(i.id) + '">' + esc(i.id) + ' ' + (i.sexo==='F'?'♀':'♂') + (i.status==='vendido'?' 📦':'') + '</button>').join('')
       : '<small style="color:#8fa3c8;font-size:12px">Sem outros animais neste lote.</small>') +
     '</div>';
   $$('#dashIrmaos .chip-irmao').forEach(ch => {
@@ -1385,7 +1582,7 @@ function renderIrmaos(c){
 
 function renderStats(c){
   const peso = pesoAtualKg(c);
-  const cresc = crescimentoPct(c); /* macho e fêmea iguais — vem do histórico de pesos */
+  const cresc = crescimentoPct(c);
   const lastPeso = (c.pesos||[]).slice().sort((a,b)=>String(a.data).localeCompare(String(b.data))).slice(-1)[0];
   const crescHtml = cresc == null
     ? '<b style="color:#8fa3c8">—</b>'
@@ -1441,10 +1638,10 @@ function renderCalendarioSanitario(c){
   });
 }
 
-/* Alertas automáticos — card neutro, SEMÁFORO apenas no emoji do canto */
+/* Alertas automáticos — card neutro, SEMÁFORO apenas no emoji do canto (só animais ativos) */
 function renderAlertasSanitarios(){
   const alertas = [];
-  for (const c of db.coelhos){
+  for (const c of ativos()){
     for (const v of VACINAS_PRE){
       const s = statusVacina(c, v);
       if (s.tipo==='pendente' || s.tipo==='atrasada' || s.tipo==='vencendo'){
@@ -1482,22 +1679,23 @@ function renderAlertasSanitarios(){
   });
 }
 
-/* ===== 11. RENDER: PLANTEL ===== */
+/* ===== 11. RENDER: PLANTEL (só ativos; vendidos ficam na aba Vendas) ===== */
 function renderPlantel(){
   const q = norm(state.busca || '');
-  const itens = db.coelhos
+  const itens = ativos()
     .filter(c => !q || norm(c.id).includes(q) || norm(c.raca).includes(q) || norm(c.lote).includes(q))
     .sort((a,b) => a.id.localeCompare(b.id));
-  $('#contPlantel').textContent = db.coelhos.length;
+  $('#contPlantel').textContent = ativos().length;
   $('#listaPlantel').innerHTML = itens.length ? itens.map(c => {
     const sg = statusGeral(c);
     const badge = sg==='ok' ? '<span class="badge-status b-ok">Saudável</span>'
       : sg==='atencao' ? '<span class="badge-status b-aten">💉 Vacinar</span>'
       : '<span class="badge-status b-urg">💉 Vacinar!</span>';
+    const linh = c.linhagem ? ' • ' + esc(c.linhagem) : '';
     return '<div class="item-coelho" data-id="' + esc(c.id) + '" role="button" tabindex="0">' +
       '<img src="' + esc(c.foto || FOTO_PADRAO) + '" alt="" onerror="this.onerror=null;this.src=FOTO_PADRAO">' +
       '<div class="ic-info"><div class="ic-nome">' + esc(c.id) + (c.matriz && c.sexo==='F' ? ' 🟢' : '') + '</div>' +
-      '<div class="ic-sub">📦 Lote ' + esc(c.lote) + ' • ' + esc(c.raca) + '</div></div>' + badge + '</div>';
+      '<div class="ic-sub">📦 Lote ' + esc(c.lote) + ' • ' + esc(c.raca) + linh + '</div></div>' + badge + '</div>';
   }).join('') : '<div class="vazio" style="grid-column:1/-1">Nenhum coelho encontrado para a busca.</div>';
 }
  $('#listaPlantel').addEventListener('click', (e) => {
@@ -1510,11 +1708,11 @@ function renderPlantel(){
 
 /* ===== 12. RENDER: RAÇÃO ===== */
 function renderRacao(){
-  /* CORREÇÃO: popula o select de Lote (antes ficava vazio), preservando a escolha atual */
+  /* Popula o select de Lote, preservando a escolha atual */
   const valorLoteSel = $('#rLote').value;
   popularSelectLotes($('#rLote'), valorLoteSel);
   const porCat = {}; let total = 0;
-  db.coelhos.forEach(c => {
+  ativos().forEach(c => { /* vendidos não consomem ração */
     const cat = categoriaCoelho(c), dose = doseDe(c);
     porCat[cat] = porCat[cat] || { n:0, kg:0 };
     porCat[cat].n++; porCat[cat].kg += dose; total += dose;
@@ -1524,7 +1722,7 @@ function renderRacao(){
     '<div class="resumo-linha">' +
     '<div class="resumo-item"><small>CONSUMO DO PLANTEL</small><b>' + fmtNumBR(total,3) + '</b><small class="v">kg / dia</small></div>' +
     '<div class="resumo-item"><small>SACOS 25 KG / MÊS</small><b>' + fmtNumBR(sacos,1) + '</b><small class="v">sacos</small></div>' +
-    '<div class="resumo-item"><small>ANIMAIS</small><b>' + db.coelhos.length + '</b><small class="v">ativos</small></div>' +
+    '<div class="resumo-item"><small>ANIMAIS</small><b>' + ativos().length + '</b><small class="v">ativos</small></div>' +
     '</div>';
 
   $('#categoriasRacao').innerHTML = Object.keys(DOSES_RACAO).map(cat => {
@@ -1535,7 +1733,7 @@ function renderRacao(){
   }).join('');
 
   $('#lotesRacao').innerHTML = db.lotes.map(l => {
-    const cs = db.coelhos.filter(c => c.lote === l.nome);
+    const cs = ativos().filter(c => c.lote === l.nome);
     const kg = cs.reduce((s,c) => s + doseDe(c), 0);
     return '<div class="lote-row"><div><b>📦 ' + esc(l.nome) + '</b>' +
       '<small>' + cs.length + ' animal(is) • ' + fmtNumBR(kg,3) + ' kg/dia</small></div>' +
@@ -1546,7 +1744,7 @@ function renderRacao(){
   $$('#lotesRacao [data-usar]').forEach(b => {
     b.onclick = () => {
       const lote = b.dataset.usar;
-      const kg = db.coelhos.filter(c => c.lote === lote).reduce((s,c) => s + doseDe(c), 0);
+      const kg = ativos().filter(c => c.lote === lote).reduce((s,c) => s + doseDe(c), 0);
       $('#rLote').value = lote;
       $('#rKg').value = kg.toFixed(3);
       $('#formRacao').scrollIntoView({ behavior:'smooth', block:'center' });
@@ -1586,25 +1784,25 @@ function renderRacao(){
 function renderLotes(){
   $('#contLotes').textContent = db.lotes.length;
   $('#listaLotes').innerHTML = db.lotes.length ? db.lotes.map(l => {
-    const cs = db.coelhos.filter(c => c.lote === l.nome);
+    const cs = ativos().filter(c => c.lote === l.nome);
+    const vend = db.coelhos.filter(c => c.lote === l.nome && c.status === 'vendido').length;
     const matrizes = cs.filter(c => c.matriz && c.sexo==='F').length;
     const kg = cs.reduce((s,c) => s + doseDe(c), 0);
     const ninh = db.ninhadas.filter(n => n.lote === l.nome).length;
-    /* CORREÇÃO de plural: "1 coelho" em vez de "1 coelhos" */
     const txtCoelhos = cs.length + (cs.length === 1 ? ' coelho' : ' coelhos');
+    const txtVend = vend ? ' • ' + vend + ' vendido(s)' : '';
     return '<div class="lote-card"><div class="lc-topo"><b>📦 ' + esc(l.nome) + '</b>' +
-      '<span>' + txtCoelhos + ' • ' + matrizes + ' matriz(es)</span></div>' +
+      '<span>' + txtCoelhos + ' • ' + matrizes + ' matriz(es)' + txtVend + '</span></div>' +
       '<small>Consumo: ' + fmtNumBR(kg,3) + ' kg/dia • ' + ninh + ' ninhada(s) registrada(s)</small>' +
       '<div class="lc-acoes"><button data-ren="' + esc(l.nome) + '">✏️ Renomear</button>' +
       '<button data-del-lote="' + esc(l.nome) + '">🗑️ Excluir</button></div></div>';
   }).join('') : '<div class="vazio">Nenhum lote. Crie o primeiro com “+ Novo Lote”.</div>';
 
   $$('#listaLotes [data-ren]').forEach(b => { b.onclick = () => abrirRenomearLote(b.dataset.ren); });
-  /* CORREÇÃO: excluir lote agora avisa o motivo quando há animais (antes era disabled silencioso) */
   $$('#listaLotes [data-del-lote]').forEach(b => {
     b.onclick = () => {
       const nome = b.dataset.delLote;
-      const qtd = db.coelhos.filter(c => c.lote === nome).length;
+      const qtd = ativos().filter(c => c.lote === nome).length;
       if (qtd > 0){
         toast('O lote ' + nome + ' ainda tem ' + qtd + ' coelho(s). Mova-os para outro lote antes de excluir.', 'erro');
         return;
@@ -1627,6 +1825,7 @@ function abrirEditarCoelho(id){
   $('#eFoto').value = c.foto || '';
   $('#eId').value = c.id;
   $('#eSexo').value = c.sexo || 'F';
+  $('#eLinhagem').value = c.linhagem || '';
   $('#eNasc').value = c.nascimento || '';
   $('#eMatriz').checked = !!c.matriz;
   $('#ePaiNome').value = (c.pai && c.pai.nome) || '';
@@ -1684,6 +1883,7 @@ function renderVacEdit(){
   c.lote = $('#eLote').value || c.lote;
   c.raca = $('#eRaca').value;
   c.sexo = $('#eSexo').value;
+  c.linhagem = $('#eLinhagem').value;
   c.nascimento = $('#eNasc').value || c.nascimento || hojeISO();
   c.matriz = $('#eMatriz').checked;
   c.pai = { nome:$('#ePaiNome').value.trim(), lote:$('#ePaiLote').value.trim() };
@@ -1692,7 +1892,6 @@ function renderVacEdit(){
   c.pesos = ctx.pesos;
   c.vacinas = ctx.vacinas;
 
-  /* Se o ID mudou, atualiza referências em coberturas e ninhadas */
   if (novoId !== idAntigo){
     db.coberturas.forEach(cb => {
       if (cb.femeaId === idAntigo) cb.femeaId = novoId;
@@ -1707,7 +1906,7 @@ function renderVacEdit(){
  $('#eExcluir').addEventListener('click', () => {
   const ctx = state.editCtx; if (!ctx) return;
   const c = porId(ctx.idOriginal); if (!c) return;
-  confirmar('Excluir animal', 'Remover ' + c.id + ' do plantel? Esta ação não pode ser desfeita.', 'Excluir', () => {
+  confirmar('Excluir animal', 'Remover ' + c.id + ' do plantel? Dica: se ele foi vendido, registre a VENDA em vez de excluir — assim o histórico financeiro fica preservado.', 'Excluir', () => {
     db.coelhos = db.coelhos.filter(x => x.id !== c.id);
     db.coberturas = db.coberturas.filter(cb => cb.femeaId !== c.id && cb.machoId !== c.id);
     if (state.coelhoId === c.id) state.coelhoId = db.coelhos.length ? db.coelhos[0].id : null;
@@ -1721,7 +1920,7 @@ function abrirNovoCoelho(){
   popularSelectLotes($('#nLote'), db.lotes.length ? db.lotes[0].nome : '');
   $('#nRaca').innerHTML = RAÇAS.map(r => '<option>'+r+'</option>').join('');
   ['nFoto','nId','nPeso','nPaiNome','nPaiLote','nMaeNome','nMaeLote'].forEach(id => $('#'+id).value = '');
-  $('#nNasc').value = hojeISO(); $('#nSexo').value = 'F'; $('#nMatriz').checked = false;
+  $('#nNasc').value = hojeISO(); $('#nSexo').value = 'F'; $('#nMatriz').checked = false; $('#nLinhagem').value = '';
   abrirModal('mNovoCoelho');
 }
  $('#nSalvar').addEventListener('click', () => {
@@ -1731,11 +1930,12 @@ function abrirNovoCoelho(){
   const kg = parseFloat($('#nPeso').value);
   const novo = {
     id, lote: $('#nLote').value || '—', sexo: $('#nSexo').value, raca: $('#nRaca').value,
+    linhagem: $('#nLinhagem').value,
     nascimento: $('#nNasc').value || hojeISO(), matriz: $('#nMatriz').checked,
     foto: $('#nFoto').value.trim(), pai:{nome:$('#nPaiNome').value.trim(), lote:$('#nPaiLote').value.trim()},
     mae:{nome:$('#nMaeNome').value.trim(), lote:$('#nMaeLote').value.trim()},
     pesos: (kg>0) ? [{data:hojeISO(), kg}] : [],
-    vacinas: [], observacoes:'', consanguineo:false, ultimoParto:null
+    vacinas: [], observacoes:'', consanguineo:false, ultimoParto:null, status:'ativo'
   };
   db.coelhos.push(novo);
   salvarDB(); fecharModal('mNovoCoelho');
@@ -1854,7 +2054,7 @@ function abrirModalVacina(coelhoId, vacinaNome){
   const c = porId($('#vCoelho').value);
   if (!c){ toast('Selecione o coelho.','erro'); return; }
   c.vacinas.push({ tipo: $('#vVacina').value, data: $('#vData').value || hojeISO(), local: $('#vLocal').value.trim() || '—' });
-  salvarDB(); fecharModal('mVacina'); renderTudo(); /* alerta sai da lista e o próximo aparece */
+  salvarDB(); fecharModal('mVacina'); renderTudo();
   toast('Dose registrada — calendário atualizado.','ok');
 });
 
@@ -1923,6 +2123,394 @@ function aplicarCriatorioNaTela(){
   if (small) small.textContent = db.criatorio.nome ? db.criatorio.nome : 'Manejo de Coelhos';
 }
 
+/* ================================================================
+   26. FINANCEIRO — COMPRA E VENDA (offline-first, chaves próprias)
+   ================================================================ */
+
+/* Preço do kg de ração usado no cálculo do LUCRO */
+function precoKgRacao(){ return Number(db.config.precoKgRacao) || 0; }
+
+/* Aplica o filtro de MÊS (e cliente, quando for venda) */
+function filtroMesAplica(iso){
+  if (state.finMes && String(iso||'').slice(0,7) !== state.finMes) return false;
+  return true;
+}
+function filtroClienteAplica(cliente){
+  const q = norm(state.finCliente || '');
+  return !q || norm(cliente).includes(q);
+}
+
+/* Totais do período filtrado — usados nos KPIs e no gráfico */
+function totaisFinanceiros(){
+  const vendas = db.vendas.filter(v => filtroMesAplica(v.data) && filtroClienteAplica(v.cliente));
+  const vendido = vendas.reduce((s,v) => s + Number(v.total||0), 0);
+  const compras = db.compras.filter(c => filtroMesAplica(c.data));
+  const gasto = compras.reduce((s,c) => s + Number(c.valor||0), 0);
+  const racaoKg = db.racao.filter(r => filtroMesAplica(r.data)).reduce((s,r) => s + Number(r.kgDia||0), 0);
+  const custoRacao = racaoKg * precoKgRacao();
+  return { vendas, vendido, compras, gasto, racaoKg, custoRacao, lucro: vendido - gasto - custoRacao };
+}
+
+/* Rótulo do mês (YYYY-MM → "Setembro de 2025") */
+function rotuloMes(ym){
+  try{
+    let s = new Date(ym + '-01T12:00:00').toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }catch(_){ return ym; }
+}
+
+/* Preenche o select de meses (derivado de vendas + compras + ração) */
+function popularFiltroMes(){
+  const meses = new Set();
+  db.vendas.forEach(v => meses.add(String(v.data||'').slice(0,7)));
+  db.compras.forEach(c => meses.add(String(c.data||'').slice(0,7)));
+  db.racao.forEach(r => meses.add(String(r.data||'').slice(0,7)));
+  meses.delete('');
+  const lista = Array.from(meses).sort().reverse();
+  $('#finMes').innerHTML = '<option value="">Todos os meses</option>' +
+    lista.map(m => '<option value="'+m+'"'+(m===state.finMes?' selected':'')+'>'+rotuloMes(m)+'</option>').join('');
+  $('#finPeriodoLabel').textContent = state.finMes ? rotuloMes(state.finMes) : 'Todos os meses';
+}
+
+/* ===== RENDER PRINCIPAL DA ABA VENDAS ===== */
+function renderVendas(){
+  /* Preço do kg de ração (config salvo) */
+  $('#inpPrecoKgRacao').value = db.config.precoKgRacao != null ? db.config.precoKgRacao : '';
+
+  popularFiltroMes();
+  const t = totaisFinanceiros();
+
+  /* --- 3 KPIs (mesmo .stat-card do dashboard) --- */
+  $('#finKpis').innerHTML =
+    '<div class="stat-card"><small>💰 Total Vendido</small><b class="cresc-pos">' + fmtBRL(t.vendido) + '</b>' +
+      '<span>' + t.vendas.length + ' venda(s)</span></div>' +
+    '<div class="stat-card"><small>🛒 Compras + Ração</small><b>' + fmtBRL(t.gasto + t.custoRacao) + '</b>' +
+      '<span>compras ' + fmtBRL(t.gasto) + ' • ração ' + fmtBRL(t.custoRacao) + '</span></div>' +
+    '<div class="stat-card"><small>📈 LUCRO</small><b class="' + (t.lucro>=0?'cresc-pos':'cresc-neg') + '">' + fmtBRL(t.lucro) + '</b>' +
+      '<span>vendido − compras − ração</span></div>';
+
+  /* --- Lista de vendas (com busca por cliente + filtro mês) --- */
+  $('#contVendas').textContent = t.vendas.length;
+  const vOrdenadas = t.vendas.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,60);
+  $('#listaVendas').innerHTML = vOrdenadas.length ? vOrdenadas.map(v =>
+    '<div class="racao-item"><span class="ri-data">' + fmtDataBR(v.data).slice(0,5) + '</span>' +
+    '<div><b>' + esc(v.exibeId || v.coelhoId) + ' • ' + esc(v.tipo) + '</b>' +
+    '<small>' + (v.cliente ? esc(v.cliente) : '—') + ' • 📦 ' + esc(v.lote||'—') + ' • ' + fmtNumBR(v.peso||0,3) + ' kg</small></div>' +
+    '<b class="ri-kg">' + fmtBRL(v.total) + (v.pago==='Não' ? ' ⏳' : '') + '</b>' +
+    '<button class="del-mini" data-delv="' + esc(v.id) + '" aria-label="Estornar venda">🗑️</button></div>'
+  ).join('') : '<div class="vazio">Nenhuma venda no filtro atual.</div>';
+
+  $$('#listaVendas [data-delv]').forEach(b => {
+    b.onclick = () => confirmar('Estornar venda', 'Remover este registro de venda? O coelho volta para o plantel como ativo.', 'Estornar', () => {
+      const v = db.vendas.find(x => x.id === b.dataset.delv);
+      if (v){
+        const c = porId(v.coelhoId);
+        if (c && c.status === 'vendido'){ c.status = 'ativo'; c.dataVenda = null; }
+      }
+      db.vendas = db.vendas.filter(x => x.id !== b.dataset.delv);
+      salvarDB(); renderVendas(); toast('Venda estornada — animal de volta ao plantel.','ok');
+    });
+  });
+
+  /* --- Lista de compras --- */
+  const compFiltradas = db.compras.filter(c => filtroMesAplica(c.data));
+  $('#contCompras').textContent = compFiltradas.length;
+  const cOrdenadas = compFiltradas.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,40);
+  $('#listaCompras').innerHTML = cOrdenadas.length ? cOrdenadas.map(c =>
+    '<div class="racao-item"><span class="ri-data">' + fmtDataBR(c.data).slice(0,5) + '</span>' +
+    '<div><b>' + esc(c.tipo) + (c.raca ? ' • ' + esc(c.raca) : '') + '</b>' +
+    '<small>' + (c.forn ? esc(c.forn) : '—') + ' • 📦 ' + esc(c.lote||'—') + (c.linhagem ? ' • ' + esc(c.linhagem) : '') + (c.notaFoto ? ' • 🧾' : '') + '</small></div>' +
+    '<b class="ri-kg" style="color:#fbbf24">−' + fmtBRL(c.valor) + '</b>' +
+    '<button class="del-mini" data-delc="' + esc(c.id) + '" aria-label="Excluir compra">🗑️</button></div>'
+  ).join('') : '<div class="vazio">Nenhuma compra no filtro atual.</div>';
+
+  $$('#listaCompras [data-delc]').forEach(b => {
+    b.onclick = () => confirmar('Excluir compra', 'Remover este registro de compra? (A compra que criou animal no plantel NÃO remove o animal.)', 'Excluir', () => {
+      db.compras = db.compras.filter(x => x.id !== b.dataset.delc);
+      salvarDB(); renderVendas(); toast('Compra removida.','ok');
+    });
+  });
+
+  /* --- Coelhos vendidos (histórico, nunca apagados) --- */
+  const vendidos = db.coelhos.filter(c => c.status === 'vendido').sort((a,b)=>String(b.dataVenda||'').localeCompare(String(a.dataVenda||'')));
+  $('#contVendidos').textContent = vendidos.length;
+  $('#listaVendidos').innerHTML = vendidos.length ? vendidos.map(c =>
+    '<div class="item-coelho" data-id="' + esc(c.id) + '" role="button" tabindex="0">' +
+    '<img src="' + esc(c.foto || FOTO_PADRAO) + '" alt="" onerror="this.onerror=null;this.src=FOTO_PADRAO">' +
+    '<div class="ic-info"><div class="ic-nome">' + esc(c.id) + '</div>' +
+    '<div class="ic-sub">Vendido em ' + fmtDataBR(c.dataVenda) + ' • 📦 ' + esc(c.lote) + '</div></div>' +
+    '<span class="badge-status b-aten">📦 Vendido</span></div>'
+  ).join('') : '<div class="vazio" style="grid-column:1/-1">Nenhum animal vendido ainda.</div>';
+  $$('#listaVendidos .item-coelho').forEach(el => {
+    el.onclick = () => { state.coelhoId = el.dataset.id; trocarAba('dashboard'); };
+  });
+
+  renderSimulador();
+  desenharGraficoLucro();
+}
+
+/* ===== SIMULADOR: Lucro por Ninhada (paramétrico, tabela zebrada) ===== */
+function renderSimulador(){
+  const s = db.config.sim || { qtd:12, preco:60, custo:200, dias:45 };
+  $('#simQtd').value = s.qtd; $('#simPreco').value = s.preco;
+  $('#simCusto').value = s.custo; $('#simDias').value = s.dias;
+  const receita = s.qtd * s.preco;
+  const lucro = receita - s.custo;
+  const ciclosAno = 365 / Math.max(1, s.dias);
+  $('#simLinhas').innerHTML =
+    '<tr><td>Receita (' + s.qtd + ' × ' + fmtBRL(s.preco) + ')</td><td><b>' + fmtBRL(receita) + '</b></td></tr>' +
+    '<tr><td>Custo ração / ciclo</td><td><b>−' + fmtBRL(s.custo) + '</b></td></tr>' +
+    '<tr><td><b>LUCRO por ciclo (' + s.dias + ' dias)</b></td><td><b class="' + (lucro>=0?'cresc-pos':'cresc-neg') + '">' + fmtBRL(lucro) + '</b></td></tr>' +
+    '<tr><td>Lucro por dia</td><td>' + fmtBRL(lucro / Math.max(1, s.dias)) + '</td></tr>' +
+    '<tr><td>Projeção anual (' + fmtNumBR(ciclosAno,1) + ' ciclos)</td><td><b class="' + (lucro>=0?'cresc-pos':'cresc-neg') + '">' + fmtBRL(lucro * ciclosAno) + '</b></td></tr>';
+}
+function lerSimulador(){
+  db.config.sim = {
+    qtd:   Math.max(1, parseInt($('#simQtd').value,10)   || 12),
+    preco: Math.max(0, parseFloat($('#simPreco').value)  || 0),
+    custo: Math.max(0, parseFloat($('#simCusto').value)  || 0),
+    dias:  Math.max(1, parseInt($('#simDias').value,10)  || 45)
+  };
+  salvarDB(); renderSimulador();
+}
+['simQtd','simPreco','simCusto','simDias'].forEach(id => $('#'+id).addEventListener('change', lerSimulador));
+
+/* ===== GRÁFICO: Lucro Acumulado (canvas puro, sem libs) ===== */
+function desenharGraficoLucro(){
+  const cv = $('#cvLucro'); if (!cv) return;
+  const caixa = cv.parentElement;
+  const w = Math.max(280, caixa.clientWidth - 4), h = 150;
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+
+  /* Eventos: vendas (+) e compras (−); custo de ração entra como evento no fim do período */
+  const evs = [];
+  db.vendas.filter(v => filtroMesAplica(v.data)).forEach(v => evs.push({ data:v.data, val:Number(v.total||0) }));
+  db.compras.filter(c => filtroMesAplica(c.data)).forEach(c => evs.push({ data:c.data, val:-Number(c.valor||0) }));
+  const t = totaisFinanceiros();
+  if (t.custoRacao > 0){
+    evs.push({ data: state.finMes ? (state.finMes + '-28') : hojeISO(), val:-t.custoRacao });
+  }
+  if (!evs.length){
+    ctx.fillStyle = '#8fa3c8'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Sem lançamentos no período', w/2, h/2);
+    return;
+  }
+  evs.sort((a,b) => String(a.data).localeCompare(String(b.data)));
+
+  /* Acumulado */
+  let acc = 0;
+  const pts = evs.map(e => { acc += e.val; return { v:acc }; });
+  pts.unshift({ v:0 });
+  const vs = pts.map(p => p.v);
+  let min = Math.min.apply(null, vs.concat([0]));
+  let max = Math.max.apply(null, vs.concat([0]));
+  if (max === min) max = min + 1;
+
+  const padL = 6, padR = 6, padT = 16, padB = 8;
+  const X = i => padL + i * (w - padL - padR) / ((pts.length - 1) || 1);
+  const Y = v => padT + (1 - (v - min) / (max - min)) * (h - padT - padB);
+
+  /* Linha do zero (tracejada) */
+  ctx.strokeStyle = 'rgba(255,255,255,.18)';
+  ctx.setLineDash([4,4]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(w - padR, Y(0)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const ultimo = pts[pts.length - 1].v;
+  const cor = ultimo >= 0 ? '#16a34a' : '#f87171';
+  const corArea = ultimo >= 0 ? 'rgba(22,163,74,.14)' : 'rgba(248,113,113,.14)';
+
+  /* Área + linha */
+  ctx.beginPath();
+  pts.forEach((p,i) => { if (i) ctx.lineTo(X(i), Y(p.v)); else ctx.moveTo(X(i), Y(p.v)); });
+  ctx.strokeStyle = cor; ctx.lineWidth = 2.4; ctx.lineJoin = 'round'; ctx.stroke();
+  ctx.lineTo(X(pts.length - 1), Y(min < 0 ? 0 : min));
+  ctx.lineTo(X(0), Y(min < 0 ? 0 : min));
+  ctx.closePath(); ctx.fillStyle = corArea; ctx.fill();
+
+  /* Bolinha final + valor */
+  ctx.beginPath(); ctx.arc(X(pts.length - 1), Y(ultimo), 4, 0, Math.PI * 2);
+  ctx.fillStyle = cor; ctx.fill();
+  ctx.fillStyle = '#e7eefc'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText(fmtBRL(ultimo), w - padR, Math.max(12, Y(ultimo) - 8));
+}
+
+/* ===== MODAL: REGISTRAR VENDA ===== */
+function abrirModalVenda(){
+  popularSelectCoelhos($('#sCoelho'), null, 'Selecione o coelho…');
+  popularSelectLotes($('#sLote'));
+  $('#sTipo').value = 'Carne';
+  $('#sPeso').value = ''; $('#sPrecoKg').value = ''; $('#sTotal').value = '';
+  $('#sCliente').value = ''; $('#sPago').value = 'Sim';
+  $('#sData').value = hojeISO();
+  abrirModal('mVenda');
+}
+/* Total automático: peso × preço/kg (o usuário ainda pode sobrescrever o total) */
+function calcTotalVenda(){
+  const peso = parseFloat($('#sPeso').value) || 0;
+  const preco = parseFloat($('#sPrecoKg').value) || 0;
+  if (peso > 0 && preco > 0) $('#sTotal').value = (peso * preco).toFixed(2);
+}
+ $('#sPeso').addEventListener('input', calcTotalVenda);
+ $('#sPrecoKg').addEventListener('input', calcTotalVenda);
+
+/* Ao selecionar o coelho: preenche peso/lote, sugere Carne p/ filhote de ninhada
+   e aplica o bloqueio de Matriz Ativa (mesma linhagem/baia do macho) */
+ $('#sCoelho').addEventListener('change', () => {
+  const c = porId($('#sCoelho').value);
+  if (!c) return;
+  const p = pesoAtualKg(c);
+  if (p != null) $('#sPeso').value = p;
+  $('#sLote').value = c.lote;
+
+  /* Filhote da Fase 1 (mesmo pai, com irmãos no lote, menos de 90 dias) → sugerir Carne */
+  const temIrmaoMesmoPai = irmaosDe(c).some(i => c.pai && c.pai.nome && i.pai && norm(i.pai.nome) === norm(c.pai.nome));
+  if (idadeDias(c) < 90 && temIrmaoMesmoPai){
+    $('#sTipo').value = 'Carne';
+    toast('Filhote de ninhada (mesmo pai) — tipo sugerido: Carne (corte).', 'info');
+  }
+  /* Regra obrigatória: Matriz Ativa da mesma linhagem/baia do macho não pode ser vendida */
+  const bloqueio = bloqueioVendaMatriz(c);
+  if (bloqueio){
+    toast(bloqueio, 'erro');
+    $('#sCoelho').value = '';
+  }
+});
+ $('#salvarVenda').addEventListener('click', () => {
+  const c = porId($('#sCoelho').value);
+  if (!c){ toast('Selecione o coelho.','erro'); return; }
+  /* Dupla checagem da regra da matriz (caso o select tenha mudado depois) */
+  const bloqueio = bloqueioVendaMatriz(c);
+  if (bloqueio){ toast(bloqueio, 'erro'); return; }
+  const total = parseFloat($('#sTotal').value);
+  if (!(total > 0)){ toast('Informe um preço total válido.','erro'); return; }
+  const venda = {
+    id: uid(),
+    coelhoId: c.id, exibeId: c.id,       /* exibeId preserva o nome mesmo se o ID mudar depois */
+    tipo: $('#sTipo').value,
+    peso: parseFloat($('#sPeso').value) || 0,
+    precoKg: parseFloat($('#sPrecoKg').value) || 0,
+    total,
+    cliente: $('#sCliente').value.trim() || '—',
+    lote: $('#sLote').value || c.lote,   /* toda venda tem lote para rastreio */
+    pago: $('#sPago').value,
+    data: $('#sData').value || hojeISO()
+  };
+  db.vendas.push(venda);
+  c.status = 'vendido';                  /* sai do plantel ativo, histórico preservado */
+  c.dataVenda = venda.data;
+  salvarDB(); fecharModal('mVenda'); renderTudo();
+  toast('Venda registrada: ' + fmtBRL(total) + ' — ' + c.id + ' foi para Vendidos.', 'ok');
+});
+
+/* ===== MODAL: REGISTRAR COMPRA ===== */
+function abrirModalCompra(){
+  popularSelectLotes($('#coLote'));
+  $('#coRaca').innerHTML = RAÇAS.map(r => '<option>'+r+'</option>').join('');
+  $('#coTipo').value = 'Matriz'; $('#coLinhagem').value = '';
+  $('#coId').value = ''; $('#coForn').value = ''; $('#coValor').value = '';
+  $('#coData').value = hojeISO();
+  $('#coNotaFoto').value = '';
+  $('#coFoto').value = ''; $('#coFotoPrev').hidden = true;
+  atualizarCamposCompra();
+  abrirModal('mCompra');
+}
+/* Matriz/Reprodutor mostram ID + Raça; Ração esconde (vira só custo) */
+function atualizarCamposCompra(){
+  const tipo = $('#coTipo').value;
+  const mostra = (tipo === 'Matriz' || tipo === 'Reprodutor');
+  $('#coCampoId').hidden = !mostra;
+  $('#coCampoRaca').hidden = !mostra;
+}
+ $('#coTipo').addEventListener('change', atualizarCamposCompra);
+
+/* Foto da nota: converte para base64 JPEG redimensionado (máx. 640px) para não estourar o localStorage */
+ $('#coFoto').addEventListener('change', (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f){ $('#coNotaFoto').value = ''; $('#coFotoPrev').hidden = true; return; }
+  const rd = new FileReader();
+  rd.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const mx = 640;
+      let w = img.width, h = img.height;
+      if (w > mx){ h = Math.round(h * mx / w); w = mx; }
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      $('#coNotaFoto').value = cv.toDataURL('image/jpeg', 0.7);
+      $('#coFotoImg').src = $('#coNotaFoto').value;
+      $('#coFotoPrev').hidden = false;
+      toast('Foto da nota anexada.', 'info');
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+});
+ $('#btnRemoveFoto').addEventListener('click', () => {
+  $('#coNotaFoto').value = ''; $('#coFoto').value = ''; $('#coFotoPrev').hidden = true;
+});
+
+/* ID automático para animais comprados (ex.: CX-4821) */
+function gerarIdCompra(){
+  let id;
+  do { id = 'CX-' + Math.floor(1000 + Math.random() * 9000); }
+  while (porId(id));
+  return id;
+}
+ $('#salvarCompra').addEventListener('click', () => {
+  const tipo = $('#coTipo').value;
+  const valor = parseFloat($('#coValor').value);
+  if (!(valor > 0)){ toast('Informe o valor da compra.','erro'); return; }
+  const compra = {
+    id: uid(), tipo,
+    raca: (tipo === 'Ração' ? '' : $('#coRaca').value),
+    linhagem: $('#coLinhagem').value,
+    forn: $('#coForn').value.trim() || '—',
+    valor,
+    lote: $('#coLote').value || '—',      /* toda compra tem lote para rastreio */
+    data: $('#coData').value || hojeISO(),
+    notaFoto: $('#coNotaFoto').value || ''
+  };
+  let msg = 'Compra registrada: −' + fmtBRL(valor) + '.';
+  /* Matriz/Reprodutor entram no plantel com tag de linhagem */
+  if (tipo === 'Matriz' || tipo === 'Reprodutor'){
+    let idNovo = $('#coId').value.trim();
+    if (idNovo && porId(idNovo)){ toast('Já existe um animal com o ID ' + idNovo + '.','erro'); return; }
+    if (!idNovo) idNovo = gerarIdCompra();
+    db.coelhos.push({
+      id: idNovo,
+      lote: compra.lote,
+      sexo: (tipo === 'Matriz' ? 'F' : 'M'),
+      raca: compra.raca || 'Mestiço',
+      linhagem: compra.linhagem,
+      nascimento: compra.data,           /* data de entrada (idade aproximada) */
+      matriz: (tipo === 'Matriz'),
+      foto: '', pesos: [], vacinas: [],
+      pai: {nome:'', lote:''}, mae: {nome:'', lote:''},
+      observacoes: 'Adquirido de ' + compra.forn + ' em ' + fmtDataBR(compra.data) + '.',
+      consanguineo: false, ultimoParto: null, status: 'ativo'
+    });
+    msg += ' Animal ' + idNovo + ' entrou no plantel' + (compra.linhagem ? ' (linhagem ' + compra.linhagem + ')' : '') + '.';
+  }
+  db.compras.push(compra);
+  salvarDB(); fecharModal('mCompra'); renderTudo();
+  toast(msg, 'ok');
+});
+
+/* Filtros da aba Vendas */
+ $('#finMes').addEventListener('change', (e) => { state.finMes = e.target.value; renderVendas(); });
+ $('#finBusca').addEventListener('input', (e) => { state.finCliente = e.target.value; renderVendas(); });
+ $('#inpPrecoKgRacao').addEventListener('change', (e) => {
+  db.config.precoKgRacao = Math.max(0, parseFloat(e.target.value) || 0);
+  salvarDB(); renderVendas();
+  toast('Preço do kg da ração atualizado: ' + fmtBRL(db.config.precoKgRacao), 'ok');
+});
+/* Redesenha o canvas quando a janela muda de tamanho (responsivo) */
+window.addEventListener('resize', () => { if (state.aba === 'vendas') desenharGraficoLucro(); });
+
 /* ===== 21. RELATÓRIO PDF PROFISSIONAL (jsPDF) ===== */
 function abrirModalPDF(){
   $$('#mPDF input[name=pdfTipo]').forEach(r => {
@@ -1941,7 +2529,7 @@ function abrirModalPDF(){
 }));
 function atualizarInfoBaia(){
   const nome = $('#pdfLoteBusca').value.trim();
-  const n = db.coelhos.filter(c => norm(c.lote) === norm(nome)).length;
+  const n = ativos().filter(c => norm(c.lote) === norm(nome)).length;
   $('#pdfLoteInfo').textContent = nome ? (n + ' animal(is) encontrado(s) no lote "' + nome + '".') : 'Digite o nome do lote para filtrar.';
 }
  $('#pdfLoteBusca').addEventListener('input', atualizarInfoBaia);
@@ -1957,10 +2545,11 @@ function gerarRelatorioPDF(op){
 
   /* ---- filtros ---- */
   const loteFiltro = op.tipo === 'baia' ? op.lote : null;
-  const coelhos = db.coelhos.filter(c => !loteFiltro || norm(c.lote) === norm(loteFiltro));
+  const coelhos = ativos().filter(c => !loteFiltro || norm(c.lote) === norm(loteFiltro));
   const noPeriodo = (iso) => (!op.de || String(iso) >= op.de) && (!op.ate || String(iso) <= op.ate);
-  const ninhadas = db.ninhadas.filter(n => (!loteFiltro || norm(n.lote) === norm(loteFiltro)) && noPeriodo(n.data));
-  const racao = db.racao.filter(r => (!loteFiltro || norm(r.lote) === norm(loteFiltro)) && noPeriodo(r.data));
+  const noLote = (l) => !loteFiltro || norm(l||'') === norm(loteFiltro);
+  const ninhadas = db.ninhadas.filter(n => noLote(n.lote) && noPeriodo(n.data));
+  const racao = db.racao.filter(r => noLote(r.lote) && noPeriodo(r.data));
   const tr = (s,n) => { s = String(s==null?'':s); return s.length > n ? s.slice(0,n-1) + '…' : s; };
 
   /* ---- CAPA NAVY com logo ---- */
@@ -2002,8 +2591,6 @@ function gerarRelatorioPDF(op){
       doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(138,180,248);
       doc.text(txtZap, 105, yCriatorio, {align:'center'});
       const largZap = doc.getTextWidth(txtZap);
-      /* link clicável exatamente sobre o texto — wa.me exige código do país (+55);
-         se o número já começar com 55 e tiver 12+ dígitos, não duplicamos */
       const zapLink = (digitosZap.length >= 12 && digitosZap.indexOf('55') === 0) ? digitosZap : ('55' + digitosZap);
       doc.link(105 - largZap/2 - 2, yCriatorio - 4.5, largZap + 4, 7, 'https://wa.me/' + zapLink);
       yCriatorio += 9;
@@ -2161,6 +2748,39 @@ function gerarRelatorioPDF(op){
     tabelaPDF(['Coelho','Vacina','Última dose','Status','Próxima'], [26,36,26,34,28], linhas.length ? linhas : [['—','—','—','—','—']]);
   }
 
+  /* ---- Seção FINANCEIRO — Compra e Venda ---- */
+  if (op.secoes.financeiro){
+    novaSecao('Financeiro — Compra e Venda');
+    const vendasPDF = db.vendas.filter(v => noPeriodo(v.data) && noLote(v.lote));
+    const comprasPDF = db.compras.filter(c => noPeriodo(c.data) && noLote(c.lote));
+    const tv = vendasPDF.reduce((s,v) => s + Number(v.total||0), 0);
+    const tc = comprasPDF.reduce((s,c) => s + Number(c.valor||0), 0);
+    const kgR = racao.reduce((s,r) => s + Number(r.kgDia||0), 0);
+    const cr = kgR * precoKgRacao();
+    const lu = tv - tc - cr;
+
+    /* Linha-resumo com 4 indicadores financeiros */
+    tabelaPDF(
+      ['Receita (Vendas)','Compras (R$)','Ração (R$)','LUCRO (R$)'],
+      [44,44,44,42],
+      [[fmtBRL(tv), fmtBRL(tc), fmtBRL(cr), fmtBRL(lu)]]
+    );
+
+    /* Detalhamento das vendas do período */
+    novaSecao('Vendas do Período');
+    const lv = vendasPDF.slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)))
+      .map(v => [fmtDataBR(v.data), v.exibeId||v.coelhoId, tr(v.tipo,12), tr(v.cliente,16), v.lote||'—', fmtBRL(v.total), v.pago==='Sim'?'Pago':'A receber']);
+    lv.push(['TOTAL','','','','',fmtBRL(tv),'']);
+    tabelaPDF(['Data','Coelho','Tipo','Cliente','Lote','Valor','Situação'], [20,22,20,30,16,22,20], lv);
+
+    /* Detalhamento das compras do período */
+    novaSecao('Compras do Período');
+    const lc = comprasPDF.slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)))
+      .map(c => [fmtDataBR(c.data), tr(c.tipo,12), tr(c.raca,18), tr(c.forn,18), c.linhagem||'—', c.lote||'—', fmtBRL(c.valor)]);
+    lc.push(['TOTAL','','','','','',fmtBRL(tc)]);
+    tabelaPDF(['Data','Tipo','Raça','Fornecedor','Linh.','Lote','Valor'], [20,18,26,28,16,16,26], lc);
+  }
+
   /* ---- Rodapé "Página X de Y" + dados do criatório ---- */
   const nomeRodape = (op.incluirCriatorio && db.criatorio.nome)
     ? db.criatorio.nome + (db.criatorio.whatsapp ? '  •  WhatsApp: ' + db.criatorio.whatsapp : '')
@@ -2193,7 +2813,8 @@ function gerarRelatorioPDF(op){
       peso: $('#ckPeso').checked,
       mortalidade: $('#ckMortalidade').checked,
       racao: $('#ckRacao').checked,
-      vacinas: $('#ckVacinas').checked
+      vacinas: $('#ckVacinas').checked,
+      financeiro: $('#ckFinanceiro').checked
     }
   });
   fecharModal('mPDF');
@@ -2226,7 +2847,6 @@ async function baixarIcone(tamanho){
   window.addEventListener('load', async () => {
     try{
       state.swReg = await navigator.serviceWorker.register('sw.js', { updateViaCache:'none' });
-      /* Verifica versão nova a cada 30 segundos */
       setInterval(() => { if (state.swReg) state.swReg.update().catch(()=>{}); }, 30000);
       state.swReg.addEventListener('updatefound', () => {
         const novo = state.swReg.installing;
@@ -2237,7 +2857,6 @@ async function baixarIcone(tamanho){
           }
         });
       });
-      /* Quando o novo SW assume o controle, recarrega uma única vez */
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         const agora = Date.now();
         const ultimo = Number(sessionStorage.getItem('cc_ult_reload') || 0);
@@ -2277,7 +2896,6 @@ function ligarEventos(){
   };
   $('#btnMais').onclick = () => $('#menuMais').classList.toggle('aberto');
 
-  /* Ações do menu ••• */
   $$('#menuMais .menu-item').forEach(b => b.onclick = () => {
     $('#menuMais').classList.remove('aberto');
     const a = b.dataset.acao;
@@ -2297,10 +2915,10 @@ function ligarEventos(){
       if (state.swReg){ state.swReg.update().then(() => toast('Nenhuma atualização pendente — você está na versão mais recente.','info')).catch(() => toast('Sem conexão para verificar atualizações.','aviso')); }
       else toast('Service Worker indisponível.','erro');
     }
-    else if (a==='restaurar') confirmar('Restaurar exemplo','Substituir os dados atuais pelos dados de exemplo?','Restaurar', () => {
-      db = gerarSeed(); salvarDB(); state.coelhoId = null; renderTudo(); toast('Dados de exemplo restaurados.','ok');
+    else if (a==='restaurar') confirmar('Restaurar exemplo','Substituir os dados atuais pelos dados de exemplo? (O financeiro também volta ao estado inicial.)','Restaurar', () => {
+      db = gerarSeed(); salvarDB(); state.coelhoId = null; state.finMes=''; state.finCliente=''; renderTudo(); toast('Dados de exemplo restaurados.','ok');
     });
-    else if (a==='apagar') confirmar('Apagar tudo','Isso apaga TODOS os dados do app neste aparelho. Continuar?','Apagar tudo', () => {
+    else if (a==='apagar') confirmar('Apagar tudo','Isso apaga TODOS os dados do app neste aparelho (inclusive vendas e compras). Continuar?','Apagar tudo', () => {
       db = normalizarDB({}); salvarDB(); state.coelhoId = null; renderTudo(); toast('Todos os dados foram apagados.','ok');
     });
   });
@@ -2317,6 +2935,8 @@ function ligarEventos(){
     else if (a==='vacina') abrirModalVacina();
     else if (a==='pdf') abrirModalPDF();
     else if (a==='guia') trocarAba('guia');
+    else if (a==='venda') abrirModalVenda();
+    else if (a==='compra') abrirModalCompra();
   });
 
   /* Ações rápidas do dashboard */
@@ -2324,9 +2944,13 @@ function ligarEventos(){
   $('#btnAcaoParto').onclick = abrirModalParto;
   $('#btnAcaoVacina').onclick = () => abrirModalVacina();
 
-  /* Plantel */
+  /* Plantel / Lotes */
   $('#btnNovoCoelhoTopo').onclick = abrirNovoCoelho;
   $('#btnNovoLoteTopo').onclick = abrirNovoLote;
+
+  /* Financeiro */
+  $('#btnNovaVenda').onclick = abrirModalVenda;
+  $('#btnNovaCompra').onclick = abrirModalCompra;
 
   /* Fechar modais: botão ✕, clique no fundo escuro e tecla ESC */
   document.addEventListener('click', (e) => {
