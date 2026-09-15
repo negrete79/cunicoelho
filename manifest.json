@@ -1,7 +1,7 @@
 {
   "name": "CuniCoelho - Manejo de Coelhos",
   "short_name": "CuniCoelho",
-  "description": "App offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração e vacinas.",
+  "description": "App offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração, vacinas e financeiro.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
