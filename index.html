@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CuniCoelho — Manejo de Coelhos</title>
 <meta name="description" content="App PWA offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração, vacinas e financeiro.">
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a1526">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -18,13 +19,14 @@
 
 <style>
 /* ================================================================
-   CuniCoelho — Layout PREMIUM DARK (baseado no mock de referência)
-   Header logo + sino/perfil • seletor pílula • KPIs com brilho
-   colorido • cards de venda com foto • botão pill • tab underline
+   CuniCoelho — Layout PREMIUM DARK (mock de referência)
+   Header logo + título + sino/perfil • KPIs com brilho colorido
+   • cards de venda com foto • botão pill • tab underline
+   Desktop: sidebar fixa (1024px+) • Mobile: tabbar flutuante
    ================================================================ */
 :root{
   --bg0:#060d1c; --bg1:#0a1526; --bg2:#0d1f38;
-  --glass:rgba(255,255,255,.05); --borda:rgba(255,255,255,.09); --borda-2:rgba(255,255,255,.15);
+  --borda:rgba(255,255,255,.09); --borda-2:rgba(255,255,255,.15);
   --txt:#e9eefc; --txt-2:#9fb0d0; --txt-3:#64799f;
   --accent:#6ea8ff; --accent-2:#8ab4f8; --accent-bg:rgba(110,168,255,.13);
   --azul:#2563eb; --verde:#16a34a; --verde-2:#4ade80; --amarelo:#fbbf24; --verm-2:#f87171;
@@ -55,14 +57,16 @@ input,select,textarea{font-family:inherit}
 .b2{width:300px;height:300px;background:#10b981;bottom:6%;left:-110px;animation:flutuar 23s var(--ease) infinite reverse}
 @keyframes flutuar{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-26px,40px) scale(1.07)}}
 
-/* ---------- Header: logo + sino + perfil ---------- */
+/* ---------- Header: logo + título + sino + perfil ---------- */
 #topo{display:flex;align-items:center;gap:8px;padding:10px 14px;position:sticky;top:0;z-index:80;
   background:rgba(8,17,34,.78);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
   border-bottom:1px solid rgba(255,255,255,.06)}
-.logo-app{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer}
+.logo-app{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0}
 .logo-app img{width:34px;height:34px;border-radius:10px;box-shadow:0 4px 12px rgba(2,8,20,.5)}
-.logo-app span{font-size:19px;font-weight:800;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-app span{font-size:19px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
 .logo-app em{color:var(--accent);font-style:normal}
+#tituloTopo{flex:1;text-align:center;font-size:15.5px;font-weight:800;letter-spacing:.3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt)}
 .btn-ico{width:38px;height:38px;border-radius:12px;border:1px solid var(--borda);
   background:rgba(255,255,255,.05);color:var(--accent-2);font-size:16px;cursor:pointer;
   display:grid;place-items:center;flex-shrink:0;transition:all .18s var(--ease);position:relative}
@@ -72,22 +76,7 @@ input,select,textarea{font-family:inherit}
   color:#fff;font-size:9.5px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;
   box-shadow:0 2px 8px rgba(239,68,68,.6)}
 
-/* ---------- Seletor de aba em pílula (ex.: "Compra & Venda ▾") ---------- */
-#seletorWrap{display:flex;justify-content:center;position:relative;padding:14px 14px 2px}
-#seletorAba{display:flex;align-items:center;gap:9px;padding:12px 26px;border-radius:999px;cursor:pointer;
-  border:1px solid var(--borda-2);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
-  color:var(--txt);font-size:15.5px;font-weight:800;letter-spacing:.3px;
-  box-shadow:var(--sombra), inset 0 1px 0 rgba(255,255,255,.07);transition:all .18s var(--ease)}
-#seletorAba:active{transform:scale(.97)}
-#seletorAba .chev{color:var(--accent);font-size:12px;transition:transform .2s}
-#seletorAba.aberto .chev{transform:rotate(180deg)}
-#menuAbas{position:absolute;top:calc(100% + 6px);left:50%;margin-left:-125px;width:250px;padding:8px;z-index:96;display:none;
-  background:rgba(12,24,48,.97);backdrop-filter:blur(24px);border:1px solid var(--borda-2);
-  border-radius:18px;box-shadow:0 18px 48px rgba(2,8,20,.6)}
-#menuAbas.aberto{display:block;animation:pop .18s var(--ease)}
-#menuAbas .menu-item.sel{color:var(--accent);background:var(--accent-bg)}
-
-/* ---------- Menus dropdown (perfil / sino) ---------- */
+/* ---------- Dropdowns (perfil / sino) ---------- */
 .drop{position:fixed;top:62px;right:10px;z-index:96;min-width:256px;padding:8px;display:none;
   background:rgba(12,24,48,.97);backdrop-filter:blur(24px);border:1px solid var(--borda-2);
   border-radius:18px;box-shadow:0 18px 48px rgba(2,8,20,.6)}
@@ -118,7 +107,7 @@ input,select,textarea{font-family:inherit}
   border-radius:14px;padding:12px 14px;font-size:12.5px;margin-top:14px}
 .vazio{margin-top:14px;padding:34px 20px;text-align:center;color:var(--txt-2);font-size:14px;line-height:1.8}
 
-/* ---------- KPI com borda/brilho colorido (mock: verde/vermelho/azul) ---------- */
+/* ---------- KPI com borda/brilho colorido ---------- */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .kpi{--kc:#4ade80;--kcb:rgba(74,222,128,.55);--kcbg:rgba(74,222,128,.08);
   border:1px solid var(--kcb);border-radius:22px;padding:16px 8px 14px;
@@ -167,7 +156,7 @@ input,select,textarea{font-family:inherit}
 .btn-parto{background:linear-gradient(180deg,#22c55e,#16a34a);box-shadow:0 6px 18px rgba(22,163,74,.4)}
 .btn-vacina{background:linear-gradient(180deg,#8ff0c8,#6ee7b7);color:#0f3d2e;box-shadow:0 6px 18px rgba(110,231,183,.3)}
 
-/* ---------- Card Último Registro (dark + gráfico) ---------- */
+/* ---------- Último Registro ---------- */
 .card-registro{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.032));
   border:1px solid var(--borda);border-radius:26px;padding:18px;margin-top:16px;
   box-shadow:var(--sombra), inset 0 1px 0 rgba(255,255,255,.05)}
@@ -224,7 +213,7 @@ input,select,textarea{font-family:inherit}
 .b-aten{background:rgba(251,191,36,.13);color:var(--amarelo);border:1px solid rgba(251,191,36,.35)}
 .b-urg{background:rgba(220,38,38,.16);color:var(--verm-2);border:1px solid rgba(248,113,113,.4)}
 
-/* ---------- Listas (plantel / ração / financeiro) ---------- */
+/* ---------- Listas ---------- */
 .plantel-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
 .busca{width:100%;padding:12px 15px;border-radius:14px;border:1px solid var(--borda);
   background:rgba(255,255,255,.05);color:#fff;font-size:14px;margin-bottom:12px;outline:none;transition:border .18s, box-shadow .18s}
@@ -238,7 +227,7 @@ input,select,textarea{font-family:inherit}
 .ic-nome{font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ic-sub{font-size:11.5px;color:var(--txt-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Card de venda (mock: foto + "Fêmea Flandres • 4,2kg" + "+ R$ 720") */
+/* Card de venda (mock) */
 .venda-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;margin-bottom:10px;
   background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.03));border:1px solid var(--borda)}
 .venda-foto{width:56px;height:56px;border-radius:14px;object-fit:cover;background:#eef2ff;flex-shrink:0;
@@ -248,7 +237,7 @@ input,select,textarea{font-family:inherit}
 .venda-info small{display:block;color:var(--txt-2);font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .venda-val{color:var(--verde-2);font-weight:800;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
 
-/* Botões pill grandes (Nova Venda / Nova Compra) */
+/* Botões pill */
 .btn-primario{width:100%;margin-top:14px;padding:17px;border:0;border-radius:999px;
   background:linear-gradient(180deg,#34d399,#16a34a);color:#fff;font-size:16.5px;font-weight:800;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.3px;
@@ -329,7 +318,7 @@ textarea.in{resize:vertical}
 .btn-cinza{background:rgba(255,255,255,.07);color:var(--txt);border:1px solid var(--borda-2)}
 .btn-excluir-link{display:block;margin:14px auto 0;background:none;border:0;color:var(--verm-2);font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:underline}
 
-/* Modais (bottom-sheet mobile) */
+/* Modais */
 .overlay{position:fixed;inset:0;background:rgba(3,8,18,.72);backdrop-filter:blur(8px);z-index:100;
   display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
 @keyframes fade{from{opacity:0}}
@@ -353,7 +342,7 @@ textarea.in{resize:vertical}
   background:rgba(255,255,255,.035);border:1px solid var(--borda);padding:11px;border-radius:12px;cursor:pointer}
 .check-grid input{accent-color:#16a34a;width:17px;height:17px}
 
-/* Tab bar — ativo azul com sublinhado (mock) */
+/* Tab bar — ativo azul com sublinhado */
 #tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));
   width:min(480px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);padding:8px;z-index:85;
   background:rgba(11,23,46,.94);backdrop-filter:blur(24px) saturate(150%);
@@ -427,6 +416,7 @@ textarea.in{resize:vertical}
 
 /* ================================================================ Responsivo */
 @media (max-width:380px){
+  .logo-app span{font-size:17px}
   .id-animal{font-size:25px}
   .foto-animal{width:78px;height:78px}
   .stats-grid{gap:8px}
@@ -465,7 +455,7 @@ textarea.in{resize:vertical}
 <div class="fundo"></div>
 <div class="blobs"><span class="b1"></span><span class="b2"></span></div>
 
-<!-- ============ SIDEBAR (desktop) ============ -->
+<!-- ============ SIDEBAR (desktop 1024px+) ============ -->
 <aside id="sidebar">
   <div class="side-logo">
     <img id="sideLogoImg" alt="Logo CuniCoelho">
@@ -477,33 +467,21 @@ textarea.in{resize:vertical}
   <button class="side-btn" data-aba="vendas"><span>💰</span> Compra &amp; Venda</button>
   <button class="side-btn" data-aba="lotes"><span>🗂️</span> Lotes</button>
   <button class="side-btn" data-aba="guia"><span>📖</span> Guia de Manejo</button>
-  <div class="sidebar-rodape">CuniCoelho v2.0<br>Funciona offline • Dados no aparelho</div>
+  <div class="sidebar-rodape">CuniCoelho v2.1<br>Funciona offline • Dados no aparelho</div>
 </aside>
 
-<!-- ============ HEADER (logo + sino + perfil) ============ -->
+<!-- ============ HEADER (logo + título + sino + perfil) ============ -->
 <header id="topo">
   <div class="logo-app" id="logoHome" role="button" tabindex="0" aria-label="Ir para o Início">
     <img id="logoTopo" alt="CuniCoelho">
     <span>Cuni<em>Coelho</em></span>
   </div>
+  <div id="tituloTopo">Início</div>
   <button class="btn-ico" id="btnBell" aria-label="Alertas sanitários">🔔<span id="pipBell"></span></button>
   <button class="btn-ico" id="btnPerfil" aria-label="Menu">👤</button>
 </header>
 
-<!-- Seletor de aba em pílula -->
-<div id="seletorWrap">
-  <button id="seletorAba"><span id="selAbaTxt">Início</span><span class="chev">▼</span></button>
-  <div id="menuAbas">
-    <button class="menu-item" data-aba="dashboard">🏠 Início</button>
-    <button class="menu-item" data-aba="plantel">🐰 Plantel</button>
-    <button class="menu-item" data-aba="racao">🌾 Ração</button>
-    <button class="menu-item" data-aba="vendas">💰 Compra &amp; Venda</button>
-    <button class="menu-item" data-aba="lotes">🗂️ Lotes</button>
-    <button class="menu-item" data-aba="guia">📖 Guia de Manejo</button>
-  </div>
-</div>
-
-<!-- Dropdown do PERFIL (ex-menu •••) -->
+<!-- Dropdown do PERFIL -->
 <div class="drop" id="menuMais">
   <div class="drop-titulo">Menu</div>
   <button class="menu-item" data-acao="guia">📖 Guia de Manejo</button>
@@ -516,7 +494,7 @@ textarea.in{resize:vertical}
   <button class="menu-item perigo" data-acao="apagar">🗑️ Apagar Todos os Dados</button>
 </div>
 
-<!-- Dropdown do SINO (alertas sanitários) -->
+<!-- Dropdown do SINO -->
 <div class="drop" id="menuAlerta" style="right:auto;left:10px">
   <div class="drop-titulo">🔔 Alertas Sanitários</div>
   <div id="menuAlertaLista"></div>
@@ -525,7 +503,7 @@ textarea.in{resize:vertical}
 
 <main id="app">
 
-  <!-- ============ VIEW: INÍCIO (DASHBOARD) ============ -->
+  <!-- ============ VIEW: INÍCIO ============ -->
   <section id="view-dashboard" class="view">
     <div id="dashConsang"></div>
     <div id="dashCobertura"></div>
@@ -593,8 +571,6 @@ textarea.in{resize:vertical}
 
   <!-- ============ VIEW: COMPRA & VENDA ============ -->
   <section id="view-vendas" class="view" hidden>
-
-    <!-- KPIs com brilho colorido (mock) -->
     <div style="margin-top:10px">
       <div class="stats-grid" id="finKpis"></div>
       <button class="btn-primario" id="btnNovaVenda">＋ Nova Venda</button>
@@ -699,7 +675,6 @@ textarea.in{resize:vertical}
       </ul>
     </div>
 
-    <!-- Alimentação segura (revisão veterinária em 4 seções) -->
     <div class="secao">
       <h3>🌿 Alimentação Segura — o que PODE e o que NÃO PODE</h3>
       <div class="alerta-consang" style="margin-top:0;margin-bottom:14px">
@@ -773,7 +748,7 @@ textarea.in{resize:vertical}
 </div>
 <button id="fab" aria-label="Adicionar">+</button>
 
-<!-- ============ TAB BAR (ativo com sublinhado azul) ============ -->
+<!-- ============ TAB BAR (mobile; some no desktop) ============ -->
 <nav id="tabbar">
   <button class="tab-btn ativo" data-aba="dashboard"><span class="ico">🏠</span>Início</button>
   <button class="tab-btn" data-aba="plantel"><span class="ico">🐰</span>Plantel</button>
@@ -782,7 +757,7 @@ textarea.in{resize:vertical}
   <button class="tab-btn" data-aba="lotes"><span class="ico">🗂️</span>Lotes</button>
 </nav>
 
-<!-- ============ MODAIS (todos preservados) ============ -->
+<!-- ============ MODAIS ============ -->
 <div class="overlay" id="mEditar" hidden>
   <div class="modal">
     <div class="modal-head"><h3>✏️ Editar Relatório Completo</h3><button class="fechar" data-fechar="mEditar">✕</button></div>
@@ -1072,7 +1047,7 @@ function fmtDataBR(iso){
   const p = String(iso).split('-');
   return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : '—';
 }
-function quandoVenda(iso){ /* "hoje" / "ontem" / data curta (estilo do mock) */
+function quandoVenda(iso){
   if (iso === hojeISO()) return 'hoje';
   if (iso === diasAtrasISO(1)) return 'ontem';
   return fmtDataBR(iso).slice(0,5);
@@ -1135,7 +1110,7 @@ const IDADE_MIN_MACHO = 210;
 const POS_PARTO_MIN   = 18;
 const JANELA_IDEAL    = 35;
 
-/* Ícones SVG dos KPIs (estilo linha, como no mock) */
+/* Ícones SVG dos KPIs */
 const SVG_UP   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>';
 const SVG_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="15 17 21 17 21 11"/></svg>';
 const SVG_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
@@ -1153,7 +1128,7 @@ var FOTO_PADRAO = 'data:image/svg+xml,' + encodeURIComponent(
   '<path d="M46 63.5 h4 l-2 3.4 z" fill="#f43f5e"/></svg>'
 );
 
-/* Ícone/logo do app (coelho branco em fundo navy) */
+/* Ícone/logo do app */
 var ICONE_APP_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
   '<rect width="512" height="512" rx="112" fill="#0a1526"/>' +
@@ -1168,7 +1143,7 @@ var ICONE_APP_SVG =
   '<circle cx="290" cy="294" r="11" fill="#0a1526"/>' +
   '<path d="M244 330 h24 l-12 16 z" fill="#f43f5e"/></svg>';
 
-/* ===== 3. BANCO LOCAL (localStorage + migração) ===== */
+/* ===== 3. BANCO LOCAL ===== */
 let db = null;
 
 function normalizarDB(d){
@@ -1492,17 +1467,14 @@ function graficoPesoSVG(pesos){
     dots + labels + '</svg>';
 }
 
-/* ===== 9. NAVEGAÇÃO (atualiza também a pílula seletora) ===== */
+/* ===== 9. NAVEGAÇÃO ===== */
 const TITULOS = { dashboard:'Início', plantel:'Plantel', racao:'Ração', vendas:'Compra & Venda', lotes:'Lotes', guia:'Guia de Manejo' };
 function trocarAba(aba){
   state.aba = aba;
   $$('.view').forEach(v => v.hidden = (v.id !== 'view-' + aba));
   $$('.tab-btn').forEach(b => b.classList.toggle('ativo', b.dataset.aba === aba));
   $$('.side-btn').forEach(b => b.classList.toggle('ativo', b.dataset.aba === aba));
-  $$('#menuAbas .menu-item').forEach(b => b.classList.toggle('sel', b.dataset.aba === aba));
-  const st = $('#selAbaTxt'); if (st) st.textContent = TITULOS[aba] || 'CuniCoelho';
-  $('#menuAbas').classList.remove('aberto');
-  $('#seletorAba').classList.remove('aberto');
+  const tt = $('#tituloTopo'); if (tt) tt.textContent = TITULOS[aba] || 'CuniCoelho';
   $('#menuMais').classList.remove('aberto');
   $('#menuAlerta').classList.remove('aberto');
   $('#speedDial').classList.remove('aberto');
@@ -1622,7 +1594,6 @@ function renderIrmaos(c){
   });
 }
 
-/* Estatísticas em KPIs coloridos (estilo mock) */
 function renderStats(c){
   const peso = pesoAtualKg(c);
   const cresc = crescimentoPct(c);
@@ -1635,7 +1606,7 @@ function renderStats(c){
     '<div class="stats-grid">' +
       '<div class="kpi kpi-azul"><span class="kpi-ico emoji">⚖️</span><span class="kpi-label">Peso Atual</span>' +
         '<b>' + fmtPesoEstat(peso) + '</b><small>' + (lastPeso ? fmtDataBR(lastPeso.data).slice(0,5) : 'sem pesagens') + '</small></div>' +
-      '<div class="kpi kpi-verde"><span class="kpi-ico">' + SVG_UP + '</span><span class="kpi-label">Crescimento</span>' +
+      '<div class="kpi"><span class="kpi-ico">' + SVG_UP + '</span><span class="kpi-label">Crescimento</span>' +
         '<b class="' + crescCls + '">' + crescVal + '</b><small>1ª → última pesagem</small></div>' +
       '<div class="kpi kpi-neutro"><span class="kpi-ico emoji">📅</span><span class="kpi-label">Idade</span>' +
         '<b>' + fmtIdade(c) + '</b><small>nasc. ' + fmtDataBR(c.nascimento).slice(0,5) + '</small></div>' +
@@ -1683,7 +1654,6 @@ function renderCalendarioSanitario(c){
   });
 }
 
-/* Coletor central de alertas (usado pela lista E pelo sino 🔔) */
 function coletarAlertas(){
   const arr = [];
   for (const c of ativos()){
@@ -1727,7 +1697,6 @@ function renderAlertasSanitarios(){
   });
 }
 
-/* Contador vermelho no sino 🔔 */
 function atualizarPipBell(){
   const pip = $('#pipBell'); if (!pip) return;
   const n = coletarAlertas().length;
@@ -2214,7 +2183,6 @@ function popularFiltroMes(){
   $('#finPeriodoLabel').textContent = state.finMes ? rotuloMes(state.finMes) : 'Todos os meses';
 }
 
-/* Card KPI com ícone SVG circular + borda/brilho colorido (mock) */
 function kpiCard(cor, icoSvg, label, valor, sub, classeValor){
   return '<div class="kpi ' + cor + '">' +
     '<span class="kpi-ico">' + icoSvg + '</span>' +
@@ -2229,14 +2197,12 @@ function renderVendas(){
   popularFiltroMes();
   const t = totaisFinanceiros();
 
-  /* KPIs exatamente no estilo do mock: verde (vendido), vermelho (compras), azul (lucro) */
   $('#finKpis').innerHTML =
     kpiCard('kpi-verde',    SVG_UP,   'Total Vendido', fmtBRL(t.vendido), t.vendas.length + ' venda(s)') +
     kpiCard('kpi-vermelho', SVG_DOWN, 'Total Compras', fmtBRL(t.gasto + t.custoRacao), 'compras + ração') +
     kpiCard('kpi-azul',     SVG_PLUS, 'Lucro', fmtBRL(t.lucro),
       'vendido − gastos', t.lucro>=0 ? 'cresc-pos' : 'cresc-neg');
 
-  /* Vendas Recentes — card com foto (estilo mock) */
   $('#contVendas').textContent = t.vendas.length;
   const vOrdenadas = t.vendas.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,60);
   $('#listaVendas').innerHTML = vOrdenadas.length ? vOrdenadas.map(v => {
@@ -2265,7 +2231,6 @@ function renderVendas(){
     });
   });
 
-  /* Compras */
   const compFiltradas = db.compras.filter(c => filtroMesAplica(c.data));
   $('#contCompras').textContent = compFiltradas.length;
   const cOrdenadas = compFiltradas.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,40);
@@ -2285,7 +2250,6 @@ function renderVendas(){
     });
   });
 
-  /* Vendidos */
   const vendidos = db.coelhos.filter(c => c.status === 'vendido').sort((a,b)=>String(b.dataVenda||'').localeCompare(String(a.dataVenda||'')));
   $('#contVendidos').textContent = vendidos.length;
   $('#listaVendidos').innerHTML = vendidos.length ? vendidos.map(c =>
@@ -2303,7 +2267,6 @@ function renderVendas(){
   desenharGraficoLucro();
 }
 
-/* Simulador de ninhada */
 function renderSimulador(){
   const s = db.config.sim || { qtd:12, preco:60, custo:200, dias:45 };
   $('#simQtd').value = s.qtd; $('#simPreco').value = s.preco;
@@ -2329,7 +2292,6 @@ function lerSimulador(){
 }
 ['simQtd','simPreco','simCusto','simDias'].forEach(id => $('#'+id).addEventListener('change', lerSimulador));
 
-/* Gráfico de lucro acumulado (canvas puro) */
 function desenharGraficoLucro(){
   const cv = $('#cvLucro'); if (!cv) return;
   const caixa = cv.parentElement;
@@ -2538,7 +2500,6 @@ function gerarIdCompra(){
   toast(msg, 'ok');
 });
 
-/* Filtros financeiros */
  $('#finMes').addEventListener('change', (e) => { state.finMes = e.target.value; renderVendas(); });
  $('#finBusca').addEventListener('input', (e) => { state.finCliente = e.target.value; renderVendas(); });
  $('#inpPrecoKgRacao').addEventListener('change', (e) => {
@@ -2904,17 +2865,12 @@ window.addEventListener('appinstalled', () => {
 
 /* ===== 24. EVENTOS GLOBAIS ===== */
 function ligarEventos(){
-  /* Tab bar + sidebar + seletor pílula */
+  /* Tab bar (mobile) + sidebar (desktop) */
   $$('.tab-btn').forEach(b => b.onclick = () => trocarAba(b.dataset.aba));
   $$('.side-btn').forEach(b => b.onclick = () => trocarAba(b.dataset.aba));
-  $$('#menuAbas .menu-item').forEach(b => b.onclick = () => trocarAba(b.dataset.aba));
-  $('#seletorAba').onclick = () => {
-    $('#menuAbas').classList.toggle('aberto');
-    $('#seletorAba').classList.toggle('aberto');
-  };
   $('#logoHome').onclick = () => trocarAba('dashboard');
 
-  /* Sino 🔔 — resumo rápido dos alertas sanitários */
+  /* Sino 🔔 */
   $('#btnBell').onclick = () => {
     const al = coletarAlertas();
     if (!al.length){
@@ -2941,10 +2897,9 @@ function ligarEventos(){
     setTimeout(() => { const el = $('#dashAlertas'); if (el) el.scrollIntoView({behavior:'smooth'}); }, 250);
   };
 
-  /* Perfil 👤 — abre o menu */
+  /* Perfil 👤 */
   $('#btnPerfil').onclick = () => $('#menuMais').classList.toggle('aberto');
 
-  /* Ações do menu de perfil */
   $$('#menuMais .menu-item').forEach(b => b.onclick = () => {
     $('#menuMais').classList.remove('aberto');
     const a = b.dataset.acao;
@@ -2956,7 +2911,7 @@ function ligarEventos(){
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then(() => { deferredPrompt = null; const mi = $('#miInstalar'); if (mi) mi.style.display='none'; });
       } else {
-        toast('Use o menu do navegador → "Adicionar à tela inicial".','info');
+        toast('Use o menu do navegador → "Instalar app" / "Adicionar à tela inicial".','info');
       }
     }
     else if (a==='icones'){ baixarIcone(192); setTimeout(() => baixarIcone(512), 700); }
@@ -2988,7 +2943,7 @@ function ligarEventos(){
     else if (a==='compra') abrirModalCompra();
   });
 
-  /* Ações rápidas do dashboard */
+  /* Ações rápidas */
   $('#btnAcaoCobertura').onclick = abrirModalCobertura;
   $('#btnAcaoParto').onclick = abrirModalParto;
   $('#btnAcaoVacina').onclick = () => abrirModalVacina();
@@ -2999,13 +2954,12 @@ function ligarEventos(){
   $('#btnNovaVenda').onclick = abrirModalVenda;
   $('#btnNovaCompra').onclick = abrirModalCompra;
 
-  /* Fechar dropdowns/modais: ✕, clique fora e ESC */
+  /* Fechar dropdowns/modais */
   document.addEventListener('click', (e) => {
     const f = e.target.closest('[data-fechar]');
     if (f){ fecharModal(f.getAttribute('data-fechar')); return; }
     if (e.target.classList && e.target.classList.contains('overlay')) fecharTodosModais();
     if (!e.target.closest('#menuMais') && !e.target.closest('#btnPerfil')) $('#menuMais').classList.remove('aberto');
-    if (!e.target.closest('#menuAbas') && !e.target.closest('#seletorAba')){ $('#menuAbas').classList.remove('aberto'); $('#seletorAba').classList.remove('aberto'); }
     if (!e.target.closest('#menuAlerta') && !e.target.closest('#btnBell')) $('#menuAlerta').classList.remove('aberto');
     if (!e.target.closest('#speedDial') && !e.target.closest('#fab')) $('#speedDial').classList.remove('aberto');
   });
@@ -3013,7 +2967,6 @@ function ligarEventos(){
     if (e.key === 'Escape'){
       fecharTodosModais();
       $('#menuMais').classList.remove('aberto');
-      $('#menuAbas').classList.remove('aberto'); $('#seletorAba').classList.remove('aberto');
       $('#menuAlerta').classList.remove('aberto');
       $('#speedDial').classList.remove('aberto');
     }
