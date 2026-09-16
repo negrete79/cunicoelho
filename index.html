@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CuniCoelho — Manejo de Coelhos</title>
 <meta name="description" content="App PWA offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração, vacinas e financeiro.">
-<meta name="theme-color" content="#0a1830">
+<meta name="theme-color" content="#0a1526">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,417 +18,494 @@
 
 <style>
 /* ================================================================
-   CuniCoelho — Estilos (dark glassmorphism, responsivo)
+   CuniCoelho — Layout PREMIUM DARK (baseado no mock de referência)
+   Header logo + sino/perfil • seletor pílula • KPIs com brilho
+   colorido • cards de venda com foto • botão pill • tab underline
    ================================================================ */
+:root{
+  --bg0:#060d1c; --bg1:#0a1526; --bg2:#0d1f38;
+  --glass:rgba(255,255,255,.05); --borda:rgba(255,255,255,.09); --borda-2:rgba(255,255,255,.15);
+  --txt:#e9eefc; --txt-2:#9fb0d0; --txt-3:#64799f;
+  --accent:#6ea8ff; --accent-2:#8ab4f8; --accent-bg:rgba(110,168,255,.13);
+  --azul:#2563eb; --verde:#16a34a; --verde-2:#4ade80; --amarelo:#fbbf24; --verm-2:#f87171;
+  --sombra:0 10px 30px rgba(2,8,20,.4);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html,body{overflow-x:hidden}
 html{scroll-behavior:smooth}
-body{
-  min-height:100vh;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-  background:#0a1830;color:#e7eefc;
-  -webkit-font-smoothing:antialiased;
-}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--bg1);color:var(--txt);-webkit-font-smoothing:antialiased}
 img{max-width:100%;display:block}
 button{font-family:inherit}
 input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+:focus{outline:none}
+:focus-visible{outline:2px solid rgba(110,168,255,.7);outline-offset:2px;border-radius:6px}
 
-/* ---- Fundo com gradiente + blobs flutuantes ---- */
+/* ---------- Fundo ---------- */
 .fundo{position:fixed;inset:0;z-index:-2;background:
-  radial-gradient(1100px 750px at 85% -10%, rgba(37,99,235,.28), transparent 60%),
-  radial-gradient(900px 700px at -10% 110%, rgba(16,185,129,.13), transparent 60%),
-  linear-gradient(180deg,#0c1c3a 0%, #0a1830 45%, #081226 100%);}
-.blobs span{position:fixed;z-index:-1;border-radius:50%;filter:blur(90px);opacity:.22;pointer-events:none}
-.b1{width:340px;height:340px;background:#2563eb;top:-90px;right:-70px;animation:flutuar 16s ease-in-out infinite}
-.b2{width:290px;height:290px;background:#10b981;bottom:8%;left:-110px;animation:flutuar 21s ease-in-out infinite reverse}
-.b3{width:230px;height:230px;background:#8ab4f8;top:42%;right:-110px;animation:flutuar 25s ease-in-out infinite}
-@keyframes flutuar{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-28px,42px) scale(1.08)}}
+  radial-gradient(1000px 700px at 80% -12%, rgba(37,99,235,.20), transparent 60%),
+  radial-gradient(900px 650px at -12% 112%, rgba(16,185,129,.10), transparent 60%),
+  linear-gradient(180deg,var(--bg2) 0%, var(--bg1) 45%, var(--bg0) 100%)}
+.blobs span{position:fixed;z-index:-1;border-radius:50%;filter:blur(110px);opacity:.15;pointer-events:none}
+.b1{width:340px;height:340px;background:#2563eb;top:-90px;right:-70px;animation:flutuar 18s var(--ease) infinite}
+.b2{width:300px;height:300px;background:#10b981;bottom:6%;left:-110px;animation:flutuar 23s var(--ease) infinite reverse}
+@keyframes flutuar{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-26px,40px) scale(1.07)}}
 
-/* ---- Glass base ---- */
-.glass{background:rgba(255,255,255,.055);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
-  border:1px solid rgba(255,255,255,.09);border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,.25)}
-
-/* ---- Sidebar (desktop 1024px+) ---- */
-#sidebar{display:none}
-.side-logo{display:flex;align-items:center;gap:12px;margin-bottom:26px}
-.side-logo img{width:46px;height:46px;border-radius:14px}
-.side-logo b{font-size:19px;letter-spacing:.2px}
-.side-logo small{display:block;color:#8fa3c8;font-size:11px;font-weight:600}
-.side-btn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;margin-bottom:6px;border:0;border-radius:16px;
-  background:none;color:#b8c7e6;font-size:14.5px;font-weight:600;cursor:pointer;text-align:left;transition:.15s}
-.side-btn:hover{background:rgba(255,255,255,.06)}
-.side-btn.ativo{background:rgba(138,180,248,.14);color:#8ab4f8}
-.sidebar-rodape{margin-top:auto;font-size:11px;color:#6d81a8;line-height:1.7}
-
-/* ---- Header ---- */
-#topo{display:flex;align-items:center;gap:10px;padding:12px 14px;position:sticky;top:0;z-index:80;
-  background:rgba(10,24,48,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+/* ---------- Header: logo + sino + perfil ---------- */
+#topo{display:flex;align-items:center;gap:8px;padding:10px 14px;position:sticky;top:0;z-index:80;
+  background:rgba(8,17,34,.78);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
   border-bottom:1px solid rgba(255,255,255,.06)}
-#btnVoltar,#btnMais{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.06);color:#e7eefc;font-size:19px;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
-#btnVoltar.shake{animation:shake .35s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-#tituloTopo{flex:1;text-align:center;font-size:16.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-app{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer}
+.logo-app img{width:34px;height:34px;border-radius:10px;box-shadow:0 4px 12px rgba(2,8,20,.5)}
+.logo-app span{font-size:19px;font-weight:800;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-app em{color:var(--accent);font-style:normal}
+.btn-ico{width:38px;height:38px;border-radius:12px;border:1px solid var(--borda);
+  background:rgba(255,255,255,.05);color:var(--accent-2);font-size:16px;cursor:pointer;
+  display:grid;place-items:center;flex-shrink:0;transition:all .18s var(--ease);position:relative}
+.btn-ico:hover{background:rgba(255,255,255,.1)}
+.btn-ico:active{transform:scale(.93)}
+#pipBell{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;border-radius:99px;background:#ef4444;
+  color:#fff;font-size:9.5px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;
+  box-shadow:0 2px 8px rgba(239,68,68,.6)}
 
-/* menu ••• */
-#menuMais{position:fixed;top:58px;right:12px;z-index:95;min-width:238px;padding:8px;display:none;
-  background:rgba(13,27,54,.96);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.5)}
-#menuMais.aberto{display:block;animation:pop .16s}
-.menu-item{display:flex;gap:10px;width:100%;text-align:left;padding:11px 12px;border:0;background:none;color:#e7eefc;
-  font-size:13.5px;font-weight:600;border-radius:12px;cursor:pointer}
+/* ---------- Seletor de aba em pílula (ex.: "Compra & Venda ▾") ---------- */
+#seletorWrap{display:flex;justify-content:center;position:relative;padding:14px 14px 2px}
+#seletorAba{display:flex;align-items:center;gap:9px;padding:12px 26px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--borda-2);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  color:var(--txt);font-size:15.5px;font-weight:800;letter-spacing:.3px;
+  box-shadow:var(--sombra), inset 0 1px 0 rgba(255,255,255,.07);transition:all .18s var(--ease)}
+#seletorAba:active{transform:scale(.97)}
+#seletorAba .chev{color:var(--accent);font-size:12px;transition:transform .2s}
+#seletorAba.aberto .chev{transform:rotate(180deg)}
+#menuAbas{position:absolute;top:calc(100% + 6px);left:50%;margin-left:-125px;width:250px;padding:8px;z-index:96;display:none;
+  background:rgba(12,24,48,.97);backdrop-filter:blur(24px);border:1px solid var(--borda-2);
+  border-radius:18px;box-shadow:0 18px 48px rgba(2,8,20,.6)}
+#menuAbas.aberto{display:block;animation:pop .18s var(--ease)}
+#menuAbas .menu-item.sel{color:var(--accent);background:var(--accent-bg)}
+
+/* ---------- Menus dropdown (perfil / sino) ---------- */
+.drop{position:fixed;top:62px;right:10px;z-index:96;min-width:256px;padding:8px;display:none;
+  background:rgba(12,24,48,.97);backdrop-filter:blur(24px);border:1px solid var(--borda-2);
+  border-radius:18px;box-shadow:0 18px 48px rgba(2,8,20,.6)}
+.drop.aberto{display:block;animation:pop .18s var(--ease)}
+.menu-item{display:flex;gap:10px;width:100%;text-align:left;padding:12px 13px;border:0;background:none;
+  color:var(--txt);font-size:13.5px;font-weight:600;border-radius:12px;cursor:pointer;transition:background .15s}
 .menu-item:hover{background:rgba(255,255,255,.07)}
-.menu-item.perigo{color:#f87171}
+.menu-item.perigo{color:var(--verm-2)}
+.menu-item small{display:block;color:var(--txt-3);font-size:11px;font-weight:600;margin-top:2px}
 @keyframes pop{from{transform:scale(.94);opacity:.4}}
+.drop-titulo{padding:8px 13px 6px;font-size:11px;font-weight:800;letter-spacing:1px;color:var(--txt-3);text-transform:uppercase}
 
-/* ---- Conteúdo ---- */
-#app{max-width:760px;margin:0 auto;padding:12px 14px 150px}
-.view{animation:surgir .22s}
-@keyframes surgir{from{opacity:0;transform:translateY(8px)}}
-.titulo-secao{font-size:15px;font-weight:800;margin:16px 2px 8px;color:#dbe6ff}
-.secao{margin-top:14px;padding:16px}
-.secao h3{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.cont{font-size:11.5px;color:#8ab4f8;background:rgba(138,180,248,.13);padding:2px 9px;border-radius:999px;font-weight:800}
-.bloco-erro{background:rgba(220,38,38,.12);border:1px solid rgba(248,113,113,.35);color:#fca5a5;
+/* ---------- Conteúdo ---------- */
+#app{max-width:760px;margin:0 auto;padding:6px 16px 160px}
+.view{animation:surgir .25s var(--ease)}
+@keyframes surgir{from{opacity:0;transform:translateY(10px)}}
+.titulo-secao{font-size:12.5px;font-weight:800;margin:20px 4px 10px;color:var(--txt-2);
+  text-transform:uppercase;letter-spacing:1.2px}
+.secao{margin-top:16px;padding:18px;border-radius:24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.032));
+  backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--borda);box-shadow:var(--sombra), inset 0 1px 0 rgba(255,255,255,.05)}
+.secao h3{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cont{font-size:11px;color:var(--accent);background:var(--accent-bg);padding:3px 10px;border-radius:99px;font-weight:800}
+.info-ico{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--txt-3);color:var(--txt-3);
+  font-size:11px;font-weight:800;font-style:italic;display:inline-grid;place-items:center;margin-left:auto}
+.bloco-erro{background:rgba(220,38,38,.1);border:1px solid rgba(248,113,113,.3);color:#fca5a5;
   border-radius:14px;padding:12px 14px;font-size:12.5px;margin-top:14px}
-.vazio{margin-top:14px;padding:30px 20px;text-align:center;color:#9fb0d0;font-size:14px;line-height:1.8}
+.vazio{margin-top:14px;padding:34px 20px;text-align:center;color:var(--txt-2);font-size:14px;line-height:1.8}
 
-/* ---- Card principal branco do animal ---- */
-.card-animal{background:#fff;color:#111827;border-radius:24px;padding:16px;margin-top:6px;
-  box-shadow:0 12px 32px rgba(0,0,0,.32);display:flex;gap:14px;cursor:pointer;position:relative;overflow:hidden;
-  transition:transform .15s}
+/* ---------- KPI com borda/brilho colorido (mock: verde/vermelho/azul) ---------- */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi{--kc:#4ade80;--kcb:rgba(74,222,128,.55);--kcbg:rgba(74,222,128,.08);
+  border:1px solid var(--kcb);border-radius:22px;padding:16px 8px 14px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;text-align:center;
+  background:linear-gradient(180deg,var(--kcbg),rgba(255,255,255,.015));
+  box-shadow:0 0 26px -10px var(--kcb), inset 0 1px 0 rgba(255,255,255,.05)}
+.kpi-ico{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:1px solid var(--kcb);display:grid;place-items:center;color:var(--kc)}
+.kpi-ico svg{width:22px;height:22px}
+.kpi-ico.emoji{font-size:20px}
+.kpi-label{font-size:10.5px;font-weight:800;letter-spacing:.3px;padding:4px 12px;border-radius:99px;
+  background:rgba(255,255,255,.06);border:1px solid var(--kcb);color:#dfe8ff;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.kpi b{font-size:19px;color:var(--kc);font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.kpi small{font-size:10px;color:var(--txt-3);line-height:1.4}
+.kpi-vermelho{--kc:#f87171;--kcb:rgba(248,113,113,.55);--kcbg:rgba(248,113,113,.08)}
+.kpi-azul{--kc:#7db3ff;--kcb:rgba(110,168,255,.6);--kcbg:rgba(110,168,255,.09)}
+.kpi-neutro{--kc:#9fb0d0;--kcb:rgba(159,176,208,.35);--kcbg:rgba(159,176,208,.06)}
+.cresc-pos{color:var(--verde-2)!important}.cresc-neg{color:var(--verm-2)!important}
+
+/* ---------- Card do animal (dark, ID azul gigante) ---------- */
+.card-animal{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.035));
+  border:1px solid var(--borda-2);border-radius:26px;padding:18px;margin-top:10px;
+  box-shadow:var(--sombra), inset 0 1px 0 rgba(255,255,255,.06);
+  display:flex;gap:14px;cursor:pointer;transition:transform .18s var(--ease)}
 .card-animal:active{transform:scale(.985)}
-.foto-animal{width:96px;height:96px;border-radius:18px;object-fit:cover;flex-shrink:0;background:#eef2ff}
+.foto-animal{width:96px;height:96px;border-radius:18px;object-fit:cover;flex-shrink:0;background:#eef2ff;
+  box-shadow:0 6px 16px rgba(2,8,20,.5)}
 .animal-info{flex:1;min-width:0}
-.id-animal{font-size:30px;font-weight:800;color:#1e3a8a;line-height:1.08;letter-spacing:-.4px;word-break:break-word}
-.tag-lote-cinza{display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;color:#475569;border-radius:999px;
-  padding:3px 11px;font-size:12px;font-weight:700;margin-top:6px;border:1px solid #e2e8f0}
-.stats-linha{display:flex;margin-top:12px;padding-top:11px;border-top:1px solid #eef2f7}
+.id-animal{font-size:30px;font-weight:800;color:var(--accent-2);line-height:1.05;letter-spacing:-.5px;
+  word-break:break-word;font-variant-numeric:tabular-nums}
+.tag-lote-cinza{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.07);color:var(--txt-2);
+  border-radius:99px;padding:4px 12px;font-size:12px;font-weight:700;margin-top:7px;border:1px solid var(--borda-2)}
+.stats-linha{display:flex;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
 .st-col{flex:1;min-width:0}
-.st-col small{display:block;font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px}
-.st-col b{display:block;font-size:13.5px;color:#0f172a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-col small{display:block;font-size:9.5px;font-weight:800;color:var(--txt-3);text-transform:uppercase;letter-spacing:.7px}
+.st-col b{display:block;font-size:13.5px;color:#fff;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ---- Ações rápidas (3 botões) ---- */
+/* ---------- Ações rápidas ---------- */
 .acoes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-.btn-acao{border:0;border-radius:14px;padding:13px 4px;font-weight:800;font-size:12.5px;color:#fff;display:flex;
-  flex-direction:column;align-items:center;gap:5px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.28);transition:transform .15s}
+.btn-acao{border:0;border-radius:16px;padding:14px 4px;font-weight:800;font-size:12.5px;color:#fff;display:flex;
+  flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform .15s var(--ease);position:relative;overflow:hidden}
+.btn-acao::after{content:'';position:absolute;inset:0 0 55% 0;background:linear-gradient(180deg,rgba(255,255,255,.16),transparent);pointer-events:none}
 .btn-acao:active{transform:scale(.95)}
-.btn-acao .ac-ico{font-size:19px;line-height:1}
-.btn-cobertura{background:#2563eb}
-.btn-parto{background:#16a34a}
-.btn-vacina{background:#6ee7b7;color:#0f3d2e}
+.btn-acao .ac-ico{font-size:20px;line-height:1}
+.btn-cobertura{background:linear-gradient(180deg,#3b82f6,#2563eb);box-shadow:0 6px 18px rgba(37,99,235,.4)}
+.btn-parto{background:linear-gradient(180deg,#22c55e,#16a34a);box-shadow:0 6px 18px rgba(22,163,74,.4)}
+.btn-vacina{background:linear-gradient(180deg,#8ff0c8,#6ee7b7);color:#0f3d2e;box-shadow:0 6px 18px rgba(110,231,183,.3)}
 
-/* ---- Estatísticas ---- */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stat-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px 10px;min-width:0}
-.stat-card small{display:block;font-size:10px;font-weight:700;color:#8fa3c8;text-transform:uppercase;letter-spacing:.4px}
-.stat-card b{display:block;font-size:15.5px;margin-top:5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat-card span{display:block;font-size:10px;color:#6d81a8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cresc-pos{color:#4ade80!important}.cresc-neg{color:#f87171!important}
-
-/* ---- Card Último Registro (branco, com gráfico) ---- */
-.card-registro{background:#fff;color:#111827;border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 12px 32px rgba(0,0,0,.3)}
+/* ---------- Card Último Registro (dark + gráfico) ---------- */
+.card-registro{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.032));
+  border:1px solid var(--borda);border-radius:26px;padding:18px;margin-top:16px;
+  box-shadow:var(--sombra), inset 0 1px 0 rgba(255,255,255,.05)}
 .reg-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .reg-titulo{font-weight:800;font-size:15px}
-.badge-vac{background:#d1fae5;color:#065f46;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px}
+.badge-vac{background:#d1fae5;color:#065f46;font-size:11px;font-weight:800;padding:4px 11px;border-radius:99px}
 .badge-vac.amarela{background:#fef3c7;color:#92400e}
 .badge-vac.vermelha{background:#fee2e2;color:#991b1b}
-.reg-sub{font-size:12.5px;color:#6b7280;margin-top:4px}
-.graf-titulo{font-weight:800;font-size:14px;margin-top:16px}
+.reg-sub{font-size:12.5px;color:var(--txt-2);margin-top:5px}
+.graf-titulo{font-weight:800;font-size:14px;margin-top:17px}
 .graf-box{position:relative;margin-top:6px}
-.label-kg{position:absolute;top:2px;right:6px;font-size:11px;color:#9ca3af;font-weight:700;z-index:2}
-.sem-dados{color:#9ca3af;font-size:12.5px;text-align:center;padding:18px 0}
+.label-kg{position:absolute;top:2px;right:6px;font-size:11px;color:var(--txt-3);font-weight:800;z-index:2}
+.sem-dados{color:var(--txt-3);font-size:12.5px;text-align:center;padding:18px 0}
 
-/* ---- Alerta amarelo de consanguinidade ---- */
-.alerta-consang{background:#fef9c3;color:#713f12;border:1px solid #fde68a;border-radius:14px;
-  padding:12px 14px;margin-top:14px;font-size:13px;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+/* ---------- Alertas ---------- */
+.alerta-consang{background:#fef9c3;color:#713f12;border:1px solid #fde68a;border-radius:16px;
+  padding:13px 15px;margin-top:14px;font-size:13px;line-height:1.55;display:flex;gap:10px;align-items:flex-start}
 .alerta-consang b{font-weight:800}
 .alerta-consang button{border:0;background:rgba(113,63,18,.12);color:#713f12;font-size:11px;font-weight:800;
-  border-radius:8px;padding:5px 9px;cursor:pointer;flex-shrink:0;margin-top:2px}
-
-/* ---- Irmandade ---- */
-.ninhada-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;gap:8px}
-.tag-lote{background:rgba(138,180,248,.14);color:#8ab4f8;font-weight:800;font-size:12.5px;padding:5px 13px;border-radius:999px}
-.tag-irmaos{color:#9fb0d0;font-size:12.5px;font-weight:700}
+  border-radius:8px;padding:6px 10px;cursor:pointer;flex-shrink:0;margin-top:2px}
+.ninhada-row{display:flex;justify-content:space-between;align-items:center;margin:16px 2px 11px;gap:8px}
+.tag-lote{background:var(--accent-bg);color:var(--accent-2);font-weight:800;font-size:12.5px;padding:6px 14px;border-radius:99px}
+.tag-irmaos{color:var(--txt-2);font-size:12.5px;font-weight:700}
 .irmaos-chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip-irmao{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#e7eefc;
-  padding:9px 14px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;transition:.15s}
+.chip-irmao{border:1px solid var(--borda-2);background:rgba(255,255,255,.05);color:var(--txt);
+  padding:9px 15px;border-radius:99px;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .15s var(--ease)}
 .chip-irmao:active{transform:scale(.94)}
-.chip-irmao:hover{border-color:#8ab4f8;color:#8ab4f8}
-
-/* ---- Semáforo (consanguinidade + janela de cobertura) ---- */
-.sem-cobertura{margin-top:12px;padding:13px 14px;border-radius:14px;font-weight:800;font-size:13px;text-align:center;letter-spacing:.4px;animation:pop .2s}
+.sem-cobertura{margin-top:12px;padding:14px;border-radius:14px;font-weight:800;font-size:13px;
+  text-align:center;letter-spacing:.4px;animation:pop .2s var(--ease);line-height:1.5}
 .vermelho{background:#2e0a0a;color:#ff3b3b;border:1px solid #ff3b3b}
 .laranja{background:#2e1f0a;color:#ff9d00;border:1px solid #ff9d00}
 .verde{background:#0a2e1f;color:#00ff88;border:1px solid #00ff88}
-
-/* ---- Alertas sanitários (semáforo apenas no emoji do canto) ---- */
 .alerta-san{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:16px;cursor:pointer;margin-bottom:8px;
-  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);transition:.15s}
+  background:rgba(255,255,255,.045);border:1px solid var(--borda);transition:all .18s var(--ease)}
 .alerta-san:active{transform:scale(.98)}
-.alerta-san .ico-g{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;font-size:21px;
-  border-radius:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+.alerta-san .ico-g{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;font-size:21px;
+  border-radius:13px;background:rgba(255,255,255,.055);border:1px solid var(--borda)}
 .alerta-san b{font-size:13.5px;display:block}
-.alerta-san small{display:block;font-size:11.5px;color:#9fb0d0;margin-top:2px;line-height:1.4}
-.alerta-san .seta{margin-left:auto;color:#5a6f96;font-size:18px;flex-shrink:0}
-/* O fundo do card é neutro; APENAS o emoji do canto muda de cor.
-   (Emojis são glifos coloridos que ignoram a propriedade CSS "color",
-   então usamos filtros para tingir o emoji na cor de gravidade.) */
+.alerta-san small{display:block;font-size:11.5px;color:var(--txt-2);margin-top:2px;line-height:1.45}
+.alerta-san .seta{margin-left:auto;color:var(--txt-3);font-size:18px;flex-shrink:0}
 .g-verde{filter:grayscale(1) sepia(1) saturate(7) hue-rotate(70deg) brightness(1.12)}
 .g-laranja{filter:grayscale(1) sepia(1) saturate(9) hue-rotate(-14deg) brightness(1.1)}
 .g-vermelho{filter:grayscale(1) sepia(1) saturate(16) hue-rotate(-48deg) brightness(1.15)}
 .vac-linha{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;
-  padding:11px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);
-  color:#e7eefc;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:7px}
-.vac-linha small{display:block;font-weight:600;color:#8fa3c8;font-size:11px;margin-top:2px}
-.todas-em-dia{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ade80;
-  border-radius:16px;padding:16px 14px;font-size:13.5px;font-weight:700;text-align:center;line-height:1.5}
+  padding:12px 13px;border-radius:15px;border:1px solid var(--borda);background:rgba(255,255,255,.035);
+  color:var(--txt);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.vac-linha small{display:block;font-weight:600;color:var(--txt-3);font-size:11px;margin-top:3px}
+.todas-em-dia{background:rgba(74,222,128,.09);border:1px solid rgba(74,222,128,.28);color:var(--verde-2);
+  border-radius:16px;padding:18px 14px;font-size:13.5px;font-weight:700;text-align:center;line-height:1.6}
 
-/* ---- Badges ---- */
-.badge-status{margin-left:auto;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:999px;flex-shrink:0;white-space:nowrap}
-.b-ok{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.35)}
-.b-aten{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
-.b-urg{background:rgba(220,38,38,.18);color:#f87171;border:1px solid rgba(248,113,113,.45)}
+/* ---------- Badges ---------- */
+.badge-status{margin-left:auto;font-size:10px;font-weight:800;padding:5px 11px;border-radius:99px;flex-shrink:0;white-space:nowrap}
+.b-ok{background:rgba(74,222,128,.13);color:var(--verde-2);border:1px solid rgba(74,222,128,.32)}
+.b-aten{background:rgba(251,191,36,.13);color:var(--amarelo);border:1px solid rgba(251,191,36,.35)}
+.b-urg{background:rgba(220,38,38,.16);color:var(--verm-2);border:1px solid rgba(248,113,113,.4)}
 
-/* ---- Plantel ---- */
-.plantel-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.busca{width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);color:#fff;font-size:14px;margin-bottom:12px;outline:none}
-.busca:focus{border-color:#8ab4f8}
+/* ---------- Listas (plantel / ração / financeiro) ---------- */
+.plantel-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.busca{width:100%;padding:12px 15px;border-radius:14px;border:1px solid var(--borda);
+  background:rgba(255,255,255,.05);color:#fff;font-size:14px;margin-bottom:12px;outline:none;transition:border .18s, box-shadow .18s}
+.busca:focus{border-color:rgba(110,168,255,.6);box-shadow:0 0 0 3px rgba(110,168,255,.12)}
 .lista-plantel{display:grid;grid-template-columns:1fr;gap:10px}
 .item-coelho{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;cursor:pointer;
-  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);min-width:0;transition:.15s}
+  background:rgba(255,255,255,.045);border:1px solid var(--borda);min-width:0;transition:all .18s var(--ease)}
 .item-coelho:active{transform:scale(.98)}
-.item-coelho img{width:48px;height:48px;border-radius:12px;object-fit:cover;background:#eef2ff;flex-shrink:0}
+.item-coelho img{width:48px;height:48px;border-radius:13px;object-fit:cover;background:#eef2ff;flex-shrink:0}
 .ic-info{flex:1;min-width:0}
 .ic-nome{font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ic-sub{font-size:11.5px;color:#9fb0d0;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ic-sub{font-size:11.5px;color:var(--txt-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ---- Ração ---- */
+/* Card de venda (mock: foto + "Fêmea Flandres • 4,2kg" + "+ R$ 720") */
+.venda-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;margin-bottom:10px;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.03));border:1px solid var(--borda)}
+.venda-foto{width:56px;height:56px;border-radius:14px;object-fit:cover;background:#eef2ff;flex-shrink:0;
+  box-shadow:0 4px 10px rgba(2,8,20,.45)}
+.venda-info{flex:1;min-width:0}
+.venda-info b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.venda-info small{display:block;color:var(--txt-2);font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.venda-val{color:var(--verde-2);font-weight:800;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* Botões pill grandes (Nova Venda / Nova Compra) */
+.btn-primario{width:100%;margin-top:14px;padding:17px;border:0;border-radius:999px;
+  background:linear-gradient(180deg,#34d399,#16a34a);color:#fff;font-size:16.5px;font-weight:800;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.3px;
+  box-shadow:0 10px 32px rgba(22,163,74,.5), inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s var(--ease)}
+.btn-primario:active{transform:scale(.98)}
+.btn-secundario{width:100%;margin-top:10px;padding:14px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(110,168,255,.5);background:rgba(110,168,255,.08);color:var(--accent-2);
+  font-size:14.5px;font-weight:800;transition:all .15s var(--ease)}
+.btn-secundario:active{transform:scale(.98)}
+
 .resumo-linha{display:flex;justify-content:space-around;text-align:center;gap:8px;flex-wrap:wrap}
-.resumo-item b{display:block;font-size:22px;color:#8ab4f8}
-.resumo-item small{font-size:11px;color:#9fb0d0;font-weight:700}
-.resumo-item b.v{color:#4ade80;font-size:18px;margin-top:3px;display:block}
-.cat-row{display:flex;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.07);margin-bottom:7px;font-size:13px;gap:10px}
+.resumo-item b{display:block;font-size:23px;color:var(--accent-2);font-variant-numeric:tabular-nums}
+.resumo-item small{font-size:10.5px;color:var(--txt-3);font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.resumo-item b.v{color:var(--verde-2);font-size:17px;margin-top:4px;display:block}
+.cat-row{display:flex;align-items:center;padding:12px 13px;border-radius:15px;background:rgba(255,255,255,.035);
+  border:1px solid var(--borda);margin-bottom:8px;font-size:13px;gap:10px}
 .cat-row span:first-child{flex:1;font-weight:700;min-width:0}
-.cat-row .cat-mult{color:#8fa3c8;font-size:11.5px;font-weight:600;white-space:nowrap}
-.cat-row b{white-space:nowrap;color:#8ab4f8}
-.lote-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:16px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);margin-bottom:8px;flex-wrap:wrap}
+.cat-row .cat-mult{color:var(--txt-3);font-size:11.5px;font-weight:600;white-space:nowrap}
+.cat-row b{white-space:nowrap;color:var(--accent-2)}
+.lote-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;border-radius:16px;
+  background:rgba(255,255,255,.035);border:1px solid var(--borda);margin-bottom:8px;flex-wrap:wrap}
 .lote-row b{font-size:14px}
-.lote-row small{display:block;color:#8fa3c8;font-size:11px;margin-top:2px}
+.lote-row small{display:block;color:var(--txt-3);font-size:11px;margin-top:3px}
 .lote-valores{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.lote-valores>b{color:#4ade80;font-size:13.5px}
-.racao-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.07);margin-bottom:7px}
-.ri-data{font-size:11px;font-weight:800;color:#8ab4f8;background:rgba(138,180,248,.12);padding:4px 8px;border-radius:9px;flex-shrink:0}
+.lote-valores>b{color:var(--verde-2);font-size:13.5px}
+.racao-item{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:15px;background:rgba(255,255,255,.035);
+  border:1px solid var(--borda);margin-bottom:8px}
+.ri-data{font-size:11px;font-weight:800;color:var(--accent-2);background:var(--accent-bg);padding:5px 9px;border-radius:9px;flex-shrink:0}
 .racao-item div{flex:1;min-width:0}
 .racao-item b{font-size:13px;display:block}
-.racao-item small{color:#8fa3c8;font-size:11px}
-.ri-kg{color:#4ade80;white-space:nowrap;font-size:13px}
-.del-mini{border:0;background:none;cursor:pointer;font-size:15px;opacity:.65;padding:4px}
-.del-mini:hover{opacity:1}
+.racao-item small{color:var(--txt-3);font-size:11px}
+.ri-kg{color:var(--verde-2);white-space:nowrap;font-size:13px}
+.del-mini{border:0;background:none;cursor:pointer;font-size:15px;opacity:.55;padding:5px;border-radius:8px}
+.del-mini:hover{opacity:1;background:rgba(255,255,255,.06)}
 
-/* ---- Lotes ---- */
-.lote-card{padding:14px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);margin-bottom:10px}
+/* Lotes */
+.lote-card{padding:15px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid var(--borda);margin-bottom:10px}
 .lc-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}
-.lc-topo span{color:#9fb0d0;font-size:11.5px;font-weight:700}
-.lote-card small{display:block;color:#8fa3c8;margin-top:4px;font-size:11.5px}
-.lc-acoes{display:flex;gap:8px;margin-top:10px}
-.lc-acoes button{flex:1;padding:9px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
-  color:#dbe6ff;font-size:12px;font-weight:700;cursor:pointer}
+.lc-topo span{color:var(--txt-2);font-size:11.5px;font-weight:700}
+.lote-card small{display:block;color:var(--txt-3);margin-top:5px;font-size:11.5px}
+.lc-acoes{display:flex;gap:8px;margin-top:12px}
+.lc-acoes button{flex:1;padding:10px;border-radius:12px;border:1px solid var(--borda-2);background:rgba(255,255,255,.045);
+  color:var(--txt);font-size:12px;font-weight:700;cursor:pointer}
+.lc-acoes button:active{transform:scale(.97)}
 
-/* ---- Formulários ---- */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.campo{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:#9fb0d0;font-weight:700;letter-spacing:.3px}
+/* Formulários */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.campo{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--txt-2);font-weight:800;letter-spacing:.5px;text-transform:uppercase}
 .campo.full{grid-column:1/-1}
-.campo.check{flex-direction:row;align-items:center;color:#e7eefc;font-size:13px;gap:8px;padding-top:16px}
+.campo.check{flex-direction:row;align-items:center;color:var(--txt);font-size:13px;gap:9px;padding-top:18px;text-transform:none;letter-spacing:0}
 .campo.check input{width:19px;height:19px;accent-color:#16a34a}
-.in{width:100%;padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.13);
-  background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;min-width:0}
-.in:focus{border-color:#8ab4f8}
-.in::placeholder{color:#5a6f96}
+.in{width:100%;padding:12px 13px;border-radius:13px;border:1px solid var(--borda-2);
+  background:rgba(255,255,255,.05);color:#fff;font-size:14.5px;outline:none;min-width:0;transition:border .18s, box-shadow .18s}
+.in:focus{border-color:rgba(110,168,255,.65);box-shadow:0 0 0 3px rgba(110,168,255,.13)}
+.in::placeholder{color:var(--txt-3)}
 select.in option{background:#0e2038;color:#fff}
 textarea.in{resize:vertical}
 .dupla{display:flex;gap:8px}
 .dupla .in{flex:1;min-width:0}
-.campo-box{margin-top:12px;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:13px}
-.campo-box>b{font-size:13px;display:block;margin-bottom:9px}
-.linha-add{display:flex;gap:8px;margin-top:9px}
+.campo-box{margin-top:14px;border:1px solid var(--borda);border-radius:16px;padding:14px;background:rgba(255,255,255,.02)}
+.campo-box>b{font-size:13px;display:block;margin-bottom:10px}
+.linha-add{display:flex;gap:8px;margin-top:10px}
 .linha-add .in{flex:1;min-width:0}
-.linha-add input[type=number]{max-width:90px}
-.btn-mini{border:1px solid rgba(138,180,248,.4);background:rgba(138,180,248,.12);color:#8ab4f8;
-  padding:9px 13px;border-radius:11px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
-.peso-item,.vac-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:11px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-size:12.5px;margin-bottom:6px}
+.linha-add input[type=number]{max-width:92px}
+.btn-mini{border:1px solid rgba(110,168,255,.4);background:var(--accent-bg);color:var(--accent-2);
+  padding:10px 14px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.peso-item,.vac-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;
+  background:rgba(255,255,255,.035);border:1px solid var(--borda);font-size:12.5px;margin-bottom:6px}
 .peso-item b{flex:1}.vac-item div{flex:1;min-width:0}
-.peso-item small,.vac-item small{color:#8fa3c8}
+.peso-item small,.vac-item small{color:var(--txt-3)}
 
-/* ---- Botões ---- */
-.botao{padding:13px 16px;border-radius:14px;border:0;font-weight:800;font-size:14px;cursor:pointer;transition:transform .15s}
+/* Botões */
+.botao{padding:13px 18px;border-radius:14px;border:0;font-weight:800;font-size:14px;cursor:pointer;transition:transform .15s var(--ease)}
 .botao:active{transform:scale(.97)}
-.btn-azul{background:#2563eb;color:#fff}
-.btn-verde{background:#16a34a;color:#fff}
-.btn-vermelho{background:#dc2626;color:#fff}
-.btn-cinza{background:rgba(255,255,255,.09);color:#dbe6ff;border:1px solid rgba(255,255,255,.12)}
-.btn-excluir-link{display:block;margin:12px auto 0;background:none;border:0;color:#f87171;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:underline}
+.btn-azul{background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 18px rgba(37,99,235,.35)}
+.btn-verde{background:linear-gradient(180deg,#22c55e,#16a34a);color:#fff;box-shadow:0 6px 18px rgba(22,163,74,.35)}
+.btn-vermelho{background:linear-gradient(180deg,#ef4444,#dc2626);color:#fff}
+.btn-cinza{background:rgba(255,255,255,.07);color:var(--txt);border:1px solid var(--borda-2)}
+.btn-excluir-link{display:block;margin:14px auto 0;background:none;border:0;color:var(--verm-2);font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:underline}
 
-/* ---- Modais ---- */
-.overlay{position:fixed;inset:0;background:rgba(4,10,22,.68);backdrop-filter:blur(6px);z-index:100;
-  display:flex;align-items:flex-end;justify-content:center}
-.modal{background:rgba(14,30,58,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,255,255,.12);border-bottom:0;border-radius:24px 24px 0 0;width:100%;
-  max-height:92vh;overflow-y:auto;padding:18px 16px calc(20px + env(safe-area-inset-bottom));animation:subir .25s}
-@keyframes subir{from{transform:translateY(48px);opacity:.5}}
-.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
-.modal-head h3{font-size:16px}
-.fechar{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.07);color:#fff;font-size:15px;cursor:pointer;flex-shrink:0}
+/* Modais (bottom-sheet mobile) */
+.overlay{position:fixed;inset:0;background:rgba(3,8,18,.72);backdrop-filter:blur(8px);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.modal{background:linear-gradient(180deg,rgba(17,33,64,.98),rgba(12,26,52,.98));
+  backdrop-filter:blur(26px);border:1px solid var(--borda-2);border-bottom:0;border-radius:26px 26px 0 0;width:100%;
+  max-height:92vh;overflow-y:auto;padding:20px 17px calc(22px + env(safe-area-inset-bottom));animation:subir .3s var(--ease);
+  box-shadow:0 -20px 60px rgba(2,8,20,.6)}
+.modal::before{content:'';display:block;width:40px;height:4px;border-radius:99px;background:rgba(255,255,255,.22);margin:-6px auto 14px}
+@keyframes subir{from{transform:translateY(56px);opacity:.5}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+.modal-head h3{font-size:16.5px}
+.fechar{width:36px;height:36px;border-radius:50%;border:1px solid var(--borda-2);
+  background:rgba(255,255,255,.06);color:#fff;font-size:14px;cursor:pointer;flex-shrink:0}
 .radio-linha{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-.radio-chip{flex:1;min-width:120px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);
-  color:#b8c7e6;padding:11px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer;text-align:center}
+.radio-chip{flex:1;min-width:120px;border:1px solid var(--borda-2);background:rgba(255,255,255,.04);
+  color:var(--txt-2);padding:12px;border-radius:13px;font-size:12.5px;font-weight:800;cursor:pointer;text-align:center}
 .radio-chip input{display:none}
-.radio-chip.selec{border-color:#8ab4f8;background:rgba(138,180,248,.14);color:#8ab4f8}
-.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
-.check-grid label{display:flex;gap:8px;align-items:center;font-size:12.5px;font-weight:700;color:#b8c7e6;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:11px;cursor:pointer}
+.radio-chip.selec{border-color:rgba(110,168,255,.7);background:var(--accent-bg);color:var(--accent-2)}
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.check-grid label{display:flex;gap:9px;align-items:center;font-size:12.5px;font-weight:700;color:var(--txt-2);
+  background:rgba(255,255,255,.035);border:1px solid var(--borda);padding:11px;border-radius:12px;cursor:pointer}
 .check-grid input{accent-color:#16a34a;width:17px;height:17px}
 
-/* ---- Tab bar flutuante (5 abas) ---- */
-#tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));
-  width:min(470px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px;z-index:85;
-  background:rgba(13,27,54,.92);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
-  border:1px solid rgba(255,255,255,.11);border-radius:24px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
-.tab-btn{background:none;border:0;color:#8fa3c8;font-size:10px;font-weight:700;display:flex;flex-direction:column;
-  align-items:center;gap:3px;padding:7px 2px;border-radius:16px;cursor:pointer;transition:.15s}
-.tab-btn .ico{font-size:19px;line-height:1}
-.tab-btn.ativo{color:#8ab4f8;background:rgba(138,180,248,.13)}
+/* Tab bar — ativo azul com sublinhado (mock) */
+#tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));
+  width:min(480px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);padding:8px;z-index:85;
+  background:rgba(11,23,46,.94);backdrop-filter:blur(24px) saturate(150%);
+  border:1px solid var(--borda-2);border-radius:22px;box-shadow:0 16px 48px rgba(2,8,20,.6)}
+.tab-btn{position:relative;background:none;border:0;color:var(--txt-3);font-size:10px;font-weight:700;display:flex;flex-direction:column;
+  align-items:center;gap:4px;padding:8px 2px 10px;border-radius:14px;cursor:pointer;transition:color .2s}
+.tab-btn .ico{font-size:20px;line-height:1}
+.tab-btn.ativo{color:var(--accent-2)}
+.tab-btn.ativo::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
+  width:26px;height:3px;border-radius:99px;background:var(--accent)}
 
-/* ---- FAB ---- */
-#fab{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;
-  border:0;background:#2563eb;color:#fff;font-size:30px;font-weight:300;z-index:86;cursor:pointer;
-  box-shadow:0 12px 30px rgba(37,99,235,.55);display:grid;place-items:center;transition:transform .2s;line-height:1}
-#fab:active{transform:scale(.9)}
-#speedDial{position:fixed;right:18px;bottom:calc(166px + env(safe-area-inset-bottom));z-index:85;display:flex;
-  flex-direction:column;gap:9px;align-items:flex-end;opacity:0;pointer-events:none;transform:translateY(12px);transition:.2s}
+/* FAB + speed dial */
+#fab{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;
+  border:0;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;font-size:30px;font-weight:300;z-index:86;cursor:pointer;
+  box-shadow:0 14px 34px rgba(37,99,235,.55), inset 0 1px 0 rgba(255,255,255,.25);display:grid;place-items:center;transition:transform .2s;line-height:1}
+#fab:active{transform:scale(.88)}
+#speedDial{position:fixed;right:18px;bottom:calc(170px + env(safe-area-inset-bottom));z-index:85;display:flex;
+  flex-direction:column;gap:9px;align-items:flex-end;opacity:0;pointer-events:none;transform:translateY(12px);transition:all .22s var(--ease)}
 #speedDial.aberto{opacity:1;pointer-events:auto;transform:none}
 .sd-item{display:flex;align-items:center;gap:9px}
-.sd-item span{background:rgba(13,27,54,.95);border:1px solid rgba(255,255,255,.13);padding:6px 12px;
-  border-radius:999px;font-size:12px;font-weight:700}
-.sd-item button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.1);backdrop-filter:blur(10px);color:#fff;font-size:17px;cursor:pointer}
+.sd-item span{background:rgba(12,24,48,.96);border:1px solid var(--borda-2);padding:7px 13px;border-radius:99px;font-size:12px;font-weight:700}
+.sd-item button{width:44px;height:44px;border-radius:50%;border:1px solid var(--borda-2);
+  background:rgba(255,255,255,.09);backdrop-filter:blur(12px);color:#fff;font-size:17px;cursor:pointer}
 
-/* ---- Toasts (nunca alert nativo) ---- */
+/* Toasts */
 #toasts{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:300;
   display:flex;flex-direction:column;gap:8px;width:min(92vw,430px);pointer-events:none}
-.toast{padding:12px 15px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;gap:9px;align-items:center;
-  background:rgba(16,32,60,.96);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(14px);
-  animation:desce .28s;box-shadow:0 12px 30px rgba(0,0,0,.45);line-height:1.4}
+.toast{padding:13px 16px;border-radius:15px;font-size:13.5px;font-weight:700;display:flex;gap:10px;align-items:center;
+  background:rgba(14,28,54,.97);border:1px solid var(--borda-2);backdrop-filter:blur(16px);
+  animation:desce .3s var(--ease);box-shadow:0 18px 48px rgba(2,8,20,.5);line-height:1.45}
 .toast.saindo{animation:sair .3s forwards}
-.toast.ok{border-color:rgba(74,222,128,.55)}
-.toast.erro{border-color:rgba(248,113,113,.65)}
-.toast.info{border-color:rgba(138,180,248,.55)}
-.toast.aviso{border-color:rgba(251,191,36,.55)}
-@keyframes desce{from{transform:translateY(-16px);opacity:0}}
+.toast.ok{border-color:rgba(74,222,128,.5)}.toast.erro{border-color:rgba(248,113,113,.6)}
+.toast.info{border-color:rgba(110,168,255,.5)}.toast.aviso{border-color:rgba(251,191,36,.5)}
+@keyframes desce{from{transform:translateY(-18px);opacity:0}}
 @keyframes sair{to{transform:translateY(-14px);opacity:0}}
 
-/* ---- Guia de Manejo ---- */
+/* Guia */
 .guia-lista{list-style:none}
-.guia-lista li{padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:13px;line-height:1.55;color:#cdd9f2}
+.guia-lista li{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:13px;line-height:1.6;color:#cdd9f2}
 .guia-lista li:last-child{border-bottom:0}
-.veg-grid{display:flex;flex-direction:column;gap:7px}
-.veg-item{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;padding:10px 12px;font-size:13px;font-weight:600}
-.freq{margin-left:auto;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:999px;letter-spacing:.4px;flex-shrink:0}
-.freq-d{background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.35)}
-.freq-s{background:rgba(138,180,248,.14);color:#8ab4f8;border:1px solid rgba(138,180,248,.35)}
-.proibido-card{background:rgba(220,38,38,.09);border:1px solid rgba(248,113,113,.35);border-radius:18px;padding:14px}
-.proibido-card .guia-lista li{color:#fecaca;border-color:rgba(248,113,113,.15)}
-.perigo-max{background:#2e0a0a;border:1px solid #ff3b3b;color:#ff3b3b;border-radius:14px;padding:12px 14px;
-  font-weight:800;font-size:13.5px;margin-bottom:11px;line-height:1.5}
-.tabela-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+.proibido-card{background:rgba(220,38,38,.07);border:1px solid rgba(248,113,113,.3);border-radius:20px;padding:15px}
+.tabela-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px}
 .tabela-guia{width:100%;min-width:430px;border-collapse:collapse;font-size:12px}
-.tabela-guia th{background:#0a1830;color:#fff;text-align:left;padding:8px;font-size:11px}
-.tabela-guia td{padding:8px;border-bottom:1px solid rgba(255,255,255,.07);color:#cdd9f2}
-.tabela-guia tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+.tabela-guia th{background:rgba(10,21,38,.9);color:#fff;text-align:left;padding:9px 10px;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px}
+.tabela-guia td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);color:#cdd9f2}
+.tabela-guia tr:nth-child(even) td{background:rgba(255,255,255,.025)}
 
-/* ---- Financeiro (CSS mínimo novo — reutiliza classes existentes) ---- */
-#cvLucro{width:100%;display:block;border-radius:12px}
+/* Financeiro */
+#cvLucro{width:100%;display:block;border-radius:14px}
 .nota-prev{margin-top:8px}
-.nota-prev img{max-width:120px;border-radius:12px;border:1px solid rgba(255,255,255,.15)}
+.nota-prev img{max-width:120px;border-radius:13px;border:1px solid var(--borda-2)}
 
-/* ================================================================
-   Responsivo
-   ================================================================ */
-/* Celulares pequenos (até 380px) */
+/* Sidebar desktop */
+#sidebar{display:none}
+.side-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.side-logo img{width:44px;height:44px;border-radius:13px}
+.side-logo b{font-size:19px;display:block}
+.side-logo b em{color:var(--accent);font-style:normal}
+.side-logo small{display:block;color:var(--txt-3);font-size:11px;font-weight:600;margin-top:1px}
+.side-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;margin-bottom:4px;border:0;border-radius:14px;
+  background:none;color:var(--txt-2);font-size:14.5px;font-weight:600;cursor:pointer;text-align:left;transition:all .18s var(--ease);border-left:3px solid transparent}
+.side-btn:hover{background:rgba(255,255,255,.05);color:var(--txt)}
+.side-btn.ativo{background:var(--accent-bg);color:var(--accent-2);border-left-color:var(--accent)}
+.sidebar-rodape{margin-top:auto;font-size:11px;color:var(--txt-3);line-height:1.7}
+
+@media (hover:hover){
+  .item-coelho:hover,.chip-irmao:hover,.vac-linha:hover,.alerta-san:hover,.cat-row:hover,.venda-card:hover{
+    border-color:rgba(110,168,255,.35)}
+  .item-coelho:hover{transform:translateY(-1px)}
+}
+
+/* ================================================================ Responsivo */
 @media (max-width:380px){
   .id-animal{font-size:25px}
-  .foto-animal{width:80px;height:80px;border-radius:16px}
-  .card-animal{gap:11px;padding:13px}
-  .acoes{gap:7px}
-  .btn-acao{font-size:11px;padding:11px 3px}
-  .stats-grid{gap:7px}
-  .stat-card b{font-size:13.5px}
-  .tab-btn{font-size:9px}
+  .foto-animal{width:78px;height:78px}
+  .stats-grid{gap:8px}
+  .kpi b{font-size:16px}
+  .kpi-label{font-size:9.5px;padding:4px 9px}
+  .tab-btn{font-size:8.5px}
 }
-/* Celulares estreitos (até 360px): formulários em 1 coluna */
 @media (max-width:360px){
   .form-grid{grid-template-columns:1fr}
   .check-grid{grid-template-columns:1fr}
 }
-/* Tablet a partir de 768px: listas em 3 colunas + modais centrais */
 @media (min-width:768px){
   .lista-plantel{grid-template-columns:repeat(3,1fr)}
   #listaLotes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   #lotesRacao{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
   #lotesRacao .lote-row{margin-bottom:0}
   #listaVendidos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .overlay{align-items:center;padding:20px}
-  .modal{max-width:560px;border-radius:24px;border-bottom:1px solid rgba(255,255,255,.12);animation:pop .2s}
+  .overlay{align-items:center;padding:24px}
+  .modal{max-width:560px;border-radius:24px;border-bottom:1px solid var(--borda-2);animation:pop .22s var(--ease)}
+  .modal::before{display:none}
 }
-/* Desktop a partir de 1024px: sidebar fixa de 280px */
+@media (min-width:1280px){ .lista-plantel{grid-template-columns:repeat(4,1fr)} }
+@media (min-width:1440px){ #app{max-width:980px} .secao{padding:22px} }
 @media (min-width:1024px){
   #sidebar{display:flex;position:fixed;top:0;left:0;bottom:0;width:280px;z-index:50;flex-direction:column;
-    padding:26px 18px 20px;background:rgba(255,255,255,.045);backdrop-filter:blur(22px);
-    border-right:1px solid rgba(255,255,255,.08)}
-  #app{margin-left:280px;max-width:860px}
+    padding:28px 18px 22px;background:rgba(255,255,255,.035);backdrop-filter:blur(24px);border-right:1px solid var(--borda)}
+  #app{margin-left:280px}
   #tabbar{display:none}
-  #fab{bottom:calc(26px + env(safe-area-inset-bottom))}
-  #speedDial{bottom:calc(100px + env(safe-area-inset-bottom))}
+  #fab{bottom:calc(28px + env(safe-area-inset-bottom))}
+  #speedDial{bottom:calc(102px + env(safe-area-inset-bottom))}
 }
 </style>
 </head>
 <body>
 
-<!-- Fundo + blobs -->
 <div class="fundo"></div>
-<div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+<div class="blobs"><span class="b1"></span><span class="b2"></span></div>
 
 <!-- ============ SIDEBAR (desktop) ============ -->
 <aside id="sidebar">
   <div class="side-logo">
     <img id="sideLogoImg" alt="Logo CuniCoelho">
-    <div><b>CuniCoelho</b><small>Manejo de Coelhos</small></div>
+    <div><b>Cuni<em>Coelho</em></b><small>Manejo de Coelhos</small></div>
   </div>
-  <button class="side-btn" data-aba="dashboard"><span>🏠</span> Dashboard</button>
+  <button class="side-btn" data-aba="dashboard"><span>🏠</span> Início</button>
   <button class="side-btn" data-aba="plantel"><span>🐰</span> Plantel</button>
   <button class="side-btn" data-aba="racao"><span>🌾</span> Ração</button>
-  <button class="side-btn" data-aba="vendas"><span>💰</span> Vendas</button>
+  <button class="side-btn" data-aba="vendas"><span>💰</span> Compra &amp; Venda</button>
   <button class="side-btn" data-aba="lotes"><span>🗂️</span> Lotes</button>
   <button class="side-btn" data-aba="guia"><span>📖</span> Guia de Manejo</button>
-  <div class="sidebar-rodape">CuniCoelho v1.3<br>Funciona offline • Dados no aparelho</div>
+  <div class="sidebar-rodape">CuniCoelho v2.0<br>Funciona offline • Dados no aparelho</div>
 </aside>
 
-<!-- ============ HEADER ============ -->
+<!-- ============ HEADER (logo + sino + perfil) ============ -->
 <header id="topo">
-  <button id="btnVoltar" aria-label="Voltar">‹</button>
-  <div id="tituloTopo">Detalhe do Animal</div>
-  <button id="btnMais" aria-label="Mais opções">•••</button>
+  <div class="logo-app" id="logoHome" role="button" tabindex="0" aria-label="Ir para o Início">
+    <img id="logoTopo" alt="CuniCoelho">
+    <span>Cuni<em>Coelho</em></span>
+  </div>
+  <button class="btn-ico" id="btnBell" aria-label="Alertas sanitários">🔔<span id="pipBell"></span></button>
+  <button class="btn-ico" id="btnPerfil" aria-label="Menu">👤</button>
 </header>
 
-<!-- Menu ••• -->
-<div id="menuMais">
+<!-- Seletor de aba em pílula -->
+<div id="seletorWrap">
+  <button id="seletorAba"><span id="selAbaTxt">Início</span><span class="chev">▼</span></button>
+  <div id="menuAbas">
+    <button class="menu-item" data-aba="dashboard">🏠 Início</button>
+    <button class="menu-item" data-aba="plantel">🐰 Plantel</button>
+    <button class="menu-item" data-aba="racao">🌾 Ração</button>
+    <button class="menu-item" data-aba="vendas">💰 Compra &amp; Venda</button>
+    <button class="menu-item" data-aba="lotes">🗂️ Lotes</button>
+    <button class="menu-item" data-aba="guia">📖 Guia de Manejo</button>
+  </div>
+</div>
+
+<!-- Dropdown do PERFIL (ex-menu •••) -->
+<div class="drop" id="menuMais">
+  <div class="drop-titulo">Menu</div>
   <button class="menu-item" data-acao="guia">📖 Guia de Manejo</button>
   <button class="menu-item" data-acao="pdf">📄 Gerar Relatório PDF</button>
   <button class="menu-item" data-acao="criatorio">🏢 Dados do Criatório (PDF)</button>
@@ -439,9 +516,16 @@ textarea.in{resize:vertical}
   <button class="menu-item perigo" data-acao="apagar">🗑️ Apagar Todos os Dados</button>
 </div>
 
+<!-- Dropdown do SINO (alertas sanitários) -->
+<div class="drop" id="menuAlerta" style="right:auto;left:10px">
+  <div class="drop-titulo">🔔 Alertas Sanitários</div>
+  <div id="menuAlertaLista"></div>
+  <button class="menu-item" id="btnVerTodosAlertas" style="color:var(--accent-2);justify-content:center;font-weight:800">Ver todos no Início ›</button>
+</div>
+
 <main id="app">
 
-  <!-- ============ VIEW: DASHBOARD ============ -->
+  <!-- ============ VIEW: INÍCIO (DASHBOARD) ============ -->
   <section id="view-dashboard" class="view">
     <div id="dashConsang"></div>
     <div id="dashCobertura"></div>
@@ -463,7 +547,7 @@ textarea.in{resize:vertical}
 
   <!-- ============ VIEW: PLANTEL ============ -->
   <section id="view-plantel" class="view" hidden>
-    <div class="secao glass">
+    <div class="secao" style="margin-top:10px">
       <div class="plantel-topo">
         <h3 style="margin:0">🐰 Plantel <span class="cont" id="contPlantel">0</span></h3>
         <button class="btn-mini" id="btnNovoCoelhoTopo">+ Coelho</button>
@@ -475,16 +559,16 @@ textarea.in{resize:vertical}
 
   <!-- ============ VIEW: RAÇÃO ============ -->
   <section id="view-racao" class="view" hidden>
-    <div class="secao glass" id="resumoRacao"></div>
-    <div class="secao glass">
+    <div class="secao" style="margin-top:10px" id="resumoRacao"></div>
+    <div class="secao">
       <h3>⚖️ Consumo automático por categoria</h3>
       <div id="categoriasRacao"></div>
     </div>
-    <div class="secao glass">
+    <div class="secao">
       <h3>📦 Consumo por lote</h3>
       <div id="lotesRacao"></div>
     </div>
-    <div class="secao glass">
+    <div class="secao">
       <h3>📝 Lançamento de ração</h3>
       <form id="formRacao" class="form-grid" autocomplete="off">
         <label class="campo">Tipo
@@ -496,54 +580,45 @@ textarea.in{resize:vertical}
         <label class="campo">Kg / dia
           <input id="rKg" class="in" type="number" step="0.001" min="0" placeholder="0,000" required>
         </label>
-        <label class="campo">Lote
-          <select id="rLote" class="in"></select>
-        </label>
-        <label class="campo">Data
-          <input id="rData" class="in" type="date" required>
-        </label>
+        <label class="campo">Lote<select id="rLote" class="in"></select></label>
+        <label class="campo">Data<input id="rData" class="in" type="date" required></label>
         <button type="submit" class="botao btn-azul" style="grid-column:1/-1">Registrar Lançamento</button>
       </form>
     </div>
-    <div class="secao glass">
+    <div class="secao">
       <h3>🗂️ Lançamentos <span class="cont" id="totalHoje">Hoje: 0,000 kg</span></h3>
       <div id="listaRacao"></div>
     </div>
   </section>
 
-  <!-- ============ VIEW: VENDAS (FINANCEIRO) ============ -->
+  <!-- ============ VIEW: COMPRA & VENDA ============ -->
   <section id="view-vendas" class="view" hidden>
 
-    <!-- Dashboard financeiro: 3 cards (reutiliza .stats-grid / .stat-card) -->
-    <div class="secao glass" style="margin-top:6px">
-      <div class="plantel-topo">
-        <h3 style="margin:0">💰 Financeiro</h3>
-        <span class="cont" id="finPeriodoLabel">Todos os meses</span>
-      </div>
+    <!-- KPIs com brilho colorido (mock) -->
+    <div style="margin-top:10px">
       <div class="stats-grid" id="finKpis"></div>
-      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-        <button class="botao btn-verde" id="btnNovaVenda" style="flex:1;min-width:140px">💵 Registrar Venda</button>
-        <button class="botao btn-azul" id="btnNovaCompra" style="flex:1;min-width:140px">🛒 Registrar Compra</button>
-      </div>
-      <!-- Preço do kg da ração: usado para calcular o custo de ração dentro do LUCRO -->
-      <div class="form-grid" style="margin-top:12px">
+      <button class="btn-primario" id="btnNovaVenda">＋ Nova Venda</button>
+      <button class="btn-secundario" id="btnNovaCompra">🛒 Nova Compra</button>
+    </div>
+
+    <div class="secao">
+      <h3>💰 Financeiro <span class="cont" id="finPeriodoLabel">Todos os meses</span></h3>
+      <div class="form-grid">
         <label class="campo">Custo da ração (R$ / kg)
           <input id="inpPrecoKgRacao" class="in" type="number" step="0.01" min="0" placeholder="2,50">
         </label>
         <label class="campo" style="justify-content:flex-end">
-          <small style="color:#8fa3c8;font-weight:600;line-height:1.5">Multiplicado pelos kg lançados no módulo Ração no período filtrado. Fica salvo no aparelho.</small>
+          <small style="color:var(--txt-3);font-weight:600;line-height:1.5;text-transform:none;letter-spacing:0">Multiplicado pelos kg lançados no módulo Ração no período filtrado. Fica salvo no aparelho.</small>
         </label>
       </div>
     </div>
 
-    <!-- Gráfico de Lucro Acumulado (canvas puro, sem libs) -->
-    <div class="secao glass">
+    <div class="secao">
       <h3>📈 Lucro Acumulado</h3>
       <div style="position:relative"><canvas id="cvLucro" height="150" aria-label="Gráfico de lucro acumulado"></canvas></div>
     </div>
 
-    <!-- Tabela de Lucro por Ninhada (paramétrica) -->
-    <div class="secao glass">
+    <div class="secao">
       <h3>🐰 Lucro por Ninhada — ciclo de corte</h3>
       <div class="form-grid">
         <label class="campo">Filhotes / ninhada<input id="simQtd" class="in" type="number" min="1" value="12"></label>
@@ -552,30 +627,23 @@ textarea.in{resize:vertical}
         <label class="campo">Dias do ciclo<input id="simDias" class="in" type="number" min="1" value="45"></label>
       </div>
       <div class="tabela-scroll" style="margin-top:10px">
-        <table class="tabela-guia">
-          <tbody id="simLinhas"></tbody>
-        </table>
+        <table class="tabela-guia"><tbody id="simLinhas"></tbody></table>
       </div>
     </div>
 
-    <!-- Filtros + Lista de vendas -->
-    <div class="secao glass">
-      <h3>🧾 Vendas <span class="cont" id="contVendas">0</span></h3>
+    <div class="secao">
+      <h3>Vendas Recentes <span class="info-ico">i</span> <span class="cont" id="contVendas">0</span></h3>
       <input id="finBusca" class="in busca" type="search" placeholder="🔎 Buscar por cliente…">
-      <label class="campo" style="margin-bottom:10px">Filtrar por mês
-        <select id="finMes" class="in"></select>
-      </label>
+      <label class="campo" style="margin-bottom:10px">Filtrar por mês<select id="finMes" class="in"></select></label>
       <div id="listaVendas"></div>
     </div>
 
-    <!-- Lista de compras -->
-    <div class="secao glass">
+    <div class="secao">
       <h3>🛒 Compras <span class="cont" id="contCompras">0</span></h3>
       <div id="listaCompras"></div>
     </div>
 
-    <!-- Histórico: coelhos vendidos (nunca apagados do banco) -->
-    <div class="secao glass">
+    <div class="secao">
       <h3>📦 Coelhos Vendidos <span class="cont" id="contVendidos">0</span></h3>
       <div id="listaVendidos" class="lista-plantel"></div>
     </div>
@@ -583,7 +651,7 @@ textarea.in{resize:vertical}
 
   <!-- ============ VIEW: LOTES ============ -->
   <section id="view-lotes" class="view" hidden>
-    <div class="secao glass">
+    <div class="secao" style="margin-top:10px">
       <div class="plantel-topo">
         <h3 style="margin:0">🗂️ Lotes <span class="cont" id="contLotes">0</span></h3>
         <button class="btn-mini" id="btnNovoLoteTopo">+ Novo Lote</button>
@@ -594,7 +662,7 @@ textarea.in{resize:vertical}
 
   <!-- ============ VIEW: GUIA DE MANEJO ============ -->
   <section id="view-guia" class="view" hidden>
-    <div class="secao glass">
+    <div class="secao">
       <h3>💗 Janela de Cobertura — Regras</h3>
       <ul class="guia-lista">
         <li>♀ <b>Fêmea:</b> 1ª cobertura a partir de <b>~5 meses</b> (150 dias) de idade.</li>
@@ -604,7 +672,7 @@ textarea.in{resize:vertical}
       </ul>
     </div>
 
-    <div class="secao glass">
+    <div class="secao">
       <h3>💉 Calendário de Vacinas</h3>
       <div class="tabela-scroll">
         <table class="tabela-guia">
@@ -619,7 +687,7 @@ textarea.in{resize:vertical}
       </div>
     </div>
 
-    <div class="secao glass">
+    <div class="secao">
       <h3>✅ Cuidados na Aplicação</h3>
       <ul class="guia-lista">
         <li>💉 Use sempre <b>agulha nova</b> para cada animal — evita transmissão de doenças.</li>
@@ -631,48 +699,59 @@ textarea.in{resize:vertical}
       </ul>
     </div>
 
-    <div class="secao glass">
-      <h3>🥬 Vegetais Seguros e Frequência</h3>
-      <div class="veg-grid">
-        <div class="veg-item">🌿 Ora-pro-nóbis <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🍃 Folha de bananeira <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🍇 Amora (folha e fruto) <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🌾 Braquiária <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🌾 Capim-açú <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🥬 Couve <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🌿 Assa-peixe <span class="freq freq-d">DIÁRIO</span></div>
-        <div class="veg-item">🎃 Abóbora (fruto) <span class="freq freq-s">SEMANAL</span></div>
-        <div class="veg-item">🥭 Manga <span class="freq freq-s">SEMANAL</span></div>
-        <div class="veg-item">🍒 Pitanga <span class="freq freq-s">SEMANAL</span></div>
+    <!-- Alimentação segura (revisão veterinária em 4 seções) -->
+    <div class="secao">
+      <h3>🌿 Alimentação Segura — o que PODE e o que NÃO PODE</h3>
+      <div class="alerta-consang" style="margin-top:0;margin-bottom:14px">
+        <span>⚠️</span>
+        <div><b>Introduza aos poucos, lave bem e nunca dê molhado.</b>
+        Alimento úmido/azedado fermenta no ceco e causa diarreia e bloat (gases mortais). Troque 1 alimento por vez e observe as fezes por 2 dias.</div>
       </div>
-      <small style="display:block;margin-top:10px;color:#8fa3c8;font-size:11.5px;line-height:1.5">
-        Introduza alimentos novos aos poucos, em pequenas quantidades, e lave bem antes de oferecer.
-      </small>
+
+      <h3 style="font-size:13.5px;color:#4ade80">✅ PODE TODO DIA — sem restrição (base da dieta + ração)</h3>
+      <div class="cat-row"><span>🌾 Braquiária<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Gramínea principal • haste grossa ajuda no desgaste dos dentes</small></span><span class="cat-mult">Qtd: à vontade</span><span class="badge-status b-ok">TODO DIA</span></div>
+      <div class="cat-row"><span>🌾 Capim-açú<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Gramínea doce muito aceita • colher antes de espigar</small></span><span class="cat-mult">Qtd: à vontade</span><span class="badge-status b-ok">TODO DIA</span></div>
+      <div class="cat-row"><span>🍇 Folha de amora (amoreira)<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Palatável e nutritiva • pode dar o galhinho fino junto</small></span><span class="cat-mult">Qtd: à vontade</span><span class="badge-status b-ok">TODO DIA</span></div>
+      <div class="cat-row"><span>🍃 Folha de bananeira (murchada)<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Deixar murchando 12–24h antes (perde o látex e o excesso de água)</small></span><span class="cat-mult">Qtd: 1–2 folhas</span><span class="badge-status b-ok">TODO DIA</span></div>
+      <div class="cat-row"><span>🌿 Ora-pro-nóbis<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Rica em proteína (~25%) • excelente para matrizes em lactação</small></span><span class="cat-mult">Qtd: 1 ramo grande</span><span class="badge-status b-ok">TODO DIA</span></div>
+
+      <h3 style="font-size:13.5px;color:#fbbf24;margin-top:16px">⚠️ 2 a 3x NA SEMANA — misturar na braquiária, nunca dar puro</h3>
+      <div class="cat-row"><span>🌿 Assa-peixe<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Amarga e aromática (óleo essencial leve) • em excesso rejeita a comida</small></span><span class="cat-mult">Qtd: 1 galho pequeno</span><span class="badge-status b-aten">2–3x/SEM</span></div>
+      <div class="cat-row"><span>🥬 Couve<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Goitrógenos em excesso causam bócio e diarreia • sempre misturada</small></span><span class="cat-mult">Qtd: máx. 3 folhas</span><span class="badge-status b-aten">2–3x/SEM</span></div>
+      <div class="cat-row"><span>🍐 Folha de goiabeira<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Adstringente (taninos) • boa para firmar as fezes</small></span><span class="cat-mult">Qtd: 3–4 folhas</span><span class="badge-status b-aten">2–3x/SEM</span></div>
+      <div class="cat-row"><span>🍒 Folha de pitanga<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Aromática (óleo essencial) • pequena quantidade</small></span><span class="cat-mult">Qtd: 3–4 folhinhas</span><span class="badge-status b-aten">2–3x/SEM</span></div>
+      <div class="cat-row"><span>🌱 Mastruz / Erva-de-Santa-Maria (Chenopodium ambrosioides)<small style="display:block;color:#fbbf24;font-weight:700;font-size:11px;margin-top:2px">VERMÍFUGO NATURAL (ascaridol) • 1 folhinha por SEMANA • 🚫 NUNCA dar a gestantes (pode causar aborto)</small></span><span class="cat-mult">Qtd: 1 folhinha</span><span class="badge-status b-aten">1x/SEM</span></div>
+
+      <h3 style="font-size:13.5px;color:#8ab4f8;margin-top:16px">🍎 1x NA SEMANA — frutas, pouco (açúcar causa enterotoxemia)</h3>
+      <div class="cat-row"><span>🎃 Abóbora<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Fruto com casca lavada • cru, em cubos</small></span><span class="cat-mult">Qtd: até 100 g</span><span class="cont">1x/SEM</span></div>
+      <div class="cat-row"><span>🥭 Manga<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">SEM o caroço (risco de engasgo) • pedaços pequenos</small></span><span class="cat-mult">Qtd: 2 pedaços</span><span class="cont">1x/SEM</span></div>
+      <div class="cat-row"><span>🍒 Pitanga (fruto)<small style="display:block;color:var(--txt-3);font-weight:600;font-size:11px;margin-top:2px">Sem semente • só como agrado</small></span><span class="cat-mult">Qtd: 2 frutinhas</span><span class="cont">1x/SEM</span></div>
+
+      <div class="proibido-card" style="margin-top:16px">
+        <h3 style="color:#fca5a5">☠️ PROIBIDOS — Nunca oferecer (com motivo)</h3>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🥔 Folha e ramagem de batata inglesa<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ TÓXICO — Contém SOLANINA. Causa intoxicação e morte.</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>❓ "Batata Santa Maria" (se for folha de Solanum/batata)<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">⚠️ Se for a erva Mastruz (Chenopodium), veja a seção ⚠️ acima. Se for folha de batata (Solanum): ☠️ solanina.</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🍅 Tomateiro (folhas e talos)<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Solanina e tomatina</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🍆 Berinjela (folhas e fruto cru)<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Glicoalcaloides (solanina)</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🧅 Cebola<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Dissulfetos → anemia hemolítica</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🧄 Alho<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Mesma família da cebola • anemia</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🥑 Abacate<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ PERSINA — cardiotóxica, morte súbita (folha, fruto e caroço)</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🌿 Samambaia<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Ptaquilosídeo — tóxica e carcinogênica</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🥔 Batata crua (tubérculo)<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Amido cru fermenta + solanina na casca</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🍆 Jiló<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">EVITAR — família Solanum, digestão difícil</small></span><span class="badge-status b-urg">EVITAR</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🌸 Comigo-ninguém-pode<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Oxalato de cálcio → queimadura na boca</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🌺 Azaleia<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Grayanotoxina — paralisa o coração</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🍞 Pão e farináceos<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Fermentam no ceco → bloat e enterotoxemia</small></span><span class="badge-status b-urg">NUNCA</span></div>
+        <div class="cat-row" style="background:rgba(220,38,38,.08);border-color:rgba(248,113,113,.25)"><span>🍬 Doces e industrializados<small style="display:block;color:#ff6b6b;font-weight:800;font-size:11px;margin-top:2px">☠️ Açúcar/gordura → enterotoxemia e obesidade</small></span><span class="badge-status b-urg">NUNCA</span></div>
+      </div>
     </div>
 
-    <div class="secao glass" style="padding:0;border:0;background:none;box-shadow:none;backdrop-filter:none">
-      <div class="proibido-card">
-        <h3 style="color:#fca5a5">☠️ PROIBIDOS — Nunca oferecer</h3>
-        <div class="perigo-max">☠️ ABACATE — NUNCA! Contém persina, tóxica para coelhos (pode causar morte súbita).</div>
-        <ul class="guia-lista">
-          <li>🍆 <b>Jiló — EVITAR</b> (digestão difícil)</li>
-          <li>🥔 Batata crua</li>
-          <li>🧅 Cebola</li>
-          <li>🧄 Alho</li>
-          <li>🍅 Folhas de tomate</li>
-          <li>🍞 Pão e farináceos</li>
-          <li>🍬 Doces e alimentos industrializados</li>
-          <li>🌸 Plantas tóxicas: comigo-ninguém-pode e azaleia</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="secao glass">
+    <div class="secao">
       <h3>🕰️ Rotina Diária Sugerida</h3>
       <ul class="guia-lista">
         <li>🌅 <b>Manhã:</b> trocar e conferir água limpa, distribuir ração do dia, checar ninhadas e filhotes.</li>
         <li>☀️ <b>Tarde:</b> oferecer forragem verde, observar fezes, apetite e comportamento de cada gaiola.</li>
-        <li>🌙 <b>Noite:</b> conferir ventilação e temperatura, anotar pesagens/coberturas/pastos do dia no app.</li>
+        <li>🌙 <b>Noite:</b> conferir ventilação e temperatura, anotar pesagens/coberturas do dia no app.</li>
         <li>📅 <b>Semanal:</b> desinfetar comedouros e bebedouros, pesar animais em crescimento, revisar alertas de vacina.</li>
       </ul>
     </div>
@@ -694,16 +773,16 @@ textarea.in{resize:vertical}
 </div>
 <button id="fab" aria-label="Adicionar">+</button>
 
-<!-- ============ TAB BAR (5 abas) ============ -->
+<!-- ============ TAB BAR (ativo com sublinhado azul) ============ -->
 <nav id="tabbar">
-  <button class="tab-btn ativo" data-aba="dashboard"><span class="ico">🏠</span>Dashboard</button>
+  <button class="tab-btn ativo" data-aba="dashboard"><span class="ico">🏠</span>Início</button>
   <button class="tab-btn" data-aba="plantel"><span class="ico">🐰</span>Plantel</button>
   <button class="tab-btn" data-aba="racao"><span class="ico">🌾</span>Ração</button>
   <button class="tab-btn" data-aba="vendas"><span class="ico">💰</span>Vendas</button>
   <button class="tab-btn" data-aba="lotes"><span class="ico">🗂️</span>Lotes</button>
 </nav>
 
-<!-- ============ MODAL: EDITAR RELATÓRIO COMPLETO ============ -->
+<!-- ============ MODAIS (todos preservados) ============ -->
 <div class="overlay" id="mEditar" hidden>
   <div class="modal">
     <div class="modal-head"><h3>✏️ Editar Relatório Completo</h3><button class="fechar" data-fechar="mEditar">✕</button></div>
@@ -749,7 +828,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: CADASTRO DE COELHO ============ -->
 <div class="overlay" id="mNovoCoelho" hidden>
   <div class="modal">
     <div class="modal-head"><h3>🐰 Cadastro de Coelho</h3><button class="fechar" data-fechar="mNovoCoelho">✕</button></div>
@@ -772,7 +850,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: COBERTURA ============ -->
 <div class="overlay" id="mCobertura" hidden>
   <div class="modal">
     <div class="modal-head"><h3>🤍 Registrar Cobertura</h3><button class="fechar" data-fechar="mCobertura">✕</button></div>
@@ -787,7 +864,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: PARTO ============ -->
 <div class="overlay" id="mParto" hidden>
   <div class="modal">
     <div class="modal-head"><h3>🐇 Registrar Parto</h3><button class="fechar" data-fechar="mParto">✕</button></div>
@@ -797,7 +873,7 @@ textarea.in{resize:vertical}
       <label class="campo">Filhotes mortos<input id="pMortos" class="in" type="number" min="0" value="0"></label>
       <label class="campo full">Data do parto<input id="pData" class="in" type="date"></label>
     </div>
-    <small style="display:block;color:#8fa3c8;font-size:11.5px;margin-top:8px;line-height:1.5">
+    <small style="display:block;color:var(--txt-3);font-size:11.5px;margin-top:8px;line-height:1.5">
       🍼 A matriz será classificada automaticamente como <b>Amamentando (0,300 kg/dia)</b> pelos próximos 35 dias.
       A janela de cobertura reabre a partir do <b>18º dia</b> pós-parto.
     </small>
@@ -805,7 +881,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: PESO RÁPIDO ============ -->
 <div class="overlay" id="mPeso" hidden>
   <div class="modal">
     <div class="modal-head"><h3>⚖️ Registrar Peso</h3><button class="fechar" data-fechar="mPeso">✕</button></div>
@@ -818,7 +893,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: VACINA ============ -->
 <div class="overlay" id="mVacina" hidden>
   <div class="modal">
     <div class="modal-head"><h3>💉 Aplicar Vacina / Medicação</h3><button class="fechar" data-fechar="mVacina">✕</button></div>
@@ -832,7 +906,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: REGISTRAR VENDA ============ -->
 <div class="overlay" id="mVenda" hidden>
   <div class="modal">
     <div class="modal-head"><h3>💵 Registrar Venda</h3><button class="fechar" data-fechar="mVenda">✕</button></div>
@@ -847,7 +920,7 @@ textarea.in{resize:vertical}
       <label class="campo">Pago?<select id="sPago" class="in"><option>Sim</option><option>Não</option></select></label>
       <label class="campo">Data<input id="sData" class="in" type="date"></label>
     </div>
-    <small style="display:block;color:#8fa3c8;font-size:11.5px;margin-top:8px;line-height:1.5">
+    <small style="display:block;color:var(--txt-3);font-size:11.5px;margin-top:8px;line-height:1.5">
       📌 O total é calculado automaticamente (peso × preço/kg), mas você pode digitar outro valor.
       O coelho vai para <b>Vendidos</b> com histórico preservado — nunca é apagado do banco.
     </small>
@@ -855,7 +928,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: REGISTRAR COMPRA ============ -->
 <div class="overlay" id="mCompra" hidden>
   <div class="modal">
     <div class="modal-head"><h3>🛒 Registrar Compra</h3><button class="fechar" data-fechar="mCompra">✕</button></div>
@@ -870,13 +942,12 @@ textarea.in{resize:vertical}
       <label class="campo">Data<input id="coData" class="in" type="date"></label>
       <label class="campo full">Foto da nota (opcional)<input id="coFoto" class="in" type="file" accept="image/*" style="padding:8px"></label>
     </div>
-    <!-- CORREÇÃO: campo invisível que guarda a foto da nota em base64 (estava faltando e travava o modal) -->
     <input type="hidden" id="coNotaFoto">
     <div class="nota-prev" id="coFotoPrev" hidden>
       <img id="coFotoImg" alt="Nota fiscal">
       <button class="btn-mini" id="btnRemoveFoto" type="button" style="margin-top:6px">✕ Remover foto</button>
     </div>
-    <small style="display:block;color:#8fa3c8;font-size:11.5px;margin-top:8px;line-height:1.5">
+    <small style="display:block;color:var(--txt-3);font-size:11.5px;margin-top:8px;line-height:1.5">
       📌 Compra de <b>Matriz</b> ou <b>Reprodutor</b> já cria o animal no plantel com a linhagem.
       Compra de <b>Ração</b> vira custo no financeiro.
     </small>
@@ -884,7 +955,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: NOVO LOTE ============ -->
 <div class="overlay" id="mLote" hidden>
   <div class="modal">
     <div class="modal-head"><h3>🗂️ Novo Lote</h3><button class="fechar" data-fechar="mLote">✕</button></div>
@@ -893,7 +963,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: RENOMEAR LOTE ============ -->
 <div class="overlay" id="mRenomear" hidden>
   <div class="modal">
     <div class="modal-head"><h3>✏️ Renomear Lote</h3><button class="fechar" data-fechar="mRenomear">✕</button></div>
@@ -903,7 +972,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- ============ MODAL: DADOS DO CRIATÓRIO ============ -->
 <div class="overlay" id="mCriatorio" hidden>
   <div class="modal">
     <div class="modal-head"><h3>🏢 Dados do Criatório</h3><button class="fechar" data-fechar="mCriatorio">✕</button></div>
@@ -915,14 +983,13 @@ textarea.in{resize:vertical}
         <input id="crZap" class="in" type="tel" inputmode="numeric" maxlength="16" placeholder="(35) 99999-9999">
       </label>
     </div>
-    <small style="display:block;color:#8fa3c8;font-size:11.5px;line-height:1.6;margin-top:10px">
-      Estes dados aparecem na capa e no rodapé de todos os relatórios PDF. O número vira um link clicável no PDF (abre direto no WhatsApp — o código do Brasil +55 é adicionado automaticamente).
+    <small style="display:block;color:var(--txt-3);font-size:11.5px;line-height:1.6;margin-top:10px">
+      Estes dados aparecem na capa e no rodapé de todos os relatórios PDF. O número vira um link clicável no PDF (+55 automático).
     </small>
     <button class="botao btn-azul" id="crSalvar" style="width:100%;margin-top:14px">SALVAR DADOS DO CRIATÓRIO</button>
   </div>
 </div>
 
-<!-- ============ MODAL: RELATÓRIO PDF ============ -->
 <div class="overlay" id="mPDF" hidden>
   <div class="modal">
     <div class="modal-head"><h3>📄 Gerar Relatório PDF</h3><button class="fechar" data-fechar="mPDF">✕</button></div>
@@ -935,7 +1002,7 @@ textarea.in{resize:vertical}
         <input id="pdfLoteBusca" class="in" list="pdfLoteList" placeholder="Digite ou selecione o lote…">
         <datalist id="pdfLoteList"></datalist>
       </label>
-      <small id="pdfLoteInfo" style="display:block;color:#8fa3c8;font-size:11px;margin-top:5px"></small>
+      <small id="pdfLoteInfo" style="display:block;color:var(--txt-3);font-size:11px;margin-top:5px"></small>
     </div>
     <div class="form-grid" style="margin-top:12px">
       <label class="campo">Período — de<input id="pdfDe" class="in" type="date"></label>
@@ -951,13 +1018,12 @@ textarea.in{resize:vertical}
       <label><input type="checkbox" id="ckCriatorio" checked> Dados do criatório</label>
     </div>
     <button class="botao btn-verde" id="pdfGerar" style="width:100%;margin-top:14px">GERAR PDF</button>
-    <small style="display:block;color:#8fa3c8;font-size:11px;margin-top:9px;text-align:center">
+    <small style="display:block;color:var(--txt-3);font-size:11px;margin-top:9px;text-align:center">
       A 1ª geração precisa de internet (biblioteca PDF). Depois fica em cache.
     </small>
   </div>
 </div>
 
-<!-- ============ MODAL: CONFIRMAÇÃO ============ -->
 <div class="overlay" id="mConfirm" hidden>
   <div class="modal" style="max-width:400px">
     <div class="modal-head"><h3 id="cfTitulo">Confirmar</h3><button class="fechar" data-fechar="mConfirm">✕</button></div>
@@ -969,7 +1035,6 @@ textarea.in{resize:vertical}
   </div>
 </div>
 
-<!-- Toasts -->
 <div id="toasts"></div>
 
 <script>
@@ -1007,6 +1072,11 @@ function fmtDataBR(iso){
   const p = String(iso).split('-');
   return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : '—';
 }
+function quandoVenda(iso){ /* "hoje" / "ontem" / data curta (estilo do mock) */
+  if (iso === hojeISO()) return 'hoje';
+  if (iso === diasAtrasISO(1)) return 'ontem';
+  return fmtDataBR(iso).slice(0,5);
+}
 function mesCurto(iso){
   try{
     const d = new Date(iso+'T12:00:00');
@@ -1015,16 +1085,13 @@ function mesCurto(iso){
   }catch(_){ return '?'; }
 }
 
-/* Formatação brasileira de números/pesos/dinheiro */
 function fmtNumBR(n, dec){ return Number(n).toFixed(dec).replace('.', ','); }
 function fmtBRL(n){ return 'R$ ' + fmtNumBR(Number(n)||0, 2); }
-/* Formato curto do card: "1,2 kg" */
 function fmtPesoCurto(kg){
   if (kg==null || isNaN(kg)) return '—';
   let s = Number(kg).toFixed(2).replace(/0+$/,'').replace(/[.,]$/,'');
   return s.replace('.', ',') + ' kg';
 }
-/* Formato da estatística: "1,600 kg" — abaixo de 1 kg mostra em gramas ("800 g") */
 function fmtPesoEstat(kg){
   if (kg==null || isNaN(kg)) return '—';
   if (kg < 1) return String(Math.round(kg*1000)) + ' g';
@@ -1046,7 +1113,6 @@ function fmtIdade(c){
 
 /* ===== 2. CONSTANTES ===== */
 const STORAGE_KEY = 'cunicoelho_db_v1';
-/* FINANCEIRO: chaves separadas conforme requisito */
 const KEY_VENDAS  = 'cunicoelho_vendas';
 const KEY_COMPRAS = 'cunicoelho_compras';
 const CHAVES_ANTIGAS = ['cunicoelho_data','cunicoelho_db_v0','cunicoelho_v1','cunicoelho'];
@@ -1054,7 +1120,6 @@ const CHAVES_ANTIGAS = ['cunicoelho_data','cunicoelho_db_v0','cunicoelho_v1','cu
 const RAÇAS = ['Nova Zelândia Branco','Califórnia','Chinchila','Gigante de Flandres','Borboleta',
   'Rex','Angorá','Himalaia','Bélgica','Polinésio','Mestiço'];
 
-/* Vacinas/medicações pré-definidas com calendário automático */
 const VACINAS_PRE = [
   { nome:'Mixomatose',        icone:'🛡️', intervalo:365, tipo:'Vacina' },
   { nome:'VHD',               icone:'🩸', intervalo:365, tipo:'Vacina' },
@@ -1062,53 +1127,46 @@ const VACINAS_PRE = [
   { nome:'Sulfaquinoxalina',  icone:'💣', intervalo:90,  tipo:'Medicação preventiva' }
 ];
 
-/* Ração automática por categoria (kg/dia — sem valores em dinheiro) */
 const DOSES_RACAO = { 'Amamentando':0.300, 'Matriz':0.180, 'Macho':0.120, 'Crescimento':0.130, 'Engorda':0.160 };
 const ICONE_CAT   = { 'Amamentando':'🍼', 'Matriz':'🟢', 'Macho':'♂️', 'Crescimento':'📈', 'Engorda':'🍖' };
 
-/* ===== JANELA DE COBERTURA — quando o animal pode cruzar =====
-   - Fêmea: 1ª cobertura a partir de ~5 meses (150 dias)
-   - Pós-parto: cobrir a partir de 18 dias (janela ideal: 18–35 dias)
-   - Macho: reprodutor a partir de ~7 meses (210 dias) */
 const IDADE_MIN_FEMEA = 150;
 const IDADE_MIN_MACHO = 210;
 const POS_PARTO_MIN   = 18;
 const JANELA_IDEAL    = 35;
 
-/* Foto padrão (coelho Nova Zelândia Branco em SVG inline) */
+/* Ícones SVG dos KPIs (estilo linha, como no mock) */
+const SVG_UP   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>';
+const SVG_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="15 17 21 17 21 11"/></svg>';
+const SVG_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
+/* Foto padrão (coelho em SVG inline) */
 var FOTO_PADRAO = 'data:image/svg+xml,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">' +
-  '<rect width="96" height="96" rx="20" fill="#eef2ff"/>' +
-  '<ellipse cx="40" cy="29" rx="6.5" ry="16" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>' +
-  '<ellipse cx="56" cy="29" rx="6.5" ry="16" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>' +
-  '<ellipse cx="40" cy="31" rx="3" ry="10" fill="#fbcfe8"/>' +
-  '<ellipse cx="56" cy="31" rx="3" ry="10" fill="#fbcfe8"/>' +
-  '<circle cx="48" cy="59" r="21" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>' +
-  '<circle cx="41.5" cy="56" r="2.4" fill="#1e3a8a"/><circle cx="54.5" cy="56" r="2.4" fill="#1e3a8a"/>' +
-  '<path d="M46 63.5 h4 l-2 3.4 z" fill="#f43f5e"/>' +
-  '<g stroke="#c7d2fe" stroke-width="1.4" stroke-linecap="round">' +
-  '<line x1="44" y1="66" x2="33" y2="64"/><line x1="44" y1="69" x2="34" y2="72"/>' +
-  '<line x1="52" y1="66" x2="63" y2="64"/><line x1="52" y1="69" x2="62" y2="72"/></g></svg>'
+  '<rect width="96" height="96" rx="20" fill="#16294a"/>' +
+  '<ellipse cx="40" cy="29" rx="6.5" ry="16" fill="#e7eefc"/>' +
+  '<ellipse cx="56" cy="29" rx="6.5" ry="16" fill="#e7eefc"/>' +
+  '<ellipse cx="40" cy="31" rx="3" ry="10" fill="#f9a8d4"/>' +
+  '<ellipse cx="56" cy="31" rx="3" ry="10" fill="#f9a8d4"/>' +
+  '<circle cx="48" cy="59" r="21" fill="#e7eefc"/>' +
+  '<circle cx="41.5" cy="56" r="2.4" fill="#0a1526"/><circle cx="54.5" cy="56" r="2.4" fill="#0a1526"/>' +
+  '<path d="M46 63.5 h4 l-2 3.4 z" fill="#f43f5e"/></svg>'
 );
 
-/* Ícone do app (SVG inline — coelho branco em fundo #0a1830).
-   Baixável como icon-192.png / icon-512.png pelo menu ••• */
+/* Ícone/logo do app (coelho branco em fundo navy) */
 var ICONE_APP_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
-  '<rect width="512" height="512" rx="112" fill="#0a1830"/>' +
+  '<rect width="512" height="512" rx="112" fill="#0a1526"/>' +
   '<circle cx="398" cy="118" r="128" fill="#2563eb" opacity="0.18"/>' +
   '<circle cx="104" cy="410" r="100" fill="#16a34a" opacity="0.14"/>' +
-  '<ellipse cx="212" cy="152" rx="34" ry="86" fill="#ffffff"/>' +
-  '<ellipse cx="300" cy="152" rx="34" ry="86" fill="#ffffff"/>' +
-  '<ellipse cx="212" cy="160" rx="16" ry="56" fill="#fbcfe8"/>' +
-  '<ellipse cx="300" cy="160" rx="16" ry="56" fill="#fbcfe8"/>' +
-  '<circle cx="256" cy="308" r="118" fill="#ffffff"/>' +
-  '<circle cx="222" cy="294" r="11" fill="#1e3a8a"/>' +
-  '<circle cx="290" cy="294" r="11" fill="#1e3a8a"/>' +
-  '<path d="M244 330 h24 l-12 16 z" fill="#f43f5e"/>' +
-  '<g stroke="#cbd5e1" stroke-width="5" stroke-linecap="round">' +
-  '<line x1="236" y1="338" x2="180" y2="330"/><line x1="236" y1="350" x2="184" y2="356"/>' +
-  '<line x1="276" y1="338" x2="332" y2="330"/><line x1="276" y1="350" x2="328" y2="356"/></g></svg>';
+  '<ellipse cx="212" cy="152" rx="34" ry="86" fill="#e7eefc"/>' +
+  '<ellipse cx="300" cy="152" rx="34" ry="86" fill="#e7eefc"/>' +
+  '<ellipse cx="212" cy="160" rx="16" ry="56" fill="#f9a8d4"/>' +
+  '<ellipse cx="300" cy="160" rx="16" ry="56" fill="#f9a8d4"/>' +
+  '<circle cx="256" cy="308" r="118" fill="#e7eefc"/>' +
+  '<circle cx="222" cy="294" r="11" fill="#0a1526"/>' +
+  '<circle cx="290" cy="294" r="11" fill="#0a1526"/>' +
+  '<path d="M244 330 h24 l-12 16 z" fill="#f43f5e"/></svg>';
 
 /* ===== 3. BANCO LOCAL (localStorage + migração) ===== */
 let db = null;
@@ -1120,7 +1178,6 @@ function normalizarDB(d){
   d.coberturas = Array.isArray(d.coberturas) ? d.coberturas : [];
   d.ninhadas   = Array.isArray(d.ninhadas)   ? d.ninhadas   : [];
   d.racao      = Array.isArray(d.racao)      ? d.racao      : [];
-  /* FINANCEIRO: vendas e compras */
   d.vendas  = Array.isArray(d.vendas)  ? d.vendas  : [];
   d.compras = Array.isArray(d.compras) ? d.compras : [];
   d.coelhos.forEach(c => {
@@ -1132,15 +1189,13 @@ function normalizarDB(d){
     c.consanguineo = !!c.consanguineo;
     c.pai = c.pai || {nome:'',lote:''};
     c.mae = c.mae || {nome:'',lote:''};
-    c.status   = c.status   || 'ativo';   /* 'ativo' | 'vendido' — vendido NUNCA é apagado */
-    c.linhagem = c.linhagem || '';        /* '' | 'Azul' | 'Vermelha' */
+    c.status   = c.status   || 'ativo';
+    c.linhagem = c.linhagem || '';
   });
   d.lotes = d.lotes.map(l => (typeof l === 'string' ? {nome:l} : l));
-  /* Dados do criatório (nome + WhatsApp) — exibidos nos relatórios PDF */
   d.criatorio = (d.criatorio && typeof d.criatorio === 'object') ? d.criatorio : {};
   d.criatorio.nome = d.criatorio.nome || '';
   d.criatorio.whatsapp = d.criatorio.whatsapp || '';
-  /* Configurações gerais (preço do kg da ração, simulador de ninhada) */
   d.config = (d.config && typeof d.config === 'object') ? d.config : {};
   if (d.config.precoKgRacao == null) d.config.precoKgRacao = 2.50;
   d.config.sim = (d.config.sim && typeof d.config.sim === 'object') ? d.config.sim : { qtd:12, preco:60, custo:200, dias:45 };
@@ -1149,11 +1204,10 @@ function normalizarDB(d){
 function salvarDB(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    salvarFinanceiro(); /* espelha vendas/compras nas chaves próprias */
+    salvarFinanceiro();
   }
   catch(e){ toast('Erro ao salvar no aparelho (armazenamento cheio?).','erro'); }
 }
-/* FINANCEIRO: grava nas chaves pedidas cunicoelho_vendas / cunicoelho_compras */
 function salvarFinanceiro(){
   try{
     localStorage.setItem(KEY_VENDAS,  JSON.stringify(db.vendas  || []));
@@ -1166,7 +1220,6 @@ function carregarDB(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) dados = JSON.parse(raw);
     else {
-      /* Migração de versões antigas (chaves antigas → chave única atual) */
       for (const antiga of CHAVES_ANTIGAS){
         const rawAntigo = localStorage.getItem(antiga);
         if (rawAntigo){
@@ -1179,7 +1232,6 @@ function carregarDB(){
       }
     }
     const d = normalizarDB(dados);
-    /* As chaves separadas de vendas/compras têm prioridade (fonte de verdade) */
     try{
       const rv = localStorage.getItem(KEY_VENDAS);
       const rc = localStorage.getItem(KEY_COMPRAS);
@@ -1191,7 +1243,7 @@ function carregarDB(){
   return gerarSeed();
 }
 
-/* ===== 4. SEED (dados de exemplo) ===== */
+/* ===== 4. SEED ===== */
 function gerarSeed(){
   const atras = (n) => diasAtrasISO(n);
   return normalizarDB({
@@ -1264,24 +1316,20 @@ function gerarSeed(){
   });
 }
 
-/* ===== 5. ESTADO + REGRAS DE NEGÓCIO ===== */
+/* ===== 5. ESTADO + REGRAS ===== */
 const state = { aba:'dashboard', coelhoId:null, busca:'', editCtx:null, cbConfirm:null, swReg:null,
-                finMes:'', finCliente:'' }; /* filtros do financeiro */
-let deferredPrompt = null; /* evento de instalação PWA nativo */
+                finMes:'', finCliente:'' };
+let deferredPrompt = null;
 
-/* Apenas animais ativos (não vendidos) entram em plantel/cálculos/alertas */
 const ativos = () => db.coelhos.filter(c => c.status !== 'vendido');
-
 const porId = (id) => db.coelhos.find(c => c.id === id) || null;
 function coelhoAtual(){
   if (state.coelhoId && porId(state.coelhoId)) return porId(state.coelhoId);
   state.coelhoId = db.coelhos.length ? db.coelhos[0].id : null;
   return porId(state.coelhoId);
 }
-/* IRMANDADE: mesmo lote + id diferente = irmão (vale para macho e fêmea igualmente) */
 const irmaosDe = (c) => db.coelhos.filter(o => o.id !== c.id && o.lote === c.lote);
 
-/* Status de uma vacina pré-definida para um coelho */
 function statusVacina(coelho, vac){
   const apps = (coelho.vacinas || [])
     .filter(v => norm(v.tipo) === norm(vac.nome))
@@ -1309,7 +1357,6 @@ function classeStatus(s){
   if (s.tipo==='vencendo') return 'b-aten';
   return 'b-urg';
 }
-/* Pior status geral do animal (badge do Plantel) */
 function statusGeral(c){
   let pior = 'ok';
   for (const v of VACINAS_PRE){
@@ -1320,32 +1367,27 @@ function statusGeral(c){
   return pior;
 }
 
-/* Categoria de ração automática */
 function categoriaCoelho(c){
-  if (c.status === 'vendido') return '—'; /* vendido sai do consumo */
+  if (c.status === 'vendido') return '—';
   if (c.matriz && c.sexo === 'F'){
     if (c.ultimoParto && diffDias(c.ultimoParto, hojeISO()) < 35) return 'Amamentando';
     return 'Matriz';
   }
-  if (idadeDias(c) < 90) return 'Crescimento'; /* vale para macho e fêmea */
+  if (idadeDias(c) < 90) return 'Crescimento';
   if (c.sexo === 'M') return 'Macho';
   return 'Engorda';
 }
 const doseDe = (c) => (c.status === 'vendido' ? 0 : (DOSES_RACAO[categoriaCoelho(c)] || 0));
 
-/* SEMÁFORO DE CONSANGUINIDADE — getSanguinidade(c1,c2) */
 function getSanguinidade(c1, c2){
   if (!c1 || !c2 || c1.id === c2.id) return null;
-  if (c1.lote === c2.lote) return 'vermelho'; /* mesmo lote */
+  if (c1.lote === c2.lote) return 'vermelho';
   const mesmoPai = c1.pai && c2.pai && c1.pai.nome && norm(c1.pai.nome) === norm(c2.pai.nome);
   const mesmaMae = c1.mae && c2.mae && c1.mae.nome && norm(c1.mae.nome) === norm(c2.mae.nome);
-  if (mesmoPai || mesmaMae) return 'laranja'; /* mesmo pai ou mesma mãe */
+  if (mesmoPai || mesmaMae) return 'laranja';
   return 'verde';
 }
 
-/* FINANCEIRO: regra de venda de Matriz Ativa.
-   Bloqueia se a matriz for da mesma linhagem/baia de algum macho reprodutor ativo
-   (usa getSanguinidade: vermelho = mesmo lote; laranja = parente direto). */
 function bloqueioVendaMatriz(c){
   if (!c || !c.matriz) return null;
   for (const m of ativos()){
@@ -1360,7 +1402,6 @@ function bloqueioVendaMatriz(c){
   return null;
 }
 
-/* JANELA DE COBERTURA — semáforo de quando o animal pode cruzar */
 function janelaCobertura(c){
   if (!c) return null;
   const idade = idadeDias(c);
@@ -1383,7 +1424,6 @@ function janelaCobertura(c){
     return { nivel:'verde', titulo:'✅ Pronta para cobertura',
       detalhe:(c.ultimoParto ? 'Último parto: ' + fmtDataBR(c.ultimoParto) + '.' : 'Nunca coberta — em idade ideal.') };
   }
-  /* Macho */
   if (idade < IDADE_MIN_MACHO){
     return { nivel:'vermelho', titulo:'⏳ Macho muito jovem',
       detalhe:'Reprodutores começam a ser usados a partir de ~7 meses. Faltam ' + (IDADE_MIN_MACHO - idade) + ' dia(s).' };
@@ -1391,7 +1431,6 @@ function janelaCobertura(c){
   return { nivel:'verde', titulo:'✅ Pronto para reprodução', detalhe:'Idade atual: ' + fmtIdade(c) + '.' };
 }
 
-/* Crescimento % — calculado pelo HISTÓRICO DE PESOS (independente do sexo) */
 function crescimentoPct(c){
   const p = (c.pesos||[]).slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)));
   if (p.length < 2) return null;
@@ -1400,7 +1439,7 @@ function crescimentoPct(c){
   return (ultimo - primeiro) / primeiro * 100;
 }
 
-/* ===== 6. TOASTS + CONFIRMAÇÃO (nunca alert nativo) ===== */
+/* ===== 6. TOASTS + CONFIRMAÇÃO ===== */
 function toast(msg, tipo){
   tipo = tipo || 'ok';
   const ic = { ok:'✅', erro:'⛔', info:'ℹ️', aviso:'⚠️' }[tipo] || '✅';
@@ -1426,7 +1465,6 @@ function fecharTodosModais(){ $$('.overlay').forEach(o => o.hidden = true); }
 function popularSelectLotes(sel, valor){
   sel.innerHTML = db.lotes.map(l => '<option value="'+esc(l.nome)+'"'+(l.nome===valor?' selected':'')+'>'+esc(l.nome)+'</option>').join('') || '<option value="">— cadastre um lote —</option>';
 }
-/* Só animais ATIVOS aparecem nos selects (vendidos não podem ser revendidos/cobertos) */
 function popularSelectCoelhos(sel, filtroFn, placeholder){
   sel.innerHTML = '<option value="">' + (placeholder||'Selecione…') + '</option>' +
     ativos().filter(filtroFn || (()=>true))
@@ -1434,7 +1472,7 @@ function popularSelectCoelhos(sel, filtroFn, placeholder){
       .join('');
 }
 
-/* ===== 8. GRÁFICO DE PESO (SVG puro — linha verde, bolinhas, área) ===== */
+/* ===== 8. GRÁFICO DE PESO (SVG) ===== */
 function graficoPesoSVG(pesos){
   const pts = (pesos||[]).slice().sort((a,b)=>String(a.data).localeCompare(String(b.data))).slice(-6);
   if (pts.length < 2) return '<div class="sem-dados">⚖️ Registre ao menos 2 pesagens para ver a evolução.</div>';
@@ -1446,23 +1484,27 @@ function graficoPesoSVG(pesos){
   const Y = kg => padT + (1-(kg-min)/(max-min))*(h-padT-padB);
   const linha = pts.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(Number(p.kg)).toFixed(1)).join(' ');
   const area  = linha + ' L'+X(pts.length-1).toFixed(1)+','+(h-padB)+' L'+X(0).toFixed(1)+','+(h-padB)+' Z';
-  const dots = pts.map((p,i)=>'<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(Number(p.kg)).toFixed(1)+'" r="3.6" fill="#16a34a" stroke="#fff" stroke-width="1.4"/>').join('');
-  const labels = pts.map((p,i)=>'<text x="'+X(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="9.5" fill="#9ca3af">'+mesCurto(p.data)+'</text>').join('');
+  const dots = pts.map((p,i)=>'<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(Number(p.kg)).toFixed(1)+'" r="3.6" fill="#4ade80" stroke="#0a1526" stroke-width="1.6"/>').join('');
+  const labels = pts.map((p,i)=>'<text x="'+X(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="9.5" fill="#64799f">'+mesCurto(p.data)+'</text>').join('');
   return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução de peso">' +
-    '<path d="'+area+'" fill="rgba(22,163,74,.12)"/>' +
-    '<path d="'+linha+'" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="'+area+'" fill="rgba(74,222,128,.10)"/>' +
+    '<path d="'+linha+'" fill="none" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
     dots + labels + '</svg>';
 }
 
-/* ===== 9. NAVEGAÇÃO ===== */
-const TITULOS = { dashboard:'Detalhe do Animal', plantel:'Plantel', racao:'Ração', vendas:'Vendas', lotes:'Lotes', guia:'Guia de Manejo' };
+/* ===== 9. NAVEGAÇÃO (atualiza também a pílula seletora) ===== */
+const TITULOS = { dashboard:'Início', plantel:'Plantel', racao:'Ração', vendas:'Compra & Venda', lotes:'Lotes', guia:'Guia de Manejo' };
 function trocarAba(aba){
   state.aba = aba;
   $$('.view').forEach(v => v.hidden = (v.id !== 'view-' + aba));
   $$('.tab-btn').forEach(b => b.classList.toggle('ativo', b.dataset.aba === aba));
   $$('.side-btn').forEach(b => b.classList.toggle('ativo', b.dataset.aba === aba));
-  $('#tituloTopo').textContent = TITULOS[aba] || 'CuniCoelho';
+  $$('#menuAbas .menu-item').forEach(b => b.classList.toggle('sel', b.dataset.aba === aba));
+  const st = $('#selAbaTxt'); if (st) st.textContent = TITULOS[aba] || 'CuniCoelho';
+  $('#menuAbas').classList.remove('aberto');
+  $('#seletorAba').classList.remove('aberto');
   $('#menuMais').classList.remove('aberto');
+  $('#menuAlerta').classList.remove('aberto');
   $('#speedDial').classList.remove('aberto');
   try{ window.scrollTo({top:0, behavior:'instant'}); }catch(_){ window.scrollTo(0,0); }
   if (aba==='dashboard') renderDashboard();
@@ -1477,9 +1519,10 @@ function renderTudo(){
   else if (state.aba==='racao') renderRacao();
   else if (state.aba==='vendas') renderVendas();
   else if (state.aba==='lotes') renderLotes();
+  atualizarPipBell();
 }
 
-/* ===== 10. RENDER: DASHBOARD (cada bloco em try/catch próprio) ===== */
+/* ===== 10. DASHBOARD ===== */
 function blocoSeguro(idEl, nome, fn){
   try{ fn(); }
   catch(e){
@@ -1493,8 +1536,8 @@ function renderDashboard(){
   if (!c){
     $('#dashConsang').innerHTML = '';
     $('#dashCobertura').innerHTML = '';
-    $('#dashCard').innerHTML = '<div class="vazio glass">🐰 Nenhum animal no plantel ainda.<br>' +
-      '<button class="botao btn-azul" id="btnVazioNovo" style="margin-top:10px">+ Cadastrar primeiro coelho</button></div>';
+    $('#dashCard').innerHTML = '<div class="vazio" style="border:1px dashed var(--borda-2);border-radius:24px">🐰 Nenhum animal no plantel ainda.<br>' +
+      '<button class="btn-primario" id="btnVazioNovo" style="margin-top:12px">＋ Cadastrar primeiro coelho</button></div>';
     $('#dashIrmaos').innerHTML = ''; $('#dashStats').innerHTML = '';
     $('#dashRegistro').innerHTML = ''; $('#dashVacinas').innerHTML = ''; $('#dashAlertas').innerHTML = '';
     const b = $('#btnVazioNovo'); if (b) b.onclick = abrirNovoCoelho;
@@ -1531,7 +1574,6 @@ function renderCardAnimal(c){
   $('#cardAnimalT').onclick = () => abrirEditarCoelho(c.id);
 }
 
-/* Janela de Cobertura — card com semáforo no dashboard */
 function renderJanelaCobertura(c){
   const j = janelaCobertura(c);
   if (!j || c.status === 'vendido'){ $('#dashCobertura').innerHTML = ''; return; }
@@ -1539,7 +1581,7 @@ function renderJanelaCobertura(c){
   $('#dashCobertura').innerHTML =
     '<h2 class="titulo-secao">💗 Janela de Cobertura</h2>' +
     '<div class="sem-cobertura ' + cls + '" style="margin-top:0">' + esc(j.titulo) + '</div>' +
-    '<small style="display:block;color:#9fb0d0;font-size:12px;margin:8px 2px 0;line-height:1.5">' + esc(j.detalhe) + '</small>' +
+    '<small style="display:block;color:var(--txt-2);font-size:12px;margin:8px 2px 0;line-height:1.5">' + esc(j.detalhe) + '</small>' +
     (j.nivel === 'verde' ? '<button class="botao btn-azul" id="btnCobrirAgora" style="width:100%;margin-top:10px">🤍 Registrar Cobertura</button>' : '');
   const b = $('#btnCobrirAgora');
   if (b) b.onclick = () => {
@@ -1573,28 +1615,31 @@ function renderIrmaos(c){
     '<div class="irmaos-chips">' +
     (irmaos.length
       ? irmaos.map(i => '<button class="chip-irmao" data-id="' + esc(i.id) + '">' + esc(i.id) + ' ' + (i.sexo==='F'?'♀':'♂') + (i.status==='vendido'?' 📦':'') + '</button>').join('')
-      : '<small style="color:#8fa3c8;font-size:12px">Sem outros animais neste lote.</small>') +
+      : '<small style="color:var(--txt-3);font-size:12px">Sem outros animais neste lote.</small>') +
     '</div>';
   $$('#dashIrmaos .chip-irmao').forEach(ch => {
     ch.onclick = () => { state.coelhoId = ch.dataset.id; renderDashboard(); toast('Mostrando ' + ch.dataset.id, 'info'); };
   });
 }
 
+/* Estatísticas em KPIs coloridos (estilo mock) */
 function renderStats(c){
   const peso = pesoAtualKg(c);
   const cresc = crescimentoPct(c);
   const lastPeso = (c.pesos||[]).slice().sort((a,b)=>String(a.data).localeCompare(String(b.data))).slice(-1)[0];
-  const crescHtml = cresc == null
-    ? '<b style="color:#8fa3c8">—</b>'
-    : '<b class="' + (cresc>=0?'cresc-pos':'cresc-neg') + '">' + (cresc>=0?'+':'') + fmtNumBR(cresc,1) + '%</b>';
+  const crescVal = cresc == null ? '—'
+    : (cresc>=0?'+':'') + fmtNumBR(cresc,1) + '%';
+  const crescCls = cresc == null ? '' : (cresc>=0?'cresc-pos':'cresc-neg');
   $('#dashStats').innerHTML =
-    '<h2 class="titulo-secao">📊 Estatísticas</h2><div class="secao glass" style="margin-top:0">' +
+    '<h2 class="titulo-secao">📊 Estatísticas</h2>' +
     '<div class="stats-grid">' +
-      '<div class="stat-card"><small>⚖️ Peso Atual</small><b>' + fmtPesoEstat(peso) + '</b>' +
-        '<span>' + (lastPeso ? 'pesagem ' + fmtDataBR(lastPeso.data).slice(0,5) : 'sem pesagens') + '</span></div>' +
-      '<div class="stat-card"><small>📈 Crescimento</small>' + crescHtml + '<span>desde a 1ª pesagem</span></div>' +
-      '<div class="stat-card"><small>📅 Idade</small><b>' + fmtIdade(c) + '</b><span>nasc. ' + fmtDataBR(c.nascimento).slice(0,5) + '</span></div>' +
-    '</div></div>';
+      '<div class="kpi kpi-azul"><span class="kpi-ico emoji">⚖️</span><span class="kpi-label">Peso Atual</span>' +
+        '<b>' + fmtPesoEstat(peso) + '</b><small>' + (lastPeso ? fmtDataBR(lastPeso.data).slice(0,5) : 'sem pesagens') + '</small></div>' +
+      '<div class="kpi kpi-verde"><span class="kpi-ico">' + SVG_UP + '</span><span class="kpi-label">Crescimento</span>' +
+        '<b class="' + crescCls + '">' + crescVal + '</b><small>1ª → última pesagem</small></div>' +
+      '<div class="kpi kpi-neutro"><span class="kpi-ico emoji">📅</span><span class="kpi-label">Idade</span>' +
+        '<b>' + fmtIdade(c) + '</b><small>nasc. ' + fmtDataBR(c.nascimento).slice(0,5) + '</small></div>' +
+    '</div>';
 }
 
 function renderUltimoRegistro(c){
@@ -1632,33 +1677,36 @@ function renderCalendarioSanitario(c){
       '<span class="badge-status ' + classeStatus(s) + '">' + textoStatusVacina(s) + '</span></button>';
   }).join('');
   $('#dashVacinas').innerHTML = '<h2 class="titulo-secao">🗓️ Calendário Sanitário</h2>' +
-    '<div class="secao glass" style="margin-top:0">' + linhas + '</div>';
+    '<div class="secao" style="margin-top:0">' + linhas + '</div>';
   $$('#dashVacinas .vac-linha').forEach(b => {
     b.onclick = () => abrirModalVacina(c.id, b.dataset.vac);
   });
 }
 
-/* Alertas automáticos — card neutro, SEMÁFORO apenas no emoji do canto (só animais ativos) */
-function renderAlertasSanitarios(){
-  const alertas = [];
+/* Coletor central de alertas (usado pela lista E pelo sino 🔔) */
+function coletarAlertas(){
+  const arr = [];
   for (const c of ativos()){
     for (const v of VACINAS_PRE){
       const s = statusVacina(c, v);
       if (s.tipo==='pendente' || s.tipo==='atrasada' || s.tipo==='vencendo'){
-        alertas.push({ c, v, s });
+        arr.push({ c, v, s });
       }
     }
   }
   const grav = { atrasada:0, pendente:1, vencendo:2 };
-  alertas.sort((a,b) => (grav[a.s.tipo]-grav[b.s.tipo]) || (a.s.dias - b.s.dias));
+  return arr.sort((a,b) => (grav[a.s.tipo]-grav[b.s.tipo]) || (a.s.dias - b.s.dias));
+}
 
+function renderAlertasSanitarios(){
+  const alertas = coletarAlertas();
   if (!alertas.length){
     $('#dashAlertas').innerHTML =
       '<h2 class="titulo-secao">🔔 Alertas Sanitários</h2>' +
       '<div class="todas-em-dia">✅ Todas as vacinas pré-definidas estão em dia no plantel!</div>';
     return;
   }
-  const corDe = { vencendo:'g-laranja', atrasada:'g-vermelho', pendente:'g-vermelho', emdia:'g-verde' };
+  const corDe = { vencendo:'g-laranja', atrasada:'g-vermelho', pendente:'g-vermelho' };
   const subDe = (a) => {
     if (a.s.tipo==='atrasada') return '🚨 Atrasada ' + a.s.dias + 'd • última dose: ' + fmtDataBR(a.s.ultima.data);
     if (a.s.tipo==='pendente') return '❓ Nunca aplicada • animal com ' + idadeDias(a.c) + ' dias (dose a partir de 45d)';
@@ -1666,7 +1714,7 @@ function renderAlertasSanitarios(){
   };
   $('#dashAlertas').innerHTML =
     '<h2 class="titulo-secao">🔔 Alertas Sanitários <span class="cont">' + alertas.length + '</span></h2>' +
-    '<div class="secao glass" style="margin-top:0">' +
+    '<div class="secao" style="margin-top:0">' +
     alertas.map((a,i) =>
       '<div class="alerta-san" data-i="' + i + '" role="button" tabindex="0">' +
         '<span class="ico-g ' + (corDe[a.s.tipo]||'g-verde') + '">' + a.v.icone + '</span>' +
@@ -1679,7 +1727,15 @@ function renderAlertasSanitarios(){
   });
 }
 
-/* ===== 11. RENDER: PLANTEL (só ativos; vendidos ficam na aba Vendas) ===== */
+/* Contador vermelho no sino 🔔 */
+function atualizarPipBell(){
+  const pip = $('#pipBell'); if (!pip) return;
+  const n = coletarAlertas().length;
+  pip.style.display = n ? 'grid' : 'none';
+  pip.textContent = n > 9 ? '9+' : String(n);
+}
+
+/* ===== 11. PLANTEL ===== */
 function renderPlantel(){
   const q = norm(state.busca || '');
   const itens = ativos()
@@ -1706,13 +1762,12 @@ function renderPlantel(){
 });
  $('#buscaPlantel').addEventListener('input', (e) => { state.busca = e.target.value; renderPlantel(); });
 
-/* ===== 12. RENDER: RAÇÃO ===== */
+/* ===== 12. RAÇÃO ===== */
 function renderRacao(){
-  /* Popula o select de Lote, preservando a escolha atual */
   const valorLoteSel = $('#rLote').value;
   popularSelectLotes($('#rLote'), valorLoteSel);
   const porCat = {}; let total = 0;
-  ativos().forEach(c => { /* vendidos não consomem ração */
+  ativos().forEach(c => {
     const cat = categoriaCoelho(c), dose = doseDe(c);
     porCat[cat] = porCat[cat] || { n:0, kg:0 };
     porCat[cat].n++; porCat[cat].kg += dose; total += dose;
@@ -1780,7 +1835,7 @@ function renderRacao(){
   toast('Lançamento de ração registrado.','ok');
 });
 
-/* ===== 13. RENDER: LOTES ===== */
+/* ===== 13. LOTES ===== */
 function renderLotes(){
   $('#contLotes').textContent = db.lotes.length;
   $('#listaLotes').innerHTML = db.lotes.length ? db.lotes.map(l => {
@@ -1815,7 +1870,7 @@ function renderLotes(){
   });
 }
 
-/* ===== 14. MODAL: EDITAR RELATÓRIO COMPLETO ===== */
+/* ===== 14. EDITAR COELHO ===== */
 function abrirEditarCoelho(id){
   const c = porId(id);
   if (!c){ toast('Animal não encontrado.','erro'); return; }
@@ -1844,7 +1899,7 @@ function renderPesosEdit(){
   $('#ePesosLista').innerHTML = ctx.pesos.map((p,i) =>
     '<div class="peso-item"><b>' + fmtDataBR(p.data) + '</b><small>' + fmtNumBR(p.kg,3) + ' kg</small>' +
     '<button class="del-mini" data-pi="' + i + '">✕</button></div>').join('') ||
-    '<small style="color:#8fa3c8">Nenhuma pesagem ainda.</small>';
+    '<small style="color:var(--txt-3)">Nenhuma pesagem ainda.</small>';
   $$('#ePesosLista [data-pi]').forEach(b => {
     b.onclick = () => { ctx.pesos.splice(Number(b.dataset.pi),1); renderPesosEdit(); };
   });
@@ -1857,7 +1912,7 @@ function renderVacEdit(){
     return '<div class="vac-item"><span>' + (def?def.icone:'💉') + '</span><div><b>' + esc(v.tipo) + '</b>' +
       '<small>' + fmtDataBR(v.data) + (v.local ? ' • ' + esc(v.local) : '') + '</small></div>' +
       '<button class="del-mini" data-vi="' + i + '">✕ remover</button></div>';
-  }).join('') || '<small style="color:#8fa3c8">Nenhuma vacina registrada.</small>';
+  }).join('') || '<small style="color:var(--txt-3)">Nenhuma vacina registrada.</small>';
   $$('#eVacLista [data-vi]').forEach(b => {
     b.onclick = () => { ctx.vacinas.splice(Number(b.dataset.vi),1); renderVacEdit(); };
   });
@@ -1915,7 +1970,7 @@ function renderVacEdit(){
   });
 });
 
-/* ===== 15. MODAL: CADASTRO DE COELHO ===== */
+/* ===== 15. NOVO COELHO ===== */
 function abrirNovoCoelho(){
   popularSelectLotes($('#nLote'), db.lotes.length ? db.lotes[0].nome : '');
   $('#nRaca').innerHTML = RAÇAS.map(r => '<option>'+r+'</option>').join('');
@@ -1943,7 +1998,7 @@ function abrirNovoCoelho(){
   toast('Coelho ' + id + ' cadastrado.','ok');
 });
 
-/* ===== 16. MODAL: COBERTURA + SEMÁFORO + JANELA ===== */
+/* ===== 16. COBERTURA ===== */
 function abrirModalCobertura(){
   popularSelectCoelhos($('#cFemea'), c => c.sexo==='F', 'Selecione a fêmea…');
   popularSelectCoelhos($('#cMacho'), c => c.sexo==='M', 'Selecione o macho…');
@@ -1966,7 +2021,6 @@ function atualizarSemaforoCobertura(){
   div.textContent = mapa[nivel][1];
   div.hidden = false;
 }
-/* Janela de cobertura DENTRO do modal — mostra fêmea e macho escolhidos */
 function atualizarJanelaModal(){
   const f = porId($('#cFemea').value), m = porId($('#cMacho').value);
   let html = '';
@@ -1974,13 +2028,13 @@ function atualizarJanelaModal(){
     const j = janelaCobertura(f);
     const cls = j.nivel==='verde' ? 'verde' : (j.nivel==='amarelo' ? 'laranja' : 'vermelho');
     html += '<div class="sem-cobertura ' + cls + '" style="margin-top:8px">♀ ' + esc(f.id) + ' — ' + esc(j.titulo) + '</div>' +
-      '<small style="display:block;color:#9fb0d0;font-size:11.5px;margin:5px 2px 0;line-height:1.45">' + esc(j.detalhe) + '</small>';
+      '<small style="display:block;color:var(--txt-2);font-size:11.5px;margin:5px 2px 0;line-height:1.45">' + esc(j.detalhe) + '</small>';
   }
   if (m){
     const j = janelaCobertura(m);
     const cls = j.nivel==='verde' ? 'verde' : (j.nivel==='amarelo' ? 'laranja' : 'vermelho');
     html += '<div class="sem-cobertura ' + cls + '" style="margin-top:8px">♂ ' + esc(m.id) + ' — ' + esc(j.titulo) + '</div>' +
-      '<small style="display:block;color:#9fb0d0;font-size:11.5px;margin:5px 2px 0;line-height:1.45">' + esc(j.detalhe) + '</small>';
+      '<small style="display:block;color:var(--txt-2);font-size:11.5px;margin:5px 2px 0;line-height:1.45">' + esc(j.detalhe) + '</small>';
   }
   $('#janelaCobModal').innerHTML = html;
 }
@@ -1992,12 +2046,11 @@ function atualizarJanelaModal(){
   if (f.id === m.id){ toast('Fêmea e macho não podem ser o mesmo animal.','erro'); return; }
   const nivel = getSanguinidade(f, m);
   const consang = nivel !== 'verde';
-  /* Aviso de janela reprodutiva (não bloqueia — decisão é do criador) */
   const jf = janelaCobertura(f);
   if (jf && jf.nivel !== 'verde'){
     toast('Atenção: ' + jf.titulo + '. ' + jf.detalhe, 'aviso');
   }
-  if (consang){ f.consanguineo = true; m.consanguineo = true; } /* marca consanguinidade ao salvar */
+  if (consang){ f.consanguineo = true; m.consanguineo = true; }
   db.coberturas.push({ id:uid(), femeaId:f.id, machoId:m.id, data:$('#cData').value || hojeISO(), consanguinea:consang });
   salvarDB(); fecharModal('mCobertura'); renderTudo();
   if (nivel==='vermelho') toast('Cobertura registrada — ⚠ CONSANGUINIDADE DETECTADA (mesmo lote).','aviso');
@@ -2005,7 +2058,7 @@ function atualizarJanelaModal(){
   else toast('Cobertura registrada — sanguinidade compatível.','ok');
 });
 
-/* ===== 17. MODAL: PARTO ===== */
+/* ===== 17. PARTO ===== */
 function abrirModalParto(){
   popularSelectCoelhos($('#pMatriz'), c => c.sexo==='F', 'Selecione a matriz…');
   $('#pVivos').value = 0; $('#pMortos').value = 0; $('#pData').value = hojeISO();
@@ -2018,13 +2071,13 @@ function abrirModalParto(){
   const mortos = Math.max(0, parseInt($('#pMortos').value,10)||0);
   const data = $('#pData').value || hojeISO();
   db.ninhadas.push({ id:uid(), matrizId:m.id, lote:m.lote, data, vivos, mortos });
-  m.ultimoParto = data;               /* matriz vira "Amamentando" automaticamente (35 dias) */
+  m.ultimoParto = data;
   m.matriz = true;
   salvarDB(); fecharModal('mParto'); renderTudo();
   toast('Parto registrado — ' + m.id + ' amamentando por 35 dias.','ok');
 });
 
-/* ===== 18. MODAL: PESO RÁPIDO ===== */
+/* ===== 18. PESO ===== */
 function abrirModalPeso(){
   popularSelectCoelhos($('#wCoelho'), null, 'Selecione o coelho…');
   if (state.coelhoId) $('#wCoelho').value = state.coelhoId;
@@ -2041,7 +2094,7 @@ function abrirModalPeso(){
   toast('Pesagem registrada para ' + c.id + '.','ok');
 });
 
-/* ===== 19. MODAL: VACINA (pré-preenchido pelos alertas) ===== */
+/* ===== 19. VACINA ===== */
 function abrirModalVacina(coelhoId, vacinaNome){
   popularSelectCoelhos($('#vCoelho'), null, 'Selecione o coelho…');
   $('#vVacina').innerHTML = VACINAS_PRE.map(v => '<option>'+v.nome+'</option>').join('');
@@ -2058,7 +2111,7 @@ function abrirModalVacina(coelhoId, vacinaNome){
   toast('Dose registrada — calendário atualizado.','ok');
 });
 
-/* ===== 20. MODAIS: LOTES ===== */
+/* ===== 20. LOTES ===== */
 function abrirNovoLote(){ $('#lNome').value = ''; abrirModal('mLote'); }
  $('#lSalvar').addEventListener('click', () => {
   const nome = $('#lNome').value.trim();
@@ -2087,8 +2140,7 @@ function abrirRenomearLote(nomeAntigo){
   toast('Lote renomeado para ' + novo + '.','ok');
 });
 
-/* ===== 20.5 MODAL: DADOS DO CRIATÓRIO (nome + WhatsApp) ===== */
-/* Máscara brasileira: (DDD) 99999-9999 */
+/* ===== 20.5 CRIATÓRIO ===== */
 function mascaraZap(valor){
   let v = String(valor||'').replace(/\D/g,'').slice(0,11);
   if (!v) return '';
@@ -2124,13 +2176,9 @@ function aplicarCriatorioNaTela(){
 }
 
 /* ================================================================
-   26. FINANCEIRO — COMPRA E VENDA (offline-first, chaves próprias)
+   26. FINANCEIRO — COMPRA E VENDA
    ================================================================ */
-
-/* Preço do kg de ração usado no cálculo do LUCRO */
 function precoKgRacao(){ return Number(db.config.precoKgRacao) || 0; }
-
-/* Aplica o filtro de MÊS (e cliente, quando for venda) */
 function filtroMesAplica(iso){
   if (state.finMes && String(iso||'').slice(0,7) !== state.finMes) return false;
   return true;
@@ -2139,8 +2187,6 @@ function filtroClienteAplica(cliente){
   const q = norm(state.finCliente || '');
   return !q || norm(cliente).includes(q);
 }
-
-/* Totais do período filtrado — usados nos KPIs e no gráfico */
 function totaisFinanceiros(){
   const vendas = db.vendas.filter(v => filtroMesAplica(v.data) && filtroClienteAplica(v.cliente));
   const vendido = vendas.reduce((s,v) => s + Number(v.total||0), 0);
@@ -2150,16 +2196,12 @@ function totaisFinanceiros(){
   const custoRacao = racaoKg * precoKgRacao();
   return { vendas, vendido, compras, gasto, racaoKg, custoRacao, lucro: vendido - gasto - custoRacao };
 }
-
-/* Rótulo do mês (YYYY-MM → "Setembro de 2025") */
 function rotuloMes(ym){
   try{
     let s = new Date(ym + '-01T12:00:00').toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
     return s.charAt(0).toUpperCase() + s.slice(1);
   }catch(_){ return ym; }
 }
-
-/* Preenche o select de meses (derivado de vendas + compras + ração) */
 function popularFiltroMes(){
   const meses = new Set();
   db.vendas.forEach(v => meses.add(String(v.data||'').slice(0,7)));
@@ -2172,33 +2214,44 @@ function popularFiltroMes(){
   $('#finPeriodoLabel').textContent = state.finMes ? rotuloMes(state.finMes) : 'Todos os meses';
 }
 
-/* ===== RENDER PRINCIPAL DA ABA VENDAS ===== */
+/* Card KPI com ícone SVG circular + borda/brilho colorido (mock) */
+function kpiCard(cor, icoSvg, label, valor, sub, classeValor){
+  return '<div class="kpi ' + cor + '">' +
+    '<span class="kpi-ico">' + icoSvg + '</span>' +
+    '<span class="kpi-label">' + esc(label) + '</span>' +
+    '<b class="' + (classeValor||'') + '">' + valor + '</b>' +
+    '<small>' + esc(sub) + '</small></div>';
+}
+
 function renderVendas(){
-  /* Preço do kg de ração (config salvo) */
   $('#inpPrecoKgRacao').value = db.config.precoKgRacao != null ? db.config.precoKgRacao : '';
 
   popularFiltroMes();
   const t = totaisFinanceiros();
 
-  /* --- 3 KPIs (mesmo .stat-card do dashboard) --- */
+  /* KPIs exatamente no estilo do mock: verde (vendido), vermelho (compras), azul (lucro) */
   $('#finKpis').innerHTML =
-    '<div class="stat-card"><small>💰 Total Vendido</small><b class="cresc-pos">' + fmtBRL(t.vendido) + '</b>' +
-      '<span>' + t.vendas.length + ' venda(s)</span></div>' +
-    '<div class="stat-card"><small>🛒 Compras + Ração</small><b>' + fmtBRL(t.gasto + t.custoRacao) + '</b>' +
-      '<span>compras ' + fmtBRL(t.gasto) + ' • ração ' + fmtBRL(t.custoRacao) + '</span></div>' +
-    '<div class="stat-card"><small>📈 LUCRO</small><b class="' + (t.lucro>=0?'cresc-pos':'cresc-neg') + '">' + fmtBRL(t.lucro) + '</b>' +
-      '<span>vendido − compras − ração</span></div>';
+    kpiCard('kpi-verde',    SVG_UP,   'Total Vendido', fmtBRL(t.vendido), t.vendas.length + ' venda(s)') +
+    kpiCard('kpi-vermelho', SVG_DOWN, 'Total Compras', fmtBRL(t.gasto + t.custoRacao), 'compras + ração') +
+    kpiCard('kpi-azul',     SVG_PLUS, 'Lucro', fmtBRL(t.lucro),
+      'vendido − gastos', t.lucro>=0 ? 'cresc-pos' : 'cresc-neg');
 
-  /* --- Lista de vendas (com busca por cliente + filtro mês) --- */
+  /* Vendas Recentes — card com foto (estilo mock) */
   $('#contVendas').textContent = t.vendas.length;
   const vOrdenadas = t.vendas.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,60);
-  $('#listaVendas').innerHTML = vOrdenadas.length ? vOrdenadas.map(v =>
-    '<div class="racao-item"><span class="ri-data">' + fmtDataBR(v.data).slice(0,5) + '</span>' +
-    '<div><b>' + esc(v.exibeId || v.coelhoId) + ' • ' + esc(v.tipo) + '</b>' +
-    '<small>' + (v.cliente ? esc(v.cliente) : '—') + ' • 📦 ' + esc(v.lote||'—') + ' • ' + fmtNumBR(v.peso||0,3) + ' kg</small></div>' +
-    '<b class="ri-kg">' + fmtBRL(v.total) + (v.pago==='Não' ? ' ⏳' : '') + '</b>' +
-    '<button class="del-mini" data-delv="' + esc(v.id) + '" aria-label="Estornar venda">🗑️</button></div>'
-  ).join('') : '<div class="vazio">Nenhuma venda no filtro atual.</div>';
+  $('#listaVendas').innerHTML = vOrdenadas.length ? vOrdenadas.map(v => {
+    const c = porId(v.coelhoId);
+    const foto = c ? (c.foto || FOTO_PADRAO) : FOTO_PADRAO;
+    const titulo = c
+      ? (c.sexo==='F'?'Fêmea':'Macho') + ' ' + c.raca + ' • ' + fmtNumBR(v.peso||0,1) + 'kg'
+      : (v.exibeId || v.coelhoId) + ' • ' + v.tipo;
+    const sub = 'Vendido ' + quandoVenda(v.data) + ' • Cliente: ' + (v.cliente||'—') + (v.pago==='Não' ? ' • ⏳ a receber' : '');
+    return '<div class="venda-card">' +
+      '<img class="venda-foto" src="' + esc(foto) + '" alt="" onerror="this.onerror=null;this.src=FOTO_PADRAO">' +
+      '<div class="venda-info"><b>' + esc(titulo) + '</b><small>' + esc(sub) + '</small></div>' +
+      '<span class="venda-val">+ ' + fmtBRL(v.total) + '</span>' +
+      '<button class="del-mini" data-delv="' + esc(v.id) + '" aria-label="Estornar venda">🗑️</button></div>';
+  }).join('') : '<div class="vazio">Nenhuma venda no filtro atual.</div>';
 
   $$('#listaVendas [data-delv]').forEach(b => {
     b.onclick = () => confirmar('Estornar venda', 'Remover este registro de venda? O coelho volta para o plantel como ativo.', 'Estornar', () => {
@@ -2212,15 +2265,16 @@ function renderVendas(){
     });
   });
 
-  /* --- Lista de compras --- */
+  /* Compras */
   const compFiltradas = db.compras.filter(c => filtroMesAplica(c.data));
   $('#contCompras').textContent = compFiltradas.length;
   const cOrdenadas = compFiltradas.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,40);
   $('#listaCompras').innerHTML = cOrdenadas.length ? cOrdenadas.map(c =>
-    '<div class="racao-item"><span class="ri-data">' + fmtDataBR(c.data).slice(0,5) + '</span>' +
-    '<div><b>' + esc(c.tipo) + (c.raca ? ' • ' + esc(c.raca) : '') + '</b>' +
+    '<div class="venda-card">' +
+    '<img class="venda-foto" src="' + FOTO_PADRAO + '" alt="" style="filter:grayscale(.4)">' +
+    '<div class="venda-info"><b>' + esc(c.tipo) + (c.raca ? ' • ' + esc(c.raca) : '') + '</b>' +
     '<small>' + (c.forn ? esc(c.forn) : '—') + ' • 📦 ' + esc(c.lote||'—') + (c.linhagem ? ' • ' + esc(c.linhagem) : '') + (c.notaFoto ? ' • 🧾' : '') + '</small></div>' +
-    '<b class="ri-kg" style="color:#fbbf24">−' + fmtBRL(c.valor) + '</b>' +
+    '<span class="venda-val" style="color:var(--verm-2)">− ' + fmtBRL(c.valor) + '</span>' +
     '<button class="del-mini" data-delc="' + esc(c.id) + '" aria-label="Excluir compra">🗑️</button></div>'
   ).join('') : '<div class="vazio">Nenhuma compra no filtro atual.</div>';
 
@@ -2231,7 +2285,7 @@ function renderVendas(){
     });
   });
 
-  /* --- Coelhos vendidos (histórico, nunca apagados) --- */
+  /* Vendidos */
   const vendidos = db.coelhos.filter(c => c.status === 'vendido').sort((a,b)=>String(b.dataVenda||'').localeCompare(String(a.dataVenda||'')));
   $('#contVendidos').textContent = vendidos.length;
   $('#listaVendidos').innerHTML = vendidos.length ? vendidos.map(c =>
@@ -2249,7 +2303,7 @@ function renderVendas(){
   desenharGraficoLucro();
 }
 
-/* ===== SIMULADOR: Lucro por Ninhada (paramétrico, tabela zebrada) ===== */
+/* Simulador de ninhada */
 function renderSimulador(){
   const s = db.config.sim || { qtd:12, preco:60, custo:200, dias:45 };
   $('#simQtd').value = s.qtd; $('#simPreco').value = s.preco;
@@ -2275,7 +2329,7 @@ function lerSimulador(){
 }
 ['simQtd','simPreco','simCusto','simDias'].forEach(id => $('#'+id).addEventListener('change', lerSimulador));
 
-/* ===== GRÁFICO: Lucro Acumulado (canvas puro, sem libs) ===== */
+/* Gráfico de lucro acumulado (canvas puro) */
 function desenharGraficoLucro(){
   const cv = $('#cvLucro'); if (!cv) return;
   const caixa = cv.parentElement;
@@ -2284,7 +2338,6 @@ function desenharGraficoLucro(){
   const ctx = cv.getContext('2d');
   ctx.clearRect(0,0,w,h);
 
-  /* Eventos: vendas (+) e compras (−); custo de ração entra como evento no fim do período */
   const evs = [];
   db.vendas.filter(v => filtroMesAplica(v.data)).forEach(v => evs.push({ data:v.data, val:Number(v.total||0) }));
   db.compras.filter(c => filtroMesAplica(c.data)).forEach(c => evs.push({ data:c.data, val:-Number(c.valor||0) }));
@@ -2293,13 +2346,12 @@ function desenharGraficoLucro(){
     evs.push({ data: state.finMes ? (state.finMes + '-28') : hojeISO(), val:-t.custoRacao });
   }
   if (!evs.length){
-    ctx.fillStyle = '#8fa3c8'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#64799f'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
     ctx.fillText('Sem lançamentos no período', w/2, h/2);
     return;
   }
   evs.sort((a,b) => String(a.data).localeCompare(String(b.data)));
 
-  /* Acumulado */
   let acc = 0;
   const pts = evs.map(e => { acc += e.val; return { v:acc }; });
   pts.unshift({ v:0 });
@@ -2312,17 +2364,15 @@ function desenharGraficoLucro(){
   const X = i => padL + i * (w - padL - padR) / ((pts.length - 1) || 1);
   const Y = v => padT + (1 - (v - min) / (max - min)) * (h - padT - padB);
 
-  /* Linha do zero (tracejada) */
   ctx.strokeStyle = 'rgba(255,255,255,.18)';
   ctx.setLineDash([4,4]); ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(w - padR, Y(0)); ctx.stroke();
   ctx.setLineDash([]);
 
   const ultimo = pts[pts.length - 1].v;
-  const cor = ultimo >= 0 ? '#16a34a' : '#f87171';
-  const corArea = ultimo >= 0 ? 'rgba(22,163,74,.14)' : 'rgba(248,113,113,.14)';
+  const cor = ultimo >= 0 ? '#4ade80' : '#f87171';
+  const corArea = ultimo >= 0 ? 'rgba(74,222,128,.13)' : 'rgba(248,113,113,.13)';
 
-  /* Área + linha */
   ctx.beginPath();
   pts.forEach((p,i) => { if (i) ctx.lineTo(X(i), Y(p.v)); else ctx.moveTo(X(i), Y(p.v)); });
   ctx.strokeStyle = cor; ctx.lineWidth = 2.4; ctx.lineJoin = 'round'; ctx.stroke();
@@ -2330,14 +2380,13 @@ function desenharGraficoLucro(){
   ctx.lineTo(X(0), Y(min < 0 ? 0 : min));
   ctx.closePath(); ctx.fillStyle = corArea; ctx.fill();
 
-  /* Bolinha final + valor */
   ctx.beginPath(); ctx.arc(X(pts.length - 1), Y(ultimo), 4, 0, Math.PI * 2);
   ctx.fillStyle = cor; ctx.fill();
-  ctx.fillStyle = '#e7eefc'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillStyle = '#e9eefc'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right';
   ctx.fillText(fmtBRL(ultimo), w - padR, Math.max(12, Y(ultimo) - 8));
 }
 
-/* ===== MODAL: REGISTRAR VENDA ===== */
+/* ===== MODAL: VENDA ===== */
 function abrirModalVenda(){
   popularSelectCoelhos($('#sCoelho'), null, 'Selecione o coelho…');
   popularSelectLotes($('#sLote'));
@@ -2347,7 +2396,6 @@ function abrirModalVenda(){
   $('#sData').value = hojeISO();
   abrirModal('mVenda');
 }
-/* Total automático: peso × preço/kg (o usuário ainda pode sobrescrever o total) */
 function calcTotalVenda(){
   const peso = parseFloat($('#sPeso').value) || 0;
   const preco = parseFloat($('#sPrecoKg').value) || 0;
@@ -2356,22 +2404,17 @@ function calcTotalVenda(){
  $('#sPeso').addEventListener('input', calcTotalVenda);
  $('#sPrecoKg').addEventListener('input', calcTotalVenda);
 
-/* Ao selecionar o coelho: preenche peso/lote, sugere Carne p/ filhote de ninhada
-   e aplica o bloqueio de Matriz Ativa (mesma linhagem/baia do macho) */
  $('#sCoelho').addEventListener('change', () => {
   const c = porId($('#sCoelho').value);
   if (!c) return;
   const p = pesoAtualKg(c);
   if (p != null) $('#sPeso').value = p;
   $('#sLote').value = c.lote;
-
-  /* Filhote da Fase 1 (mesmo pai, com irmãos no lote, menos de 90 dias) → sugerir Carne */
   const temIrmaoMesmoPai = irmaosDe(c).some(i => c.pai && c.pai.nome && i.pai && norm(i.pai.nome) === norm(c.pai.nome));
   if (idadeDias(c) < 90 && temIrmaoMesmoPai){
     $('#sTipo').value = 'Carne';
     toast('Filhote de ninhada (mesmo pai) — tipo sugerido: Carne (corte).', 'info');
   }
-  /* Regra obrigatória: Matriz Ativa da mesma linhagem/baia do macho não pode ser vendida */
   const bloqueio = bloqueioVendaMatriz(c);
   if (bloqueio){
     toast(bloqueio, 'erro');
@@ -2381,31 +2424,30 @@ function calcTotalVenda(){
  $('#salvarVenda').addEventListener('click', () => {
   const c = porId($('#sCoelho').value);
   if (!c){ toast('Selecione o coelho.','erro'); return; }
-  /* Dupla checagem da regra da matriz (caso o select tenha mudado depois) */
   const bloqueio = bloqueioVendaMatriz(c);
   if (bloqueio){ toast(bloqueio, 'erro'); return; }
   const total = parseFloat($('#sTotal').value);
   if (!(total > 0)){ toast('Informe um preço total válido.','erro'); return; }
   const venda = {
     id: uid(),
-    coelhoId: c.id, exibeId: c.id,       /* exibeId preserva o nome mesmo se o ID mudar depois */
+    coelhoId: c.id, exibeId: c.id,
     tipo: $('#sTipo').value,
     peso: parseFloat($('#sPeso').value) || 0,
     precoKg: parseFloat($('#sPrecoKg').value) || 0,
     total,
     cliente: $('#sCliente').value.trim() || '—',
-    lote: $('#sLote').value || c.lote,   /* toda venda tem lote para rastreio */
+    lote: $('#sLote').value || c.lote,
     pago: $('#sPago').value,
     data: $('#sData').value || hojeISO()
   };
   db.vendas.push(venda);
-  c.status = 'vendido';                  /* sai do plantel ativo, histórico preservado */
+  c.status = 'vendido';
   c.dataVenda = venda.data;
   salvarDB(); fecharModal('mVenda'); renderTudo();
   toast('Venda registrada: ' + fmtBRL(total) + ' — ' + c.id + ' foi para Vendidos.', 'ok');
 });
 
-/* ===== MODAL: REGISTRAR COMPRA ===== */
+/* ===== MODAL: COMPRA ===== */
 function abrirModalCompra(){
   popularSelectLotes($('#coLote'));
   $('#coRaca').innerHTML = RAÇAS.map(r => '<option>'+r+'</option>').join('');
@@ -2417,7 +2459,6 @@ function abrirModalCompra(){
   atualizarCamposCompra();
   abrirModal('mCompra');
 }
-/* Matriz/Reprodutor mostram ID + Raça; Ração esconde (vira só custo) */
 function atualizarCamposCompra(){
   const tipo = $('#coTipo').value;
   const mostra = (tipo === 'Matriz' || tipo === 'Reprodutor');
@@ -2426,7 +2467,6 @@ function atualizarCamposCompra(){
 }
  $('#coTipo').addEventListener('change', atualizarCamposCompra);
 
-/* Foto da nota: converte para base64 JPEG redimensionado (máx. 640px) para não estourar o localStorage */
  $('#coFoto').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0];
   if (!f){ $('#coNotaFoto').value = ''; $('#coFotoPrev').hidden = true; return; }
@@ -2453,7 +2493,6 @@ function atualizarCamposCompra(){
   $('#coNotaFoto').value = ''; $('#coFoto').value = ''; $('#coFotoPrev').hidden = true;
 });
 
-/* ID automático para animais comprados (ex.: CX-4821) */
 function gerarIdCompra(){
   let id;
   do { id = 'CX-' + Math.floor(1000 + Math.random() * 9000); }
@@ -2470,12 +2509,11 @@ function gerarIdCompra(){
     linhagem: $('#coLinhagem').value,
     forn: $('#coForn').value.trim() || '—',
     valor,
-    lote: $('#coLote').value || '—',      /* toda compra tem lote para rastreio */
+    lote: $('#coLote').value || '—',
     data: $('#coData').value || hojeISO(),
     notaFoto: $('#coNotaFoto').value || ''
   };
   let msg = 'Compra registrada: −' + fmtBRL(valor) + '.';
-  /* Matriz/Reprodutor entram no plantel com tag de linhagem */
   if (tipo === 'Matriz' || tipo === 'Reprodutor'){
     let idNovo = $('#coId').value.trim();
     if (idNovo && porId(idNovo)){ toast('Já existe um animal com o ID ' + idNovo + '.','erro'); return; }
@@ -2486,7 +2524,7 @@ function gerarIdCompra(){
       sexo: (tipo === 'Matriz' ? 'F' : 'M'),
       raca: compra.raca || 'Mestiço',
       linhagem: compra.linhagem,
-      nascimento: compra.data,           /* data de entrada (idade aproximada) */
+      nascimento: compra.data,
       matriz: (tipo === 'Matriz'),
       foto: '', pesos: [], vacinas: [],
       pai: {nome:'', lote:''}, mae: {nome:'', lote:''},
@@ -2500,7 +2538,7 @@ function gerarIdCompra(){
   toast(msg, 'ok');
 });
 
-/* Filtros da aba Vendas */
+/* Filtros financeiros */
  $('#finMes').addEventListener('change', (e) => { state.finMes = e.target.value; renderVendas(); });
  $('#finBusca').addEventListener('input', (e) => { state.finCliente = e.target.value; renderVendas(); });
  $('#inpPrecoKgRacao').addEventListener('change', (e) => {
@@ -2508,10 +2546,9 @@ function gerarIdCompra(){
   salvarDB(); renderVendas();
   toast('Preço do kg da ração atualizado: ' + fmtBRL(db.config.precoKgRacao), 'ok');
 });
-/* Redesenha o canvas quando a janela muda de tamanho (responsivo) */
 window.addEventListener('resize', () => { if (state.aba === 'vendas') desenharGraficoLucro(); });
 
-/* ===== 21. RELATÓRIO PDF PROFISSIONAL (jsPDF) ===== */
+/* ===== 21. RELATÓRIO PDF ===== */
 function abrirModalPDF(){
   $$('#mPDF input[name=pdfTipo]').forEach(r => {
     r.parentElement.classList.toggle('selec', r.checked);
@@ -2543,7 +2580,6 @@ function gerarRelatorioPDF(op){
   const doc = new jsPDF({ unit:'mm', format:'a4' });
   const W=210, H=297, M=14, CW=W-2*M;
 
-  /* ---- filtros ---- */
   const loteFiltro = op.tipo === 'baia' ? op.lote : null;
   const coelhos = ativos().filter(c => !loteFiltro || norm(c.lote) === norm(loteFiltro));
   const noPeriodo = (iso) => (!op.de || String(iso) >= op.de) && (!op.ate || String(iso) <= op.ate);
@@ -2552,23 +2588,22 @@ function gerarRelatorioPDF(op){
   const racao = db.racao.filter(r => noLote(r.lote) && noPeriodo(r.data));
   const tr = (s,n) => { s = String(s==null?'':s); return s.length > n ? s.slice(0,n-1) + '…' : s; };
 
-  /* ---- CAPA NAVY com logo ---- */
-  doc.setFillColor(10,24,48); doc.rect(0,0,W,H,'F');
+  doc.setFillColor(10,21,38); doc.rect(0,0,W,H,'F');
   try{ doc.setGState(new doc.GState({opacity:.16})); }catch(_){}
   doc.setFillColor(37,99,235);  doc.circle(178,42,42,'F');
   doc.setFillColor(22,163,74);  doc.circle(28,260,36,'F');
   try{ doc.setGState(new doc.GState({opacity:1})); }catch(_){}
   const cx=105, cy=94;
-  doc.setFillColor(255,255,255);
+  doc.setFillColor(231,238,252);
   doc.ellipse(cx-14, cy-30, 7, 17, 'F'); doc.ellipse(cx+14, cy-30, 7, 17, 'F');
-  doc.setFillColor(252,207,217);
+  doc.setFillColor(249,168,212);
   doc.ellipse(cx-14, cy-28, 3.2, 9, 'F'); doc.ellipse(cx+14, cy-28, 3.2, 9, 'F');
-  doc.setFillColor(255,255,255); doc.circle(cx, cy, 21, 'F');
-  doc.setFillColor(30,58,138); doc.circle(cx-7, cy-4, 2.2, 'F'); doc.circle(cx+7, cy-4, 2.2, 'F');
+  doc.setFillColor(231,238,252); doc.circle(cx, cy, 21, 'F');
+  doc.setFillColor(10,21,38); doc.circle(cx-7, cy-4, 2.2, 'F'); doc.circle(cx+7, cy-4, 2.2, 'F');
   doc.setFillColor(244,63,94); doc.circle(cx, cy+5, 2, 'F');
   doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(30);
   doc.text('CuniCoelho', 105, 150, {align:'center'});
-  doc.setFont('helvetica','normal'); doc.setFontSize(12.5); doc.setTextColor(138,180,248);
+  doc.setFont('helvetica','normal'); doc.setFontSize(12.5); doc.setTextColor(110,168,255);
   doc.text('Manejo de Coelhos — Relatório Profissional', 105, 160, {align:'center'});
   doc.setDrawColor(37,99,235); doc.setLineWidth(.8); doc.line(70, 168, 140, 168);
   doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(17);
@@ -2577,7 +2612,6 @@ function gerarRelatorioPDF(op){
   doc.text('Período: ' + (op.de ? fmtDataBR(op.de) : 'início') + ' a ' + (op.ate ? fmtDataBR(op.ate) : fmtDataBR(hojeISO())), 105, 198, {align:'center'});
   doc.text('Emitido em ' + new Date().toLocaleString('pt-BR'), 105, 206, {align:'center'});
 
-  /* ---- Dados do criatório na capa (nome + WhatsApp clicável) ---- */
   let yCriatorio = 218;
   if (op.incluirCriatorio && (db.criatorio.nome || db.criatorio.whatsapp)){
     if (db.criatorio.nome){
@@ -2588,7 +2622,7 @@ function gerarRelatorioPDF(op){
     const digitosZap = (db.criatorio.whatsapp || '').replace(/\D/g,'');
     if (digitosZap.length >= 10){
       const txtZap = 'WhatsApp: ' + db.criatorio.whatsapp;
-      doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(138,180,248);
+      doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(110,168,255);
       doc.text(txtZap, 105, yCriatorio, {align:'center'});
       const largZap = doc.getTextWidth(txtZap);
       const zapLink = (digitosZap.length >= 12 && digitosZap.indexOf('55') === 0) ? digitosZap : ('55' + digitosZap);
@@ -2609,11 +2643,10 @@ function gerarRelatorioPDF(op){
     doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.setTextColor(15,23,42);
     doc.text(titulo, M, y + 4);
     y += 6.5;
-    doc.setDrawColor(10,24,48); doc.setLineWidth(.6); doc.line(M, y, W-M, y);
+    doc.setDrawColor(10,21,38); doc.setLineWidth(.6); doc.line(M, y, W-M, y);
     y += 4.5;
   };
 
-  /* ---- 4 KPIs ---- */
   const matrizes = coelhos.filter(c => c.matriz && c.sexo==='F').length;
   const vivos = ninhadas.reduce((s,n) => s + Number(n.vivos||0), 0);
   const mortos = ninhadas.reduce((s,n) => s + Number(n.mortos||0), 0);
@@ -2623,9 +2656,9 @@ function gerarRelatorioPDF(op){
   (function kpis(){
     const kw = (CW - 3*4) / 4;
     const boxes = [
-      { t:'COELHOS', v:String(coelhos.length), cor:[10,24,48] },
-      { t:'MATRIZES', v:String(matrizes), cor:[10,24,48] },
-      { t:'NASCIDOS VIVOS', v:String(vivos), cor:[10,24,48] },
+      { t:'COELHOS', v:String(coelhos.length), cor:[10,21,38] },
+      { t:'MATRIZES', v:String(matrizes), cor:[10,21,38] },
+      { t:'NASCIDOS VIVOS', v:String(vivos), cor:[10,21,38] },
       { t:'MORTALIDADE', v:fmtNumBR(mortPct,1) + '%', cor:corMort }
     ];
     boxes.forEach((b,i) => {
@@ -2639,11 +2672,10 @@ function gerarRelatorioPDF(op){
     y += 26;
   })();
 
-  /* ---- Tabela zebrada genérica (cabeçalho navy, quebra de página) ---- */
   function tabelaPDF(colunas, larguras, linhas){
     const totalLarg = larguras.reduce((a,b)=>a+b,0);
     function header(){
-      doc.setFillColor(10,24,48); doc.rect(M, y, totalLarg, 7.5, 'F');
+      doc.setFillColor(10,21,38); doc.rect(M, y, totalLarg, 7.5, 'F');
       doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(8);
       let x = M + 2;
       colunas.forEach((c,i) => { doc.text(String(c), x, y + 5.1); x += larguras[i]; });
@@ -2666,7 +2698,6 @@ function gerarRelatorioPDF(op){
     y += 7;
   }
 
-  /* ---- Tabela: Plantel ---- */
   novaSecao('Plantel');
   (function(){
     const comPeso = op.secoes.peso;
@@ -2686,7 +2717,6 @@ function gerarRelatorioPDF(op){
     tabelaPDF(cols, largs, linhas.length ? linhas : [['—','—','—','—','—','—','—']].slice(0,1));
   })();
 
-  /* ---- Tabela: Irmãos por Lote ---- */
   novaSecao('Irmãos por Lote');
   (function(){
     const grupos = {};
@@ -2695,7 +2725,6 @@ function gerarRelatorioPDF(op){
     tabelaPDF(['Lote','Irmãos (mesmo lote)','Qtd'], [26,132,16], linhas.length ? linhas : [['—','—','—']]);
   })();
 
-  /* ---- Tabela: Ninhadas ---- */
   if (op.secoes.ninhadas){
     novaSecao('Ninhadas');
     const linhas = ninhadas.map(n => {
@@ -2705,7 +2734,6 @@ function gerarRelatorioPDF(op){
     tabelaPDF(['Matriz','Lote','Data','Vivos','Mortos'], [30,22,30,20,20], linhas.length ? linhas : [['—','—','—','—','—']]);
   }
 
-  /* ---- Tabela: Mortalidade por lote ---- */
   if (op.secoes.mortalidade){
     novaSecao('Mortalidade por Lote');
     (function(){
@@ -2722,7 +2750,6 @@ function gerarRelatorioPDF(op){
     })();
   }
 
-  /* ---- Tabela: Ração ---- */
   if (op.secoes.racao){
     novaSecao('Ração');
     const linhas = racao.slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)))
@@ -2732,7 +2759,6 @@ function gerarRelatorioPDF(op){
     tabelaPDF(['Data','Tipo','Lote','Kg (dia)'], [26,52,22,26], linhas.length ? linhas : [['—','—','—','—']]);
   }
 
-  /* ---- Tabela: Vacinas ---- */
   if (op.secoes.vacinas){
     novaSecao('Vacinas e Medicações');
     const linhas = [];
@@ -2748,7 +2774,6 @@ function gerarRelatorioPDF(op){
     tabelaPDF(['Coelho','Vacina','Última dose','Status','Próxima'], [26,36,26,34,28], linhas.length ? linhas : [['—','—','—','—','—']]);
   }
 
-  /* ---- Seção FINANCEIRO — Compra e Venda ---- */
   if (op.secoes.financeiro){
     novaSecao('Financeiro — Compra e Venda');
     const vendasPDF = db.vendas.filter(v => noPeriodo(v.data) && noLote(v.lote));
@@ -2759,21 +2784,18 @@ function gerarRelatorioPDF(op){
     const cr = kgR * precoKgRacao();
     const lu = tv - tc - cr;
 
-    /* Linha-resumo com 4 indicadores financeiros */
     tabelaPDF(
       ['Receita (Vendas)','Compras (R$)','Ração (R$)','LUCRO (R$)'],
       [44,44,44,42],
       [[fmtBRL(tv), fmtBRL(tc), fmtBRL(cr), fmtBRL(lu)]]
     );
 
-    /* Detalhamento das vendas do período */
     novaSecao('Vendas do Período');
     const lv = vendasPDF.slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)))
       .map(v => [fmtDataBR(v.data), v.exibeId||v.coelhoId, tr(v.tipo,12), tr(v.cliente,16), v.lote||'—', fmtBRL(v.total), v.pago==='Sim'?'Pago':'A receber']);
     lv.push(['TOTAL','','','','',fmtBRL(tv),'']);
     tabelaPDF(['Data','Coelho','Tipo','Cliente','Lote','Valor','Situação'], [20,22,20,30,16,22,20], lv);
 
-    /* Detalhamento das compras do período */
     novaSecao('Compras do Período');
     const lc = comprasPDF.slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)))
       .map(c => [fmtDataBR(c.data), tr(c.tipo,12), tr(c.raca,18), tr(c.forn,18), c.linhagem||'—', c.lote||'—', fmtBRL(c.valor)]);
@@ -2781,7 +2803,6 @@ function gerarRelatorioPDF(op){
     tabelaPDF(['Data','Tipo','Raça','Fornecedor','Linh.','Lote','Valor'], [20,18,26,28,16,16,26], lc);
   }
 
-  /* ---- Rodapé "Página X de Y" + dados do criatório ---- */
   const nomeRodape = (op.incluirCriatorio && db.criatorio.nome)
     ? db.criatorio.nome + (db.criatorio.whatsapp ? '  •  WhatsApp: ' + db.criatorio.whatsapp : '')
     : 'CuniCoelho — Manejo de Coelhos';
@@ -2820,7 +2841,7 @@ function gerarRelatorioPDF(op){
   fecharModal('mPDF');
 });
 
-/* ===== 22. GERADOR DE ÍCONES PNG (a partir do SVG inline) ===== */
+/* ===== 22. ÍCONES PNG ===== */
 async function baixarIcone(tamanho){
   try{
     const img = new Image();
@@ -2830,7 +2851,7 @@ async function baixarIcone(tamanho){
     cv.width = cv.height = tamanho;
     const ctx = cv.getContext('2d');
     if (img.width) ctx.drawImage(img, 0, 0, tamanho, tamanho);
-    else { ctx.fillStyle='#0a1830'; ctx.fillRect(0,0,tamanho,tamanho); ctx.fillStyle='#fff'; ctx.font='bold '+tamanho/2+'px sans-serif'; ctx.textAlign='center'; ctx.fillText('🐰', tamanho/2, tamanho*0.66); }
+    else { ctx.fillStyle='#0a1526'; ctx.fillRect(0,0,tamanho,tamanho); ctx.fillStyle='#fff'; ctx.font='bold '+tamanho/2+'px sans-serif'; ctx.textAlign='center'; ctx.fillText('🐰', tamanho/2, tamanho*0.66); }
     const a = document.createElement('a');
     a.download = 'icon-' + tamanho + '.png';
     a.href = cv.toDataURL('image/png');
@@ -2841,7 +2862,7 @@ async function baixarIcone(tamanho){
   }
 }
 
-/* ===== 23. SERVICE WORKER + PWA INSTALÁVEL + ATUALIZAÇÃO AUTOMÁTICA (30s) ===== */
+/* ===== 23. SERVICE WORKER + PWA ===== */
 (function registrarSW(){
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', async () => {
@@ -2868,7 +2889,6 @@ async function baixarIcone(tamanho){
   });
 })();
 
-/* Instalação nativa (botão "📲 Instalar App" aparece quando disponível) */
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -2884,18 +2904,47 @@ window.addEventListener('appinstalled', () => {
 
 /* ===== 24. EVENTOS GLOBAIS ===== */
 function ligarEventos(){
-  /* Tab bar + sidebar */
+  /* Tab bar + sidebar + seletor pílula */
   $$('.tab-btn').forEach(b => b.onclick = () => trocarAba(b.dataset.aba));
   $$('.side-btn').forEach(b => b.onclick = () => trocarAba(b.dataset.aba));
-
-  /* Voltar / menu ••• */
-  $('#btnVoltar').onclick = () => {
-    if (state.aba !== 'dashboard'){ trocarAba('dashboard'); return; }
-    const b = $('#btnVoltar');
-    b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+  $$('#menuAbas .menu-item').forEach(b => b.onclick = () => trocarAba(b.dataset.aba));
+  $('#seletorAba').onclick = () => {
+    $('#menuAbas').classList.toggle('aberto');
+    $('#seletorAba').classList.toggle('aberto');
   };
-  $('#btnMais').onclick = () => $('#menuMais').classList.toggle('aberto');
+  $('#logoHome').onclick = () => trocarAba('dashboard');
 
+  /* Sino 🔔 — resumo rápido dos alertas sanitários */
+  $('#btnBell').onclick = () => {
+    const al = coletarAlertas();
+    if (!al.length){
+      toast('✅ Todas as vacinas estão em dia no plantel!', 'ok');
+      return;
+    }
+    const corDe = { vencendo:'⏳', atrasada:'🚨', pendente:'❓' };
+    $('#menuAlertaLista').innerHTML = al.slice(0,6).map((a,i) =>
+      '<button class="menu-item" data-ai="' + i + '"><span>' + (corDe[a.s.tipo]||'🔔') + '</span>' +
+      '<span style="flex:1;min-width:0">' + esc(a.c.id) + ' — ' + esc(a.v.nome) +
+      '<small>' + textoStatusVacina(a.s) + '</small></span></button>').join('');
+    $$('#menuAlertaLista .menu-item').forEach(el => {
+      el.onclick = () => {
+        $('#menuAlerta').classList.remove('aberto');
+        const a = al[Number(el.dataset.ai)];
+        abrirModalVacina(a.c.id, a.v.nome);
+      };
+    });
+    $('#menuAlerta').classList.toggle('aberto');
+  };
+  $('#btnVerTodosAlertas').onclick = () => {
+    $('#menuAlerta').classList.remove('aberto');
+    trocarAba('dashboard');
+    setTimeout(() => { const el = $('#dashAlertas'); if (el) el.scrollIntoView({behavior:'smooth'}); }, 250);
+  };
+
+  /* Perfil 👤 — abre o menu */
+  $('#btnPerfil').onclick = () => $('#menuMais').classList.toggle('aberto');
+
+  /* Ações do menu de perfil */
   $$('#menuMais .menu-item').forEach(b => b.onclick = () => {
     $('#menuMais').classList.remove('aberto');
     const a = b.dataset.acao;
@@ -2944,24 +2993,30 @@ function ligarEventos(){
   $('#btnAcaoParto').onclick = abrirModalParto;
   $('#btnAcaoVacina').onclick = () => abrirModalVacina();
 
-  /* Plantel / Lotes */
+  /* Plantel / Lotes / Financeiro */
   $('#btnNovoCoelhoTopo').onclick = abrirNovoCoelho;
   $('#btnNovoLoteTopo').onclick = abrirNovoLote;
-
-  /* Financeiro */
   $('#btnNovaVenda').onclick = abrirModalVenda;
   $('#btnNovaCompra').onclick = abrirModalCompra;
 
-  /* Fechar modais: botão ✕, clique no fundo escuro e tecla ESC */
+  /* Fechar dropdowns/modais: ✕, clique fora e ESC */
   document.addEventListener('click', (e) => {
     const f = e.target.closest('[data-fechar]');
     if (f){ fecharModal(f.getAttribute('data-fechar')); return; }
     if (e.target.classList && e.target.classList.contains('overlay')) fecharTodosModais();
-    if (!e.target.closest('#menuMais') && !e.target.closest('#btnMais')) $('#menuMais').classList.remove('aberto');
+    if (!e.target.closest('#menuMais') && !e.target.closest('#btnPerfil')) $('#menuMais').classList.remove('aberto');
+    if (!e.target.closest('#menuAbas') && !e.target.closest('#seletorAba')){ $('#menuAbas').classList.remove('aberto'); $('#seletorAba').classList.remove('aberto'); }
+    if (!e.target.closest('#menuAlerta') && !e.target.closest('#btnBell')) $('#menuAlerta').classList.remove('aberto');
     if (!e.target.closest('#speedDial') && !e.target.closest('#fab')) $('#speedDial').classList.remove('aberto');
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape'){ fecharTodosModais(); $('#menuMais').classList.remove('aberto'); $('#speedDial').classList.remove('aberto'); }
+    if (e.key === 'Escape'){
+      fecharTodosModais();
+      $('#menuMais').classList.remove('aberto');
+      $('#menuAbas').classList.remove('aberto'); $('#seletorAba').classList.remove('aberto');
+      $('#menuAlerta').classList.remove('aberto');
+      $('#speedDial').classList.remove('aberto');
+    }
   });
   $('#cfCancelar').onclick = () => { state.cbConfirm = null; fecharModal('mConfirm'); };
   $('#cfOk').onclick = () => { const cb = state.cbConfirm; state.cbConfirm = null; fecharModal('mConfirm'); if (cb) cb(); };
@@ -2971,10 +3026,13 @@ function ligarEventos(){
 function init(){
   db = carregarDB();
   aplicarCriatorioNaTela();
-  $('#sideLogoImg').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(ICONE_APP_SVG);
+  const logoData = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(ICONE_APP_SVG);
+  $('#sideLogoImg').src = logoData;
+  $('#logoTopo').src = logoData;
   $('#rData').value = hojeISO();
   ligarEventos();
   trocarAba('dashboard');
+  atualizarPipBell();
   if (db.migradoDe) setTimeout(() => toast('Dados migrados de uma versão anterior com sucesso.','info'), 800);
 }
 init();
