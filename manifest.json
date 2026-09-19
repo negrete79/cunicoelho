@@ -1,30 +1,22 @@
 {
-  "name": "CuniCoelho - Manejo de Coelhos",
+  "name": "CuniCoelho 2.0",
   "short_name": "CuniCoelho",
-  "description": "App offline-first para manejo de coelhos: plantel, cobertura, partos, peso, ração, vacinas e financeiro.",
-  "id": "./",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "portrait",
+  "description": "Gestão de coelhos 100% offline: plantel, lotes, ração, partos e vendas.",
+  "id": "cunicoelho-2",
   "lang": "pt-BR",
   "dir": "ltr",
-  "background_color": "#0a1830",
-  "theme_color": "#0a1830",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06152B",
+  "theme_color": "#0A1931",
   "categories": ["productivity", "utilities"],
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
   ]
 }
