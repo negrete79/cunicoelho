@@ -1,83 +1,52 @@
-/* ============================================================
-   CuniCoelho — Service Worker (v2)
-   HTML: NETWORK-FIRST (app sempre atualiza com internet)
-   Estáticos: CACHE-FIRST (100% offline)
-   ============================================================ */
-
-const CACHE_NAME = 'cunicoelho-v2';
-
-const PRECACHE_URLS = [
+/* CuniCoelho 2.0 — service worker cache-first, 100% offline */
+const VERSAO = 'cunicoelho-v2.0.0';
+const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-180.png'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    await Promise.all(PRECACHE_URLS.map(async (url) => {
-      try { await cache.add(new Request(url, { cache: 'reload' })); }
-      catch (err) { console.warn('[SW] Pré-cache falhou:', url, err); }
-    }));
-    await self.skipWaiting();
-  })());
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(VERSAO)
+      .then(cache => Promise.allSettled(ASSETS.map(a => cache.add(a))))
+      .then(() => self.skipWaiting())
+  );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    const nomes = await caches.keys();
-    await Promise.all(nomes.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)));
-    await self.clients.claim();
-  })());
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(ks => Promise.all(ks.filter(k => k !== VERSAO).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener('fetch', (event) => {
-  const req = event.request;
+self.addEventListener('fetch', e => {
+  const req = e.request;
   if (req.method !== 'GET') return;
-
-  const ehNavegacao =
-    req.mode === 'navigate' ||
-    (req.headers.get('accept') || '').includes('text/html');
-
-  if (ehNavegacao) {
-    event.respondWith((async () => {
-      try {
-        const rede = await fetch(req);
-        const cache = await caches.open(CACHE_NAME);
-        cache.put('./index.html', rede.clone());
-        return rede;
-      } catch (err) {
-        const cache = await caches.open(CACHE_NAME);
-        return (
-          (await cache.match(req, { ignoreSearch: true })) ||
-          (await cache.match('./index.html')) ||
-          new Response(
-            '<!doctype html><html lang="pt-BR"><meta charset="utf-8">' +
-            '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-            '<body style="background:#0a1526;color:#e9eefc;font-family:sans-serif;' +
-            'display:grid;place-items:center;height:100vh;text-align:center">' +
-            '<div><h1>🐰 CuniCoelho</h1><p>Você está offline.<br>' +
-            'Abra o app uma vez com internet para habilitar o modo offline.</p></div>',
-            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-          )
-        );
-      }
-    })());
-    return;
-  }
-
-  event.respondWith((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    const cacheado = await cache.match(req);
-    if (cacheado) return cacheado;
+  e.respondWith((async () => {
+    const cache = await caches.open(VERSAO);
+    const hit = await cache.match(req);
+    if (hit) return hit; // cache first
     try {
-      const rede = await fetch(req);
-      if (rede && (rede.ok || rede.type === 'opaque')) cache.put(req, rede.clone());
-      return rede;
+      const res = await fetch(req);
+      if (res && (res.status === 200 || res.type === 'opaque')) {
+        // guarda fontes do Google e assets da própria origem para visitas futuras offline
+        if (req.url.startsWith(self.location.origin) || req.url.includes('fonts.g')) {
+          cache.put(req, res.clone());
+        }
+      }
+      return res;
     } catch (err) {
-      return new Response('', { status: 504, statusText: 'Offline' });
+      if (req.mode === 'navigate') {
+        const fb = (await cache.match('./index.html')) || (await cache.match('./'));
+        if (fb) return fb; // fallback para index.html
+      }
+      return new Response('Offline', { status: 503 });
     }
   })());
 });
