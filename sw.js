@@ -1,18 +1,21 @@
 /* ============================================================
    LEPUS — Service Worker
-   Ao ATUALIZAR o app no servidor, mude a versão abaixo
-   (ex.: lepus-v2) para o celular baixar a nova versão.
+   Ao atualizar o app no servidor, mude a versão abaixo
+   (ex.: lepus-v3) para o celular baixar a nova versão.
    ============================================================ */
-const CACHE = 'lepus-v1';
+const CACHE = 'lepus-v2';
 const SHELL = [
   './',
   './index.html',
   './manifest.json',
+  './icon-16.png',
+  './icon-32.png',
+  './icon-180.png',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-512-maskable.png'
 ];
 
-/* Instalação: guarda o "shell" do app (falha de um item não trava o resto) */
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
@@ -21,7 +24,6 @@ self.addEventListener('install', e => {
   );
 });
 
-/* Ativação: limpa caches de versões antigas */
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
@@ -30,12 +32,10 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* Estratégia de rede */
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
 
-  /* Navegação (abrir o app): rede primeiro, cache como reserva */
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req)
@@ -49,7 +49,6 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  /* Demais recursos (ícones, manifest): cache primeiro, atualiza em segundo plano */
   e.respondWith(
     caches.match(req).then(hit => {
       const rede = fetch(req)
