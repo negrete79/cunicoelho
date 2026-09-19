@@ -3,1066 +3,1961 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CuniCoelho 2.0 — Gestão de Cunicultura</title>
-<meta name="description" content="Gestão de coelhos 100% offline: plantel, lotes, ração, partos e vendas.">
-<meta name="theme-color" content="#0A1931">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1E3A26">
+<meta name="description" content="Criação, manejo, abates e vendas para cunicultores. Funciona offline.">
+<!-- iOS / iPhone / iPad -->
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CuniCoelho">
+<meta name="apple-mobile-web-app-title" content="Lepus">
+<!-- PC / Windows -->
+<meta name="application-name" content="Lepus">
+<meta name="msapplication-TileColor" content="#1E3A26">
+<!-- Ícones: PC, iPhone, Android/manifest -->
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="icon-192.png">
+<title>Lepus — Cunicultura</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#06152B; --card:#10294F; --card2:#0B2144; --line:#1D3A67; --line2:#2A4A7E;
-  --green:#27AE60; --blue:#2F80ED; --mint:#2BC7A8; --amber:#E8A33D;
-  --red:#E05252; --pink:#E0599A; --text:#E6EEF8; --muted:#8FA6C6;
-  color-scheme:dark;
+  --bg:#F4EFE4; --paper:#FFFDF6; --ink:#22301E; --muted:#6E7A63;
+  --line:#E3DCC8; --green:#2C5233; --deep:#1E3A26; --green-soft:#E7EDDE;
+  --carrot:#D96E30; --carrot-soft:#F9E7D8; --bad:#B23A2E; --bad-soft:#F6E0DC;
+  --oliva:#6B7A34; --amber:#A8741F; --amber-soft:#F3E8D2;
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{background:#04101F}
+html{-webkit-text-size-adjust:100%}
 body{
-  font-family:'Sora',ui-sans-serif,sans-serif;color:var(--text);
-  min-height:100dvh;-webkit-font-smoothing:antialiased;
+  font-family:'Outfit','Segoe UI',sans-serif; background:var(--deep); color:var(--ink);
+  font-size:15px; line-height:1.45;
 }
-body.locked{overflow:hidden}
-button{font-family:inherit;cursor:pointer;color:inherit;background:none;border:none}
-input,select,textarea{font-family:inherit}
+body::before{
+  content:''; position:fixed; inset:0;
+  background-image:radial-gradient(rgba(244,239,228,.06) 1px, transparent 1.4px);
+  background-size:16px 16px; pointer-events:none;
+}
+#app{
+  position:relative; max-width:560px; margin:0 auto; min-height:100dvh;
+  background:var(--bg); box-shadow:0 0 0 1px rgba(0,0,0,.25), 0 0 60px rgba(0,0,0,.35);
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink)}
+h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
 svg{display:block}
-#frame{
-  max-width:430px;margin:0 auto;min-height:100dvh;background:var(--bg);
-  box-shadow:0 0 0 1px #12294E;position:relative;padding-bottom:132px;
+
+header#hdr{
+  position:sticky; top:0; z-index:30; background:var(--bg);
+  padding:calc(var(--sat) + 14px) 18px 10px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
 }
+header#hdr h1{font-size:21px; font-weight:650; letter-spacing:.2px; line-height:1.1}
+header#hdr p{font-size:12px; color:var(--muted); margin-top:1px}
+.h-r{display:flex; gap:8px}
+.iconbtn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+  background:var(--paper); display:flex;align-items:center;justify-content:center;
+  color:var(--green); flex:none; transition:transform .15s;
+}
+.iconbtn:active{transform:scale(.92)}
 
-/* ============ TOPO ============ */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px}
-.brand{display:flex;align-items:center;gap:11px}
-.logo{width:44px;height:44px;border-radius:13px;background:#0D2547;border:1px solid var(--line2);display:grid;place-items:center;flex-shrink:0}
-.logo svg{width:36px;height:36px}
-.brandname{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
-.netpill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green);border:1px solid rgba(39,174,96,.45);border-radius:20px;padding:2.5px 9px;margin-top:3px}
-.netpill i{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pul 1.8s infinite}
-.netpill.off{color:var(--amber);border-color:rgba(232,163,61,.45)}
-.netpill.off i{background:var(--amber);animation:none}
-@keyframes pul{50%{opacity:.35}}
-.hdate{text-align:right;font-size:12px;font-weight:600;color:var(--muted);line-height:1.5}
-.hdate b{display:block;color:var(--text);font-size:13.5px;font-weight:700}
+main#view{padding:6px 18px calc(170px + var(--sab))}
 
-main{padding:4px 18px 0}
-.view{display:none}
-.view.on{display:block;animation:fade .28s cubic-bezier(.22,.9,.3,1)}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}}
-h1{font-size:25px;font-weight:800;letter-spacing:-.02em}
-.ptitle{display:flex;align-items:center;justify-content:space-between;margin:8px 0 14px}
-.count{font-size:12.5px;font-weight:600;color:var(--muted)}
-.sh{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+.hero{
+  background:var(--deep); color:#F4EFE4; border-radius:20px; padding:20px;
+  background-image:radial-gradient(rgba(244,239,228,.07) 1px, transparent 1.3px);
+  background-size:14px 14px;
+}
+.hero-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+.h-label{font-size:11.5px; text-transform:uppercase; letter-spacing:1.4px; color:rgba(244,239,228,.65); font-weight:600}
+.h-val{font-family:'Fraunces',serif; font-size:36px; font-weight:650; margin-top:4px; letter-spacing:.3px}
+.h-sub{font-size:12px; color:rgba(244,239,228,.6); margin-top:2px}
+.hero .bunny{width:62px; flex:none; color:rgba(244,239,228,.55); margin-top:2px}
+.bunny.hop{animation:hop .8s cubic-bezier(.3,1.4,.4,1)}
+@keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-9px) rotate(-6deg)}55%{transform:translateY(0)}72%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+.h-chart{margin-top:14px}
+.earR{transform-box:view-box; transform-origin:49px 34px; animation:flick 5s infinite}
+@keyframes flick{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(-15deg)}93%{transform:rotate(6deg)}}
 
-/* ============ ESTADO VAZIO ============ */
-.empty{padding:34px 8px 10px;text-align:center}
-.empty-art{width:118px;height:118px;margin:0 auto 20px;border-radius:50%;background:var(--card2);border:1.5px dashed var(--line2);display:grid;place-items:center;color:#41618F}
-.empty h2{font-size:21px;font-weight:800;margin-bottom:8px}
-.empty p{font-size:14px;line-height:1.6;color:var(--muted);max-width:270px;margin:0 auto 24px}
+.stats,.tira{
+  display:flex; background:var(--paper); border:1px solid var(--line); border-radius:16px;
+  margin-top:14px; padding:13px 4px;
+}
+.tira{margin-bottom:16px}
+.stat{flex:1; text-align:center; border-left:1px solid var(--line); padding:0 4px; min-width:0}
+.stat:first-child{border-left:none}
+.stat b{font-family:'Fraunces',serif; font-size:19px; font-weight:650; color:var(--deep); display:block; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.stat span{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px}
 
-/* ============ BOTÕES ============ */
-.btn-big{height:56px;width:100%;border-radius:28px;background:var(--green);color:#fff;font-size:16px;font-weight:800;letter-spacing:.01em;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s;box-shadow:0 8px 22px rgba(39,174,96,.24)}
-.btn-big:active{transform:scale(.97)}
-.btn-big.blue{background:var(--blue);box-shadow:0 8px 22px rgba(47,128,237,.24)}
-.btn-big.mint{background:var(--mint);box-shadow:0 8px 22px rgba(43,199,168,.22)}
-.btn-big .ck{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.22)}
-.btn-del{margin-top:10px;width:100%;height:48px;border-radius:24px;border:1.5px solid rgba(224,82,82,.4);color:var(--red);font-weight:700;font-size:14.5px;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-del:active{transform:scale(.97)}
-.pillbtn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:19px;border:1.5px solid rgba(39,174,96,.5);color:#4CC77E;font-weight:700;font-size:13.5px;background:rgba(39,174,96,.08)}
-.pillbtn:active{transform:scale(.96)}
+.alerta{
+  display:flex; align-items:center; gap:10px; background:var(--amber-soft);
+  border:1px solid #E8D3A2; border-radius:14px; padding:12px 14px; margin-top:14px;
+  font-size:13px; font-weight:600; color:#7A5510; cursor:pointer;
+}
+.alerta svg{flex:none; color:var(--amber)}
+.aviso{
+  display:flex; gap:8px; align-items:flex-start; background:var(--bad-soft);
+  color:var(--bad); border-radius:11px; padding:10px 12px; font-size:12.5px; font-weight:600; line-height:1.4;
+}
+.aviso svg{flex:none; margin-top:1px}
 
-/* ============ RESUMO 3 COLUNAS ============ */
-.sumcard{background:var(--card);border:1px solid var(--line);border-radius:22px;display:grid;grid-template-columns:1fr 1fr 1fr;padding:16px 4px;box-shadow:0 8px 24px rgba(2,8,20,.3)}
-.sum{text-align:center;padding:0 4px}
-.sum + .sum{border-left:1px solid var(--line)}
-.sum b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.sum b em{font-style:normal;font-size:12px;font-weight:700;color:var(--muted);margin-left:2px}
-.sum span{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.03em}
-.sum.g b{color:#4CC77E}.sum.r b{color:var(--red)}
+section{margin-top:22px}
+.sec-h{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px}
+.sec-h h2{font-size:17.5px; font-weight:650}
+.chip-meta{font-size:11px; font-weight:600; color:var(--green); background:var(--green-soft); padding:3px 10px; border-radius:999px}
+.link{color:var(--carrot); font-weight:600; font-size:13px}
+.grp-h{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin:16px 2px 8px}
+.sec-t{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); margin:20px 2px 8px}
 
-/* ============ AÇÕES RÁPIDAS ============ */
-.acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.act{height:96px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;transition:transform .15s}
-.act:active{transform:scale(.95)}
-.act.ab{background:rgba(47,128,237,.13);border:1px solid rgba(47,128,237,.4);color:#7CB3F5}
-.act.ag{background:rgba(39,174,96,.13);border:1px solid rgba(39,174,96,.42);color:#4CC77E}
-.act.am{background:rgba(43,199,168,.12);border:1px solid rgba(43,199,168,.4);color:#43D8BC}
+.row,.crow,.fila-row,.nrow,.carenc-row,.pk-row{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:12px 14px; margin-bottom:9px; display:flex; align-items:center; gap:12px;
+  cursor:pointer; transition:transform .12s; width:100%; text-align:left;
+}
+.row:active,.crow:active,.fila-row:active,.nrow:active,.carenc-row:active,.pk-row:active{transform:scale(.985)}
+.carenc-row{background:var(--amber-soft); border-color:#E8D3A2}
+.row-ico{width:38px;height:38px;border-radius:12px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;flex:none}
+.carenc-row .row-ico{background:#FFFDF6; color:var(--amber)}
+.row-main{flex:1; min-width:0}
+.row-main b{display:block; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.row-main span{font-size:12px; color:var(--muted)}
+.row-side{text-align:right; flex:none}
+.row-side b{font-family:'Fraunces',serif; font-size:16px; font-weight:650; display:block}
+.row-side span{font-size:11px; color:var(--muted)}
 
-/* ============ CONSUMO POR CATEGORIA ============ */
-.cons{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px 16px}
-.crow{padding:13px 0}
-.crow + .crow{border-top:1px solid var(--line)}
-.crow.zero{opacity:.42}
-.crl{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.cdot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
-.cname{font-weight:700;font-size:14px}
-.cq{font-size:11.5px;color:var(--muted);font-weight:600;margin-left:auto}
-.ckg{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;margin-left:8px}
-.cbar{height:6px;border-radius:3px;background:#0B2144;overflow:hidden;margin-top:2px}
-.cbar i{display:block;height:100%;border-radius:3px;transition:width .5s cubic-bezier(.32,.72,.24,1)}
+.ava{
+  width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  font-weight:700; font-size:13px; letter-spacing:.3px; font-family:'Fraunces',serif;
+}
+.ava.f{background:var(--carrot-soft); color:#9C4A15}
+.ava.m{background:var(--green-soft); color:var(--green)}
+.ava.off{background:#ECE7DA; color:#8A8778}
+.c-side{flex:none; text-align:right}
+.c-side>b{display:block; font-size:13.5px; font-family:'Fraunces',serif}
+.st{display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; padding:2.5px 9px; border-radius:999px; margin-top:3px}
+.st::before{content:''; width:5px; height:5px; border-radius:50%; background:currentColor}
+.st.matriz{background:var(--green-soft); color:var(--green)}
+.st.reprodutor{background:#EAEEDA; color:var(--oliva)}
+.st.engorda{background:var(--amber-soft); color:var(--amber)}
+.st.vendido{background:#ECE7DA; color:#7C7768}
+.st.abatido{background:var(--carrot-soft); color:#B04E14}
+.st.morto{background:#E4E1D6; color:#6B675A}
+.st.carencia{background:var(--amber-soft); color:var(--amber)}
 
-/* ============ PLANTEL ============ */
-.search{display:flex;align-items:center;gap:10px;height:52px;border-radius:26px;background:var(--card);border:1.5px solid var(--line);padding:0 18px;color:var(--muted);margin-bottom:6px}
-.search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:15px}
-.search input::placeholder{color:#5E77A0}
-.fchip{display:inline-flex;align-items:center;gap:7px;margin:8px 0 2px;height:34px;padding:0 6px 0 13px;border-radius:17px;background:rgba(47,128,237,.14);border:1px solid rgba(47,128,237,.45);color:#7CB3F5;font-size:12.5px;font-weight:700}
-.fchip button{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(47,128,237,.2)}
-.clist{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.ccard{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:13px 14px;transition:transform .15s}
-.ccard:active{transform:scale(.985)}
-.av{width:52px;height:52px;border-radius:16px;object-fit:cover;flex-shrink:0}
-.avi{display:grid;place-items:center;font-size:21px;font-weight:800;color:#fff;background:color-mix(in srgb,var(--c,#2F80ED) 28%,#0B2144);border:1px solid var(--line2)}
-.cinfo{flex:1;min-width:0}
-.cn{display:flex;align-items:center;gap:7px;margin-bottom:2px}
-.cn b{font-size:15.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sx{font-size:14px;font-weight:800}
-.sx.M{color:#6FB1F7}.sx.F{color:#F088BE}
-.cm{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cbadges{display:flex;gap:6px;flex-wrap:wrap}
-.badge{font-style:normal;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:10px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 38%,transparent)}
-.badge.b2{--c:var(--muted)}
-.cside{text-align:right;flex-shrink:0}
-.peso{display:block;font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums;margin-bottom:7px}
-.mini{display:flex;gap:7px;justify-content:flex-end}
-.mini button{width:34px;height:34px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--muted);display:grid;place-items:center}
-.mini button:active{transform:scale(.9);color:var(--green)}
+.fr-main{flex:1; min-width:0}
+.fr-main b{font-size:14px}
+.fr-main>span{display:block; font-size:11.5px; color:var(--muted); margin:1px 0 6px}
+.pbar{height:4px; background:#EAE4D2; border-radius:99px; overflow:hidden; max-width:170px}
+.pbar i{display:block; height:100%; background:var(--green); border-radius:99px}
+.pbar i.full{background:var(--carrot)}
+.fr-w{flex:none; text-align:right}
+.fr-w b{font-family:'Fraunces',serif; font-size:15.5px; font-weight:650; display:block}
+.pronto{display:inline-block; font-size:10px; font-weight:700; color:#fff; background:var(--carrot); border-radius:99px; padding:1.5px 8px; margin-top:3px; font-style:normal; letter-spacing:.4px}
+em.pronto.caren{background:var(--amber)}
 
-/* ============ RAÇÃO ============ */
-.bigcard{background:var(--card);border:1px solid var(--line);border-radius:22px;display:grid;grid-template-columns:1fr 1fr;padding:18px 4px;margin-top:14px}
-.bk{text-align:center;padding:0 8px}
-.bk + .bk{border-left:1px solid var(--line)}
-.bk span{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.bk b{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.bk b em{font-style:normal;font-size:12.5px;font-weight:700;color:var(--muted)}
-.bk.g b{color:#4CC77E}
-.hint{font-size:12px;color:var(--muted);line-height:1.55;margin:10px 4px 0}
-.rcat{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 16px}
-.rrow{display:grid;grid-template-columns:1.35fr .75fr .6fr .7fr;align-items:center;gap:4px;padding:12px 0}
-.rrow + .rrow{border-top:1px solid var(--line)}
-.rrow.zero{opacity:.4}
-.rn{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
-.rq,.rt{font-size:11.5px;color:var(--muted);font-weight:600;text-align:right}
-.rk{font-size:13.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.search{position:relative; margin-bottom:12px}
+.search svg{position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted)}
+.search input{
+  width:100%; height:46px; border:1px solid var(--line); border-radius:13px;
+  background:var(--paper); padding:0 14px 0 42px; font-size:16px;
+}
+.search input:focus{outline:none; border-color:var(--green)}
+.chips{display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none; font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:999px;
+  border:1px solid var(--line); background:var(--paper); color:var(--muted);
+}
+.chip.on{background:var(--deep); color:#F4EFE4; border-color:var(--deep)}
+.segmini{display:flex; background:#ECE5D2; border-radius:11px; padding:3px; margin-bottom:14px}
+.segmini button{flex:1; padding:8px; border-radius:8px; font-size:13px; font-weight:600; color:var(--muted)}
+.segmini button.on{background:var(--paper); color:var(--deep); box-shadow:0 1px 3px rgba(40,50,30,.12)}
 
-/* ============ VENDAS / LOTES ============ */
-.moneywrap{display:flex;align-items:center;height:54px;border-radius:27px;background:var(--card2);border:1.5px solid var(--line);padding:0 18px;gap:8px}
-.moneywrap:focus-within{border-color:var(--green)}
-.moneywrap span{font-size:14px;font-weight:800;color:var(--muted)}
-.moneywrap input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:16px;font-weight:600}
-.vlist{display:flex;flex-direction:column;gap:10px}
-.vcard{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px 15px}
-.vcard .av{width:42px;height:42px;border-radius:13px}
-.vcard .avi{font-size:16px}
-.vinfo{flex:1;min-width:0}
-.vinfo b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vinfo span{font-size:11.5px;color:var(--muted);font-weight:600}
-.vpreco{font-size:15px;font-weight:800;color:#4CC77E;font-variant-numeric:tabular-nums}
-.lcard{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:15px 16px;margin-bottom:10px;transition:transform .15s}
-.lcard:active{transform:scale(.985)}
-.lic{width:44px;height:44px;border-radius:14px;background:rgba(47,128,237,.14);border:1px solid rgba(47,128,237,.35);color:#7CB3F5;display:grid;place-items:center;flex-shrink:0}
-.lmain{flex:1;min-width:0}
-.lmain b{display:block;font-size:15px}
-.lmain span{font-size:11.5px;color:var(--muted);font-weight:600}
-.lcount{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
-.lcount em{font-style:normal;font-size:11px;color:var(--muted);font-weight:700}
-.ltrash{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;color:var(--red);border:1px solid rgba(224,82,82,.3)}
-.mini-vazio{padding:26px 0;text-align:center;color:var(--muted);font-size:13.5px;font-weight:500}
+.empty{text-align:center; padding:34px 20px; color:var(--muted)}
+.empty svg{margin:0 auto 10px; color:#B9B39E}
+.empty b{display:block; color:var(--ink); font-family:'Fraunces',serif; font-size:16px; font-weight:650}
+.empty p{font-size:13px; margin-top:3px}
 
-/* ============ NAV INFERIOR ============ */
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(8,23,47,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:8px 4px calc(9px + env(safe-area-inset-bottom))}
-.bnav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:#5E77A0;font-size:10px;font-weight:700;letter-spacing:.02em}
-.bnav .bic{padding:3px 15px;border-radius:15px;transition:background .2s}
-.bnav button.on{color:#4CC77E}
-.bnav button.on .bic{background:rgba(39,174,96,.15)}
+nav#tabbar{
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%); z-index:40;
+  width:100%; max-width:560px; background:var(--paper); border-top:1px solid var(--line);
+  display:flex; padding:8px 6px calc(8px + var(--sab));
+}
+.tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; color:#8A9070; font-size:10px; font-weight:600; padding:5px 0; border-radius:12px}
+.tab svg{width:22px;height:22px}
+.tab.on{color:var(--deep)}
+.tab.on .pill{background:var(--green-soft)}
+.pill{display:flex; align-items:center; padding:4px 12px; border-radius:999px; transition:background .2s}
+#fab{
+  position:fixed; z-index:39; right:max(16px, calc(50vw - 264px));
+  bottom:calc(84px + var(--sab));
+  background:var(--deep); color:#F4EFE4; border-radius:999px; padding:14px 20px;
+  display:flex; align-items:center; gap:7px; font-weight:600; font-size:14px;
+  box-shadow:0 8px 22px rgba(20,35,18,.35); transition:transform .15s;
+}
+#fab:active{transform:scale(.94)}
+#fab svg{width:18px;height:18px}
 
-/* ============ FAB + MENU RADIAL ============ */
-.fab{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));right:max(18px,calc(50% - 197px));width:60px;height:60px;border-radius:50%;background:var(--blue);color:#fff;z-index:46;display:grid;place-items:center;box-shadow:0 10px 26px rgba(47,128,237,.4);transition:transform .35s cubic-bezier(.32,.72,.24,1)}
-.fab.open{transform:rotate(45deg)}
-.fabdim{position:fixed;inset:0;background:rgba(3,9,20,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:43;opacity:0;pointer-events:none;transition:opacity .3s}
-.fabdim.show{opacity:1;pointer-events:auto}
-.fabmenu{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));right:max(18px,calc(50% - 197px));width:60px;height:60px;z-index:44;pointer-events:none}
-.fabitem{position:absolute;bottom:30px;right:30px;display:flex;align-items:center;gap:9px;height:46px;padding:0 17px 0 9px;border-radius:23px;background:rgba(16,41,79,.97);border:1px solid var(--line2);box-shadow:0 10px 26px rgba(2,8,20,.5);white-space:nowrap;font-size:13.5px;font-weight:700;pointer-events:auto;opacity:0;transform:translate(50%,50%) scale(.3);transition:transform .4s cubic-bezier(.32,.72,.24,1),opacity .25s;transition-delay:0ms}
-.fabmenu.open .fabitem{opacity:1;transform:translate(calc(50% + var(--tx)),calc(50% + var(--ty))) scale(1);transition-delay:var(--d)}
-.fic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c)}
+.ov{position:fixed; inset:0; z-index:100; background:rgba(22,30,16,.5); opacity:0; transition:opacity .25s}
+.ov.on{opacity:1}
+.ov.out{opacity:0}
+.sheet{
+  position:absolute; bottom:0; left:50%; transform:translate(-50%,105%);
+  width:100%; max-width:560px; max-height:90dvh; background:var(--bg);
+  border-radius:22px 22px 0 0; display:flex; flex-direction:column;
+  transition:transform .32s cubic-bezier(.32,.72,.24,1);
+}
+.ov.on .sheet{transform:translate(-50%,0)}
+.ov.out .sheet{transform:translate(-50%,105%)}
+.sh-head{display:flex; align-items:center; justify-content:space-between; padding:16px 18px 10px; flex:none}
+.sh-head h3{font-size:19px; font-weight:650}
+.sh-body{overflow-y:auto; padding:4px 18px 22px}
+.sh-foot{
+  flex:none; padding:12px 18px calc(14px + var(--sab)); background:var(--bg);
+  border-top:1px solid var(--line); display:flex; gap:10px; align-items:center;
+}
+.sheet.mini{max-width:400px}
+.form{display:flex; flex-direction:column; gap:14px; padding-top:4px}
+.fld label{display:block; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:5px}
+.fld input,.fld select,.fld textarea{
+  width:100%; min-height:46px; border:1px solid var(--line); border-radius:12px;
+  background:var(--paper); padding:11px 13px; font-size:16px;
+}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(44,82,51,.13)}
+.fld textarea{min-height:70px; resize:vertical}
+.frow{display:flex; gap:10px}
+.frow>.fld{flex:1}
+.seg{display:flex; background:#ECE5D2; border-radius:11px; padding:3px}
+.seg button{flex:1; padding:9px 4px; border-radius:8px; font-size:13px; font-weight:600; color:var(--muted)}
+.seg button.on{background:var(--paper); color:var(--deep); box-shadow:0 1px 3px rgba(40,50,30,.12)}
+.btn{
+  min-height:48px; border-radius:13px; padding:12px 18px; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; gap:8px; flex:1;
+}
+.btn.primary{background:var(--deep); color:#F4EFE4}
+.btn.primary:active{transform:scale(.97)}
+.btn.ghost{background:var(--paper); border:1px solid var(--line); color:var(--deep)}
+.btn.danger{background:var(--bad); color:#fff}
+.btn.danger-l{background:var(--bad-soft); color:var(--bad)}
+.hint{font-size:12px; color:var(--muted); line-height:1.45}
 
-/* ============ BOTTOM SHEETS ============ */
-.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;visibility:hidden;transition:visibility 0s .45s}
-.sheet.open{visibility:visible;transition-delay:0s}
-.bd{position:absolute;inset:0;background:rgba(3,9,20,.6);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:0;transition:opacity .35s}
-.sheet.open .bd{opacity:1}
-.card{position:relative;width:100%;max-width:430px;background:#0D2247;border:1px solid var(--line);border-bottom:none;border-radius:28px 28px 0 0;padding:9px 20px calc(22px + env(safe-area-inset-bottom));max-height:calc(100dvh - 46px);overflow-y:auto;transform:translateY(105%);transition:transform .45s cubic-bezier(.32,.72,.24,1)}
-.sheet.open .card{transform:none}
-.grab{width:44px;height:5px;border-radius:3px;background:var(--line2);margin:4px auto 14px}
-.shead2{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
-.shead2 h2{font-size:20px;font-weight:800;letter-spacing:-.02em}
-.shead2 p{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:3px}
-.xbtn{width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--muted);display:grid;place-items:center;flex-shrink:0}
+.it-tools{display:flex; gap:8px; margin-bottom:10px}
+.it-tools button{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  min-height:42px; font-size:13.5px; font-weight:600; color:var(--green);
+  background:var(--green-soft); border-radius:11px;
+}
+.it-tools button.sec{color:var(--muted); background:#EFE9DA}
+.it-row{display:grid; grid-template-columns:1fr 50px 58px 78px 28px; gap:6px; margin-bottom:8px; align-items:center}
+.it-row input,.it-row select{
+  min-height:42px; border:1px solid var(--line); border-radius:10px; background:var(--paper);
+  padding:8px 9px; font-size:15px; width:100%;
+}
+.it-row .i-x{width:28px;height:38px;border-radius:9px;color:var(--muted);display:flex;align-items:center;justify-content:center;background:#EFE9DA}
+.vtot{display:flex; align-items:baseline; justify-content:space-between; flex:1}
+.vtot span{font-size:12px; color:var(--muted); font-weight:600}
+.vtot b{font-family:'Fraunces',serif; font-size:23px; font-weight:650; color:var(--deep)}
 
-/* formulários */
-.field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
-.field label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.03em}
-.input{height:54px;border-radius:27px;background:var(--card2);border:1.5px solid var(--line);color:var(--text);padding:0 18px;font-size:16px;font-weight:500;width:100%;outline:none;transition:border-color .2s}
-.input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(39,174,96,.14)}
-.input::placeholder{color:#54719E}
-select.input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238FA6C6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 9 7 7 7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 17px center;padding-right:44px}
-select.input option{background:#0B2144}
-input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
-input[type=date]{color-scheme:dark}
-textarea.ta{height:auto;min-height:84px;padding:15px 18px;border-radius:22px;resize:none;line-height:1.5}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.frow .field{margin-bottom:14px}
+.d-head{display:flex; gap:14px; align-items:center; margin-bottom:16px}
+.d-ava{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:650;font-size:18px}
+.d-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px}
+.d-cell{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:9px 12px; min-width:0}
+.d-cell span{display:block; font-size:10px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); font-weight:700}
+.d-cell b{font-size:14px; word-wrap:break-word}
+.d-acts{display:flex; flex-wrap:wrap; gap:8px}
+.d-acts .btn{flex:1 1 calc(50% - 4px); min-height:44px; font-size:13.5px}
 
-/* foto */
-.photo{display:flex;align-items:center;gap:14px;width:100%;border:1.8px dashed rgba(39,174,96,.55);background:rgba(39,174,96,.06);border-radius:20px;padding:14px 16px;margin-bottom:16px;text-align:left;transition:transform .15s}
-.photo:active{transform:scale(.98)}
-.pprev{width:54px;height:54px;border-radius:15px;background:rgba(39,174,96,.13);display:grid;place-items:center;color:var(--green);overflow:hidden;flex-shrink:0}
-.pprev img{width:100%;height:100%;object-fit:cover}
-.ptxt b{display:block;font-size:14.5px;font-weight:700;color:#4CC77E}
-.ptxt span{font-size:12px;color:var(--muted);font-weight:500}
+.recibo{
+  background:#fff; border:1.5px solid var(--ink); outline:1px solid var(--ink); outline-offset:3px;
+  padding:20px 18px; margin:6px 4px 14px; border-radius:2px;
+}
+.r-head{text-align:center; border-bottom:1.5px solid var(--ink); padding-bottom:12px}
+.r-logo{width:52px;height:52px;border-radius:50%;background:var(--deep);color:#F4EFE4;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.r-logo svg{width:32px;height:32px}
+.r-name{font-family:'Fraunces',serif; font-size:20px; font-weight:650}
+.r-sub{font-size:11.5px; color:var(--muted); margin-top:2px}
+.r-title{text-align:center; margin:13px 0 3px; font-weight:700; letter-spacing:2px; font-size:13.5px}
+.r-title small{display:block; font-weight:400; letter-spacing:.5px; font-size:9.5px; color:var(--muted); margin-top:2px}
+.r-info{display:flex; justify-content:space-between; gap:10px; font-size:12px; margin:12px 0; border:1px solid var(--line); border-radius:8px; padding:9px 11px; background:var(--bg)}
+.r-info b{display:block; font-size:13px}
+.r-info span{color:var(--muted); font-size:9.5px; text-transform:uppercase; letter-spacing:.8px; font-weight:700}
+.r-info .col{min-width:0}
+.r-info .right{text-align:right}
+table.r-items{width:100%; border-collapse:collapse; font-size:12.5px}
+table.r-items th{text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); border-bottom:1px solid var(--ink); padding:4px 2px}
+table.r-items td{padding:6px 2px; border-bottom:1px dashed var(--line); vertical-align:top}
+.r-items .num{text-align:right; white-space:nowrap}
+.r-subline{font-size:10px; color:var(--muted); margin-top:1px}
+.r-tots{margin-top:10px; font-size:12.5px}
+.r-tots .tr{display:flex; justify-content:space-between; padding:2.5px 2px; color:var(--muted)}
+.r-tots .grand{
+  background:var(--deep); color:#F4EFE4; border-radius:8px; padding:8px 12px; margin-top:6px;
+  font-weight:700; font-size:14.5px; justify-content:space-between;
+}
+.r-obs{font-size:11.5px; color:var(--muted); margin-top:9px; font-style:italic}
+.ficha{background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:10px 12px; margin-top:8px}
+.ficha-h{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px}
+.ficha-h b{font-family:'Fraunces',serif; font-size:14px}
+.ficha-h span{font-size:10.5px; color:var(--muted)}
+.ficha-l{font-size:12px; margin-top:2px; line-height:1.45}
+.r-sign{text-align:center; margin-top:26px; font-size:11px; color:var(--muted)}
+.r-sign i{display:block; width:200px; border-top:1px solid var(--ink); margin:0 auto 5px; font-style:normal}
+.r-foot{text-align:center; font-size:9.5px; color:var(--muted); margin-top:16px; border-top:1px solid var(--line); padding-top:8px}
 
-/* sexo */
-.sexgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.sexbtn{height:58px;border-radius:29px;border:1.5px solid var(--line);background:var(--card2);color:var(--muted);display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:700;transition:all .15s}
-.sexbtn .sym{font-size:19px;line-height:1}
-.sexbtn.m.on{border-color:rgba(47,128,237,.7);background:rgba(47,128,237,.14);color:#7CB3F5}
-.sexbtn.f.on{border-color:rgba(224,89,154,.7);background:rgba(224,89,154,.13);color:#F088BE}
-.sexbtn:active{transform:scale(.96)}
+#toastRoot{position:fixed; z-index:200; bottom:calc(96px + var(--sab)); left:50%; transform:translateX(-50%); display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; width:max-content; max-width:88vw}
+.toast{
+  background:var(--deep); color:#F4EFE4; border-radius:999px; padding:11px 18px;
+  font-size:13.5px; font-weight:600; display:flex; align-items:center; gap:9px;
+  box-shadow:0 10px 26px rgba(15,25,12,.4); animation:tin .35s cubic-bezier(.3,1.3,.4,1); max-width:88vw;
+}
+.toast svg{width:17px;height:17px;color:#A9C79A;flex:none}
+.toast.err svg{color:#F0A08F}
+.toast.hide{opacity:0; transform:translateY(8px); transition:.3s}
+@keyframes tin{from{opacity:0; transform:translateY(14px) scale(.9)}}
 
-/* chips de categoria */
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{height:38px;padding:0 16px;border-radius:19px;border:1.5px solid var(--line);background:var(--card2);color:var(--muted);font-size:13px;font-weight:600;transition:all .15s}
-.chip.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:700}
-.chip:active{transform:scale(.94)}
+.clist{background:var(--paper); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-top:10px}
+.clist button{display:flex; width:100%; align-items:center; gap:12px; padding:13px 15px; border-bottom:1px solid var(--line); font-size:14px; font-weight:600; text-align:left}
+.clist button:last-child{border-bottom:none}
+.clist button svg{color:var(--green); flex:none}
+.clist button small{display:block; font-weight:400; font-size:11.5px; color:var(--muted)}
+.clist .red, .clist .red svg{color:var(--bad)}
 
-/* contador */
-.counter{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1.5px solid var(--line);border-radius:30px;padding:9px 10px}
-.counter:focus-within{border-color:var(--green)}
-.cbtn{width:46px;height:46px;border-radius:50%;background:#16335F;border:1px solid var(--line2);color:var(--text);display:grid;place-items:center;transition:transform .12s}
-.cbtn:active{transform:scale(.88);background:#1B3D6F}
-.cval{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.cval.bump{animation:bump .2s cubic-bezier(.32,.72,.24,1)}
-@keyframes bump{45%{transform:scale(1.14)}}
-.auto{display:flex;align-items:center;gap:9px;background:rgba(47,128,237,.1);border:1px solid rgba(47,128,237,.35);border-radius:16px;padding:11px 14px;font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:14px}
-.auto i{color:#7CB3F5;display:grid;place-items:center}
-.auto b{color:var(--text);font-weight:700}
-.vhint{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 15px;margin:-4px 0 14px}
-
-/* toast */
-.toast{position:fixed;left:50%;bottom:calc(160px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;z-index:90;display:flex;align-items:center;gap:10px;background:#0F2A52;border:1px solid var(--line2);border-radius:18px;padding:13px 18px;font-size:13.5px;font-weight:600;max-width:88%;box-shadow:0 12px 30px rgba(2,8,20,.55);pointer-events:none;transition:all .3s cubic-bezier(.32,.72,.24,1)}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.toast .tdot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
-.toast.ok .tdot{background:rgba(39,174,96,.2);color:#4CC77E}
-.toast.err .tdot{background:rgba(224,82,82,.2);color:#F08A8A}
+@media (min-width:700px){
+  .sheet{border-radius:22px; bottom:40px; max-height:82dvh}
+  .ov{background:rgba(22,30,16,.55)}
+}
 </style>
 </head>
 <body>
-<div id="frame">
-
-  <!-- ===== TOPO ===== -->
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo" id="logoBtn" title="CuniCoelho 2.0">
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <ellipse cx="18.6" cy="12.4" rx="4.6" ry="9.6" fill="#E6EEF8" transform="rotate(-10 18.6 12.4)"/>
-          <ellipse cx="29.4" cy="12.4" rx="4.6" ry="9.6" fill="#E6EEF8" transform="rotate(10 29.4 12.4)"/>
-          <ellipse cx="18.1" cy="12.6" rx="2" ry="6.2" fill="#E58FA0" transform="rotate(-10 18.1 12.6)"/>
-          <ellipse cx="29.9" cy="12.6" rx="2" ry="6.2" fill="#E58FA0" transform="rotate(10 29.9 12.6)"/>
-          <circle cx="24" cy="31.5" r="11.5" fill="#E6EEF8"/>
-          <circle cx="19.8" cy="29.9" r="1.7" fill="#0A1931"/>
-          <circle cx="28.2" cy="29.9" r="1.7" fill="#0A1931"/>
-          <path d="M22.4 34.4h3.2L24 36.4Z" fill="#E58FA0"/>
-        </svg>
-      </div>
-      <div>
-        <div class="brandname">CuniCoelho <span style="color:#4CC77E">2.0</span></div>
-        <span class="netpill" id="netpill"><i></i>Online</span>
-      </div>
-    </div>
-    <div class="hdate">Hoje<b id="hdate">—</b></div>
-  </header>
-
-  <main>
-    <section class="view on" data-view="inicio" id="v-inicio"></section>
-    <section class="view" data-view="plantel" id="v-plantel"></section>
-    <section class="view" data-view="racao" id="v-racao"></section>
-    <section class="view" data-view="vendas" id="v-vendas"></section>
-    <section class="view" data-view="lotes" id="v-lotes"></section>
-  </main>
-
-  <!-- ===== NAV INFERIOR ===== -->
-  <nav class="bnav">
-    <button data-view="inicio" class="on"><span class="bic" data-ic="home"></span>Início</button>
-    <button data-view="plantel"><span class="bic" data-ic="bunny"></span>Plantel</button>
-    <button data-view="racao"><span class="bic" data-ic="bowl"></span>Ração</button>
-    <button data-view="vendas"><span class="bic" data-ic="tag"></span>Vendas</button>
-    <button data-view="lotes"><span class="bic" data-ic="grid"></span>Lotes</button>
-  </nav>
-
-  <!-- ===== FAB RADIAL ===== -->
-  <div class="fabdim" id="fabdim"></div>
-  <div class="fabmenu" id="fabmenu"></div>
-  <button class="fab" id="fab" aria-label="Abrir ações"><i data-ic="plus" data-sz="26"></i></button>
-
+<div id="app">
+  <header id="hdr"></header>
+  <main id="view"></main>
 </div>
-
-<!-- ===== SHEET: NOVO COELHO ===== -->
-<div class="sheet" id="sh-coelho" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2 id="ct-title">Novo coelho</h2><p id="ct-sub">Cadastre um novo animal no plantel</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-coelho" novalidate>
-      <input type="file" id="cFoto" accept="image/*" capture="environment" hidden>
-      <button type="button" class="photo" id="cPhotoBtn">
-        <span class="pprev" id="cPrev"><i data-ic="camera" data-sz="26"></i></span>
-        <span class="ptxt"><b>Adicionar foto</b><span>Toque para tirar foto</span></span>
-      </button>
-      <div class="field"><label for="cNome">Nome</label>
-        <input class="input" id="cNome" placeholder="Ex.: Lupita" maxlength="26"></div>
-      <div class="field"><label for="cRaca">Raça</label>
-        <select class="input" id="cRaca"><option value="">Selecione a raça</option></select></div>
-      <div class="frow">
-        <div class="field"><label for="cIdade">Idade (meses)</label>
-          <input class="input" id="cIdade" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 8"></div>
-        <div class="field"><label for="cPeso">Peso (kg)</label>
-          <input class="input" id="cPeso" type="number" min="0" step="0.05" inputmode="decimal" placeholder="Ex.: 3,2"></div>
-      </div>
-      <div class="field"><label>Sexo</label>
-        <div class="sexgrid">
-          <button type="button" class="sexbtn m" data-sex="M">Macho <span class="sym">&#9794;&#xFE0E;</span></button>
-          <button type="button" class="sexbtn f" data-sex="F">Fêmea <span class="sym">&#9792;&#xFE0E;</span></button>
-        </div>
-      </div>
-      <div class="field"><label>Categoria</label><div class="chips" id="cChips"></div></div>
-      <div class="field"><label for="cLote">Lote</label><select class="input" id="cLote"></select></div>
-      <button class="btn-big" type="submit" id="cSubmit"><span class="ck"><i data-ic="check" data-sz="14"></i></span>Confirmar e Adicionar</button>
-      <button class="btn-del" type="button" id="cDel" hidden><i data-ic="trash" data-sz="17"></i>Excluir coelho</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: PESO ===== -->
-<div class="sheet" id="sh-peso" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2>Registrar peso</h2><p>Acompanhe a evolução do seu coelho</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-peso" novalidate>
-      <div class="field"><label for="pCoelho">Coelho</label><select class="input" id="pCoelho"></select></div>
-      <div class="field"><label>Peso</label>
-        <div class="counter">
-          <button type="button" class="cbtn" data-st="-" aria-label="Diminuir"><i data-ic="minus" data-sz="20"></i></button>
-          <b class="cval" id="pVal">1,5 kg</b>
-          <button type="button" class="cbtn" data-st="+" aria-label="Aumentar"><i data-ic="plus" data-sz="20"></i></button>
-        </div>
-      </div>
-      <button class="btn-big" type="submit"><span class="ck"><i data-ic="check" data-sz="14"></i></span>Salvar</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: PARTO ===== -->
-<div class="sheet" id="sh-parto" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2>Registrar parto</h2><p>Os filhotes entram como Amamentando</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-parto" novalidate>
-      <div class="field"><label for="bMae">Mãe</label><select class="input" id="bMae"></select></div>
-      <div class="field"><label>Número de filhotes</label>
-        <div class="counter">
-          <button type="button" class="cbtn" data-bt="-" aria-label="Diminuir"><i data-ic="minus" data-sz="20"></i></button>
-          <b class="cval" id="bVal">1</b>
-          <button type="button" class="cbtn" data-bt="+" aria-label="Aumentar"><i data-ic="plus" data-sz="20"></i></button>
-        </div>
-      </div>
-      <div class="auto"><i data-ic="clock" data-sz="17"></i><span>Registro automático em <b id="bAgora">—</b></span></div>
-      <div class="field"><label for="bObs">Observações</label>
-        <textarea class="input ta" id="bObs" rows="2" placeholder="Alguma observação sobre o parto? (opcional)"></textarea></div>
-      <button class="btn-big blue" type="submit">Salvar Registro</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: COBERTURA ===== -->
-<div class="sheet" id="sh-cobertura" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2>Registrar cobertura</h2><p>Cruzamento entre fêmea e macho</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-cobertura" novalidate>
-      <div class="field"><label for="cvMae">Fêmea</label><select class="input" id="cvMae"></select></div>
-      <div class="field"><label for="cvPai">Macho</label><select class="input" id="cvPai"></select></div>
-      <div class="field"><label for="cvData">Data da cobertura</label><input class="input" id="cvData" type="date"></div>
-      <div class="auto"><i data-ic="calendar" data-sz="17"></i><span>Parto previsto para <b id="cvPrev">—</b> (gestação de ~31 dias)</span></div>
-      <div class="field"><label for="cvObs">Observações</label>
-        <textarea class="input ta" id="cvObs" rows="2" placeholder="Observações (opcional)"></textarea></div>
-      <button class="btn-big blue" type="submit">Salvar Registro</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: VACINA ===== -->
-<div class="sheet" id="sh-vacina" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2>Registrar vacina</h2><p>Mantenha a carteirinha em dia</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-vacina" novalidate>
-      <div class="field"><label for="vcCoelho">Coelho</label><select class="input" id="vcCoelho"></select></div>
-      <div class="field"><label for="vcTipo">Vacina</label>
-        <select class="input" id="vcTipo">
-          <option value="">Selecione a vacina</option>
-          <option>Mixomatose</option>
-          <option>VHD-1 (Doença hemorrágica)</option>
-          <option>VHD-2</option>
-          <option>Mixo + VHD (tripla)</option>
-        </select></div>
-      <div class="field"><label for="vcData">Data da aplicação</label><input class="input" id="vcData" type="date"></div>
-      <button class="btn-big mint" type="submit">Salvar Vacina</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: VENDA ===== -->
-<div class="sheet" id="sh-venda" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2>Registrar venda</h2><p>O coelho sai do plantel ativo</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-venda" novalidate>
-      <div class="field"><label for="vdCoelho">Coelho</label><select class="input" id="vdCoelho"></select></div>
-      <div class="vhint" id="vdInfo">Selecione um coelho</div>
-      <div class="field"><label for="vdPreco">Preço de venda (R$)</label>
-        <div class="moneywrap"><span>R$</span><input id="vdPreco" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></div></div>
-      <div class="field"><label for="vdData">Data da venda</label><input class="input" id="vdData" type="date"></div>
-      <button class="btn-big" type="submit"><span class="ck"><i data-ic="check" data-sz="14"></i></span>Registrar Venda</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: LOTE ===== -->
-<div class="sheet" id="sh-lote" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card">
-    <div class="grab"></div>
-    <div class="shead2">
-      <div><h2>Novo lote</h2><p>Agrupe animais por fase ou baia</p></div>
-      <button class="xbtn" data-close aria-label="Fechar"><i data-ic="x" data-sz="17"></i></button>
-    </div>
-    <form id="f-lote" novalidate>
-      <div class="field"><label for="ltNome">Nome do lote</label>
-        <input class="input" id="ltNome" placeholder="Ex.: Engorda Baia 2" maxlength="26"></div>
-      <button class="btn-big" type="submit"><span class="ck"><i data-ic="check" data-sz="14"></i></span>Criar Lote</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===== SHEET: CONFIRMAÇÃO ===== -->
-<div class="sheet" id="sh-confirm" role="dialog" aria-modal="true">
-  <div class="bd" data-close></div>
-  <div class="card" style="max-width:380px">
-    <div class="grab"></div>
-    <div class="shead2"><div><h2 id="cfTitle">Confirmar</h2></div></div>
-    <p id="cfMsg" style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px"></p>
-    <div class="frow">
-      <button class="btn-big blue" style="height:52px" type="button" data-close>Cancelar</button>
-      <button class="btn-big" style="height:52px;background:var(--red);box-shadow:0 8px 22px rgba(224,82,82,.25)" type="button" id="cfOk">Excluir</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
+<button id="fab" aria-label="Ação principal"></button>
+<nav id="tabbar"></nav>
+<div id="toastRoot"></div>
 
 <script>
+/* ============================================================
+   LEPUS — gestão de cunicultura · arquivo único, 100% offline
+   ============================================================ */
 'use strict';
-/* ================= UTILITÁRIOS ================= */
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const semAcento=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const fmtKg=n=>Number(n).toLocaleString('pt-BR',{maximumFractionDigits:2});
-const fmtMoney=n=>'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtData=iso=>{if(!iso)return'—';const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y};
-const nowISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const agoraBR=()=>{const d=new Date();return fmtData(nowISO())+' às '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 
-/* ================= ÍCONES SVG ================= */
-const P={
-home:'<path d="M4 10.8 12 4l8 6.8V19a1.6 1.6 0 0 1-1.6 1.6h-3.6v-5.4h-5.6v5.4H5.6A1.6 1.6 0 0 1 4 19Z"/>',
-bunny:'<ellipse cx="8.7" cy="5.1" rx="1.9" ry="3.9" transform="rotate(-11 8.7 5.1)"/><ellipse cx="15.3" cy="5.1" rx="1.9" ry="3.9" transform="rotate(11 15.3 5.1)"/><circle cx="12" cy="15.4" r="5.4"/><circle cx="10.1" cy="14.4" r=".95" fill="currentColor" stroke="none"/><circle cx="13.9" cy="14.4" r=".95" fill="currentColor" stroke="none"/><path d="M11.3 17.1h1.4l-.7 1Z" fill="currentColor" stroke="none"/>',
-bowl:'<path d="M3.5 11.5h17M5 11.5a7 7 0 0 0 14 0"/><circle cx="9.5" cy="8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.2" cy="6.7" r=".8" fill="currentColor" stroke="none"/><circle cx="15.3" cy="9" r=".8" fill="currentColor" stroke="none"/>',
-tag:'<path d="M20.4 13.2 13.2 20.4a1.8 1.8 0 0 1-2.5 0L3.4 13V3.4H13l7.4 7.3a1.8 1.8 0 0 1 0 2.5Z"/><circle cx="7.7" cy="7.7" r="1.4"/>',
-grid:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/>',
-heart:'<path d="M12 20.3C7.2 16.6 3.6 13.6 3.6 9.9a4.5 4.5 0 0 1 8.4-2.3 4.5 4.5 0 0 1 8.4 2.3c0 3.7-3.6 6.7-8.4 10.4Z"/>',
-scale:'<path d="M6.8 9.3h10.4l1.6 9.3a2 2 0 0 1-2 2.3H7.2a2 2 0 0 1-2-2.3Z"/><path d="M9.2 9.3a2.8 2.8 0 1 1 5.6 0"/>',
-syringe:'<path d="m18 2 4 4M17 7l3-3M19 9 8.7 19.3a1.5 1.5 0 0 1-2.1 0l-1.9-1.9a1.5 1.5 0 0 1 0-2.1L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/>',
-camera:'<rect x="2.8" y="7" width="18.4" height="13" rx="3"/><path d="m8.4 7 1.7-2.6h3.8L15.6 7"/><circle cx="12" cy="13.2" r="3.4"/>',
-search:'<circle cx="11" cy="11" r="6.8"/><path d="m16.2 16.2 4.3 4.3"/>',
-plus:'<path d="M12 5v14M5 12h14"/>',
-minus:'<path d="M5.5 12h13"/>',
-check:'<path d="m4.5 12.6 4.8 4.8L19.5 7.2"/>',
-x:'<path d="M6 6l12 12M18 6 6 18"/>',
-trash:'<path d="M4 7h16M9.5 7V4.8h5V7M6.3 7l.9 12.2a1.6 1.6 0 0 0 1.6 1.5h6.4a1.6 1.6 0 0 0 1.6-1.5L17.7 7M10 11v5.4M14 11v5.4"/>',
-calendar:'<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8.3 3v3.6M15.7 3v3.6"/>',
-clock:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.4V12l3 2.2"/>',
-birth:'<circle cx="12" cy="12" r="8.4"/><path d="M12 8.6v6.8M8.6 12h6.8"/>'
+/* ---------- Utilitários ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+const isoHoje = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const diasAtras = n => { const d = new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const addDias = (iso, n) => { const d = new Date(iso+'T00:00'); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const fmtData = s => s ? s.split('-').reverse().join('/') : '—';
+const fmtDataHora = d => d.toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const fmtMoeda = n => (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtKg = n => (Number(n)||0).toLocaleString('pt-BR',{maximumFractionDigits:2}) + ' kg';
+const fmtNum = n => (Number(n)||0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const fmtCurto = v => v >= 1000 ? (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil' : String(Math.round(v));
+function idade(d){
+  if(!d) return '—';
+  const n = new Date(); const b = new Date(d+'T00:00');
+  let m = (n.getFullYear()-b.getFullYear())*12 + (n.getMonth()-b.getMonth());
+  let dd = n.getDate()-b.getDate(); if(dd<0){ m--; dd+=30; }
+  if(m<0) return '—';
+  const a = Math.floor(m/12); m = m%12;
+  return a>0 ? a+' a '+m+' m' : m>0 ? m+' m '+dd+' d' : dd+' d';
+}
+const vendaTotal = v => v.itens.reduce((s,i)=> s + (Number(i.qtd)||0)*(Number(i.preco)||0), 0) - (Number(v.desconto)||0);
+
+/* ---------- Ícones ---------- */
+const P = {
+  home:'<path d="M4 10.5 12 3.5l8 7V20a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20z"/><path d="M9.5 21v-6.5h5V21"/>',
+  rabbit:'<path d="M9.4 9.2C7.6 6.9 8 3.7 9.7 3.1c1.4-.5 2.2 1.6 1.9 4.5M14.6 9.2c1.8-2.3 1.4-5.5-.3-6.1-1.4-.5-2.2 1.6-1.9 4.5"/><circle cx="12" cy="15.2" r="5.3"/><path d="M10.4 14.7h.01M13.6 14.7h.01" stroke-width="2.4"/><path d="M11 17.2c.6.5 1.4.5 2 0"/>',
+  pulse:'<path d="M3 12h4l2.5-6.5 4.5 13 2.5-6.5H21"/>',
+  syringe:'<path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/>',
+  balde:'<ellipse cx="12" cy="6" rx="7.5" ry="2.6"/><path d="M4.6 6.2 6.5 20a2.2 2.2 0 0 0 2.2 1.9h6.6a2.2 2.2 0 0 0 2.2-1.9l1.9-13.8"/>',
+  warn:'<path d="M12 3.5 2.8 20h18.4z"/><path d="M12 9.5v4.5"/><path d="M12 17.2h.01"/>',
+  knife:'<path d="M3.5 8.3h11.7a5 5 0 0 1 5 5v.7h-9.3L3.5 9.7z"/><path d="m12.6 14.5 3.4 5.6"/>',
+  tag:'<path d="M20.6 12.6 12.9 20.3a1.9 1.9 0 0 1-2.7 0L3.4 13.5V3.4h10.1l7.1 7.1a1.5 1.5 0 0 1 0 2.1z"/><circle cx="8" cy="8" r="1.4"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  gear:'<circle cx="12" cy="12" r="3.1"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/>',
+  pencil:'<path d="m4 20 .9-3.6L16.1 5.2a2.1 2.1 0 0 1 3 3L7.6 19.1 4 20z"/><path d="m14.5 6.8 2.7 2.7"/>',
+  trash:'<path d="M4 7h16M9.5 7V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2M6.5 7l.8 12a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9l.8-12"/>',
+  scale:'<path d="M9 10 7.2 3.8h9.6L15 10"/><rect x="5.5" y="10" width="13" height="9.5" rx="2.5"/>',
+  share:'<path d="M12 3.2v11.6M8 6.7 12 3l4 3.7"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/>',
+  download:'<path d="M12 3v12M8 11.2l4 4 4-4"/><path d="M5 20.5h14"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  eggs:'<path d="M9.5 19.5c-2.9 0-5-2-5-4.7C4.5 11.2 6.7 6 9.5 6s5 5.2 5 8.8c0 2.7-2.1 4.7-5 4.7z"/><path d="M17.7 18.9c1.5-.6 2.5-2.1 2.5-4 0-2.4-1.6-5.9-3.6-5.9-.5 0-.9.2-1.3.6"/>',
+  install:'<path d="M12 3v12M8 11.2l4 4 4-4"/><rect x="4" y="17.5" width="16" height="3.5" rx="1.5"/>',
+  db:'<ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v13c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-13"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>',
+  sparkle:'<path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4L4.7 10.8 10.2 9z"/><path d="M18.5 16.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>'
 };
-const ic=(n,s=20)=>'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';
-function injetaIcones(raiz){(raiz||document).querySelectorAll('[data-ic]').forEach(el=>{el.innerHTML=ic(el.dataset.ic,el.dataset.sz||20)})}
+const ic = (n, s=20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+const bunnySVG = cls => `<svg class="bunny ${cls||''}" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M39 38 C33 25 34 12 41 9 C47 7 49 17 47 34"/>
+  <path class="earR" d="M57 38 C63 25 62 12 55 9 C49 7 47 17 49 34"/>
+  <circle cx="48" cy="58" r="17"/>
+  <circle cx="42.5" cy="56.5" r="1.4" fill="currentColor" stroke="none"/>
+  <circle cx="53.5" cy="56.5" r="1.4" fill="currentColor" stroke="none"/>
+  <path d="M46 62.5h4M48 62.5v2.4M48 64.9c-.8 1.1-2 1.3-3 .6M48 64.9c.8 1.1 2 1.3 3 .6"/>
+</svg>`;
 
-/* ================= DADOS ================= */
-const RACAS=['Nova Zelândia Branco','Nova Zelândia Vermelho','Nova Zelândia Preto','Califórnia','Rex','Mini Rex','Holland Lop','Mini Lop','Fuzzy Lop','Lionhead / Leão','Angorá Inglês','Angorá Alemão','Angorá Francês','Angorá Gigante','Gigante de Flandres','Gigante de Chinchila','Borboleta / Butterfly','Chinchila Standard','Chinchila Americano','Satin / Cetim','Mini Satin','Netherland Dwarf / Anão Holandês','Polish / Polonês','Belier Inglês','Belier Francês','Hotot','Harlequin / Arlequim','Lop Inglês','Cinnamon / Canela','Fuzzy / Teddy','Cabeça de Leão Anão','SRD / Sem Raça Definida / Vira-lata','Outra'];
-const TAXAS={'Matriz':.20,'Macho':.18,'Amamentando':.35,'Crescimento':.12,'Engorda':.15};
-const CORCAT={'Matriz':'#27AE60','Macho':'#2F80ED','Amamentando':'#E0599A','Crescimento':'#E8C13D','Engorda':'#E8763D'};
+/* ---------- Predefinidos ---------- */
+const RACAS = ['Nova Zelândia Branca','Californiano','Branco de Vila Real','Chinchila','Gigante de Flandres','Angorá','Rex','Belo Holandês','Mestiço'];
+const MEDS = [
+  {n:'Sulfaquinoxalina 20%',    via:'Água de bebida',  ind:'Coccidiose',               dose:'0,5–1 mL/L de água, 3–5 dias',        car:10},
+  {n:'Amprolium 20%',           via:'Água de bebida',  ind:'Coccidiose',               dose:'1 mL/L de água, 5–7 dias',             car:7},
+  {n:'Toltrazuril 2,5%',        via:'Oral',            ind:'Coccidiose',               dose:'0,4 mL/kg, 2 dias seguidos',           car:5},
+  {n:'Enrofloxacina 10%',       via:'Injetável',       ind:'Infecções bacterianas',    dose:'0,1–0,2 mL/kg, 3–5 dias',              car:14},
+  {n:'Oxitetraciclina LA 20%',  via:'Injetável',       ind:'Antibiótico de amplo espectro', dose:'0,2 mL/kg, repetir em 72h',       car:21},
+  {n:'Penicilina G benzatina',  via:'Injetável',       ind:'Infecções e abscessos',    dose:'0,1–0,2 mL/kg',                        car:15},
+  {n:'Ivermectina 1%',          via:'Injetável (SC)',  ind:'Sarna, piolhos, parasitas',dose:'0,1 mL/kg, repetir em 10–14 dias',     car:21},
+  {n:'Albendazol 10%',          via:'Oral',            ind:'Vermes intestinais',       dose:'1 mL/5 kg, repetir em 10–14 dias',     car:14},
+  {n:'Levamisol 10%',           via:'Oral',            ind:'Vermes intestinais',       dose:'1 mL/10 kg',                           car:7},
+  {n:'Complexo B',              via:'Injetável',       ind:'Apetite e recuperação',    dose:'0,5–1 mL/animal',                      car:0},
+  {n:'Vitamina A·D·E',          via:'Injetável',       ind:'Imunidade e reprodução',   dose:'0,2–0,5 mL/animal',                    car:0}
+];
+const RACOES = [
+  {n:'Crescimento / Engorda', fase:'16–18% proteína · do desmame ao abate'},
+  {n:'Gestação',              fase:'15–16% proteína · matrizes prenhes'},
+  {n:'Lactação',              fase:'17–18% proteína · matriz com ninhada'},
+  {n:'Desmame / Creche',      fase:'17–18% proteína · 28 a 70 dias'},
+  {n:'Manutenção',            fase:'13–14% proteína · animais em repouso'},
+  {n:'Reprodutores',          fase:'14–15% proteína · machos e matrizes vazias'},
+  {n:'Feno de tifton',        fase:'Volumoso · fibra e desgaste dos dentes'},
+  {n:'Feno de alfafa',        fase:'Volumoso · proteína e cálcio'}
+];
 
-const KEY='cuni.v2';
-function carregar(){
-  try{const d=JSON.parse(localStorage.getItem(KEY));
-    if(d&&Array.isArray(d.coelhos))return Object.assign({lotes:[],vendas:[],eventos:[],config:{custoRacao:3.5}},d);
-  }catch(e){}
-  return{coelhos:[],lotes:[],vendas:[],eventos:[],config:{custoRacao:3.5}};
+/* ---------- Banco local (com migração de versões antigas) ---------- */
+const LS = 'lepus_db_v1';
+const dbPadrao = () => ({ settings:{configurado:false, nome:'', responsavel:'', telefone:'', cidade:'', pesoAlvo:3.5},
+  coelhos:[], ninhadas:[], abates:[], vendas:[], sanidade:[], alimentacao:[] });
+function normalizaDb(d){
+  const p = dbPadrao();
+  const out = Object.assign({}, p, (d && typeof d === 'object') ? d : {});
+  out.settings = Object.assign({}, p.settings, (d && d.settings) || {});
+  ['coelhos','ninhadas','abates','vendas','sanidade','alimentacao'].forEach(k => { if(!Array.isArray(out[k])) out[k] = []; });
+
+  /* Migração de nomes de raça para a grafia correta em português */
+  const renomeia = (de, para) => out.coelhos.forEach(c => { if(c.raca === de) c.raca = para; });
+  renomeia('Flanders', 'Gigante de Flandres');
+  renomeia('Branco de Vila Récal', 'Branco de Vila Real');
+
+  return out;
 }
-let S=carregar();
-function salvar(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Não foi possível salvar: armazenamento cheio.','err')}}
-const salvarTudo=()=>{salvar();render()};
-const byId=id=>S.coelhos.find(c=>c.id===id);
-const ativos=()=>S.coelhos.filter(c=>c.ativo);
-const kgDia=()=>ativos().reduce((s,c)=>s+TAXAS[c.categoria]||0,0);
-const loteNome=id=>{const l=S.lotes.find(l=>l.id===id);return l?l.nome:'Sem lote'};
+let db;
+try{ db = normalizaDb(JSON.parse(localStorage.getItem(LS))); }catch(e){ db = dbPadrao(); }
+const save = () => { try{ localStorage.setItem(LS, JSON.stringify(db)); }catch(e){ toast('Não foi possível salvar no aparelho', 'x', true); } };
 
-/* estado de UI */
-let cur='inicio';
-const F={q:'',lote:null};
-let editando=null, fotoTemp=null, sexoSel=null, catSel='Crescimento';
-let pesoVal=1.5, filhotes=1, cfCallback=null;
+const STATUS_L = { matriz:'Matriz', reprodutor:'Reprodutor', engorda:'Engorda', vendido:'Vendido', abatido:'Abatido', morto:'Óbito' };
+const ativos = () => db.coelhos.filter(c => !['vendido','abatido','morto'].includes(c.status));
+const porId = id => db.coelhos.find(c => c.id === id);
+const proxNum = () => Math.max(0, ...db.vendas.map(v=>v.num||0)) + 1;
 
-/* ================= TOAST ================= */
-let tTimer;
-function toast(msg,tipo='ok'){
-  const t=$('#toast');
-  t.className='toast show '+tipo;
-  t.innerHTML='<span class="tdot">'+ic(tipo==='err'?'x':'check',13)+'</span>'+msg;
-  clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),2700);
+/* Carência de medicamento para abate */
+function carenciaCoelho(c){
+  const hoje = isoHoje(); let melhor = null;
+  db.sanidade.forEach(s => {
+    const dias = Number(s.carenciaDias)||0;
+    if(dias <= 0 || !s.data) return;
+    const fim = addDias(s.data, dias);
+    if(fim < hoje) return;
+    let atinge = false;
+    if(s.alvoTipo === 'individual') atinge = s.coelhoId === c.id;
+    else if(s.alvoTipo === 'grupo'){
+      if(s.grupo === 'ativos') atinge = !['vendido','abatido','morto'].includes(c.status);
+      else atinge = c.status === s.grupo;
+    }
+    if(atinge && (!melhor || fim > melhor.fim)) melhor = { fim, med:s.med };
+  });
+  return melhor;
+}
+function alvoDesc(s){
+  if(s.alvoTipo === 'individual'){ const c = porId(s.coelhoId); return c ? 'Coelho '+c.brinco : 'Coelho (removido)'; }
+  return { matriz:'Todas as matrizes', reprodutor:'Reprodutores', engorda:'Engorda (lote)', ativos:'Plantel ativo' }[s.grupo] || '—';
 }
 
-/* ================= NAVEGAÇÃO ================= */
-function go(v){
-  cur=v;
-  $$('.view').forEach(s=>s.classList.toggle('on',s.dataset.view===v));
-  $$('.bnav button').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
-  window.scrollTo({top:0});
+/* ---------- Estado de interface ---------- */
+const state = { tab:'painel', filtro:'todos', q:'', sub:'plantel', msub:'sanidade' };
+const TABS = [
+  {id:'painel',  label:'Painel',  icon:'home'},
+  {id:'coelhos', label:'Coelhos', icon:'rabbit'},
+  {id:'manejo',  label:'Manejo',  icon:'pulse'},
+  {id:'abates',  label:'Abates',  icon:'knife'},
+  {id:'vendas',  label:'Vendas',  icon:'tag'}
+];
+
+function hopBunny(){
+  const b = $('#hdr').querySelector('.bunny');
+  if(b){ b.classList.add('hop'); setTimeout(()=>b.classList.remove('hop'), 900); }
+}
+
+/* ---------- Toast ---------- */
+function toast(msg, icon='check', err=false){
+  const t = document.createElement('div');
+  t.className = 'toast' + (err ? ' err' : '');
+  t.innerHTML = ic(err ? 'x' : icon, 17) + '<span>' + esc(msg) + '</span>';
+  $('#toastRoot').appendChild(t);
+  setTimeout(()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(), 320); }, 2600);
+}
+
+/* ---------- Sheets ---------- */
+function openSheet(title, bodyHTML, opts={}){
+  const ov = document.createElement('div');
+  ov.className = 'ov';
+  ov.innerHTML = `<div class="sheet ${opts.cls||''}"><div class="sh-head"><h3>${title}</h3>
+    <button class="iconbtn sh-x" aria-label="Fechar">${ic('x')}</button></div>
+    <div class="sh-body">${bodyHTML}</div>${opts.foot ? `<div class="sh-foot">${opts.foot}</div>` : ''}</div>`;
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=> requestAnimationFrame(()=> ov.classList.add('on')));
+  const close = () => { ov.classList.remove('on'); ov.classList.add('out'); setTimeout(()=>ov.remove(), 300); };
+  ov.close = close;
+  ov.addEventListener('click', e => { if(e.target === ov && !opts.locked) close(); });
+  ov.querySelector('.sh-x').onclick = close;
+  return ov;
+}
+function confirmSheet(titulo, msg, acao, cb){
+  const sh = openSheet(esc(titulo),
+    `<p class="hint" style="font-size:13.5px;margin-top:2px">${esc(msg)}</p>
+     <div class="d-acts" style="margin-top:18px">
+       <button class="btn ghost" data-a="n">Cancelar</button>
+       <button class="btn danger" data-a="y">${esc(acao)}</button>
+     </div>`, {cls:'mini'});
+  sh.querySelector('[data-a=n]').onclick = sh.close;
+  sh.querySelector('[data-a=y]').onclick = () => { sh.close(); cb(); };
+}
+
+/* ---------- Cabeçalho / abas / FAB ---------- */
+function renderHeader(){
+  let t, s;
+  if(state.tab === 'painel'){
+    t = esc(db.settings.nome || 'Lepus');
+    s = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+  } else if(state.tab === 'coelhos'){
+    t = 'Coelhos'; s = ativos().length + ' ativos no plantel · ' + db.coelhos.length + ' registros';
+  } else if(state.tab === 'manejo'){
+    t = 'Manejo'; s = db.sanidade.length + ' aplicações · ' + db.alimentacao.length + ' rações registradas';
+  } else if(state.tab === 'abates'){
+    t = 'Abates'; s = db.abates.length + ' registros';
+  } else {
+    t = 'Vendas'; s = db.vendas.length + ' vendas emitidas';
+  }
+  $('#hdr').innerHTML = `<div class="h-l"><h1>${t}</h1><p>${s}</p></div>
+    <div class="h-r">${window._installEvt ? `<button class="iconbtn" id="btnInstallHdr" aria-label="Instalar app" title="Instalar app">${ic('install')}</button>` : ''}
+    <button class="iconbtn" id="btnCfg" aria-label="Configurações">${ic('gear')}</button></div>`;
+  $('#btnCfg').onclick = sheetConfig;
+  if($('#btnInstallHdr')) $('#btnInstallHdr').onclick = tentarInstalar;
+}
+function renderFab(){
+  const fab = $('#fab');
+  let label = 'Nova venda';
+  if(state.tab === 'coelhos') label = state.sub === 'plantel' ? 'Novo coelho' : 'Nova ninhada';
+  if(state.tab === 'manejo')  label = state.msub === 'sanidade' ? 'Nova aplicação' : 'Nova ração';
+  if(state.tab === 'abates')  label = 'Novo abate';
+  fab.innerHTML = ic('plus', 18) + '<span>' + label + '</span>';
+  fab.onclick = () => {
+    if(state.tab === 'coelhos') state.sub === 'plantel' ? sheetCoelho() : sheetNinhada();
+    else if(state.tab === 'manejo') state.msub === 'sanidade' ? sheetSanidade() : sheetAlimentacao();
+    else if(state.tab === 'abates') sheetAbate();
+    else sheetVenda();
+  };
+}
+function render(){
+  renderHeader(); renderFab();
+  $('#tabbar').innerHTML = TABS.map(t =>
+    `<button class="tab ${state.tab===t.id?'on':''}" data-tab="${t.id}">
+       <span class="pill">${ic(t.icon,22)}</span><span>${t.label}</span></button>`).join('');
+  $$('#tabbar .tab').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); window.scrollTo(0,0); });
+  if(state.tab === 'painel') viewPainel();
+  else if(state.tab === 'coelhos') viewCoelhos();
+  else if(state.tab === 'manejo') viewManejo();
+  else if(state.tab === 'abates') viewAbates();
+  else viewVendas();
+}
+
+/* ============================================================
+   PAINEL
+   ============================================================ */
+function svgBars(){
+  const meses = [];
+  for(let i=5; i>=0; i--){
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+    meses.push({ key: d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),
+      label: d.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''), total:0 });
+  }
+  db.vendas.forEach(v => { const m = meses.find(x => x.key === (v.data||'').slice(0,7)); if(m) m.total += vendaTotal(v); });
+  const max = Math.max(...meses.map(m=>m.total), 1);
+  const W=340, H=152, pad=8, bw=(W-pad*2)/6;
+  let bars = '';
+  meses.forEach((m,i)=>{
+    const h = Math.max((m.total/max)*(H-56), 2);
+    const x = pad + i*bw + 9, wid = bw-18, y = H-40-h;
+    const cur = i===5;
+    bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${wid.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="${cur?'#E07A3F':'rgba(244,239,228,.5)'}"/>
+      <text x="${(x+wid/2).toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="600" fill="${cur?'#E8945F':'rgba(244,239,228,.8)'}">${m.total?fmtCurto(m.total):''}</text>
+      <text x="${(x+wid/2).toFixed(1)}" y="${H-19}" text-anchor="middle" font-size="10" fill="rgba(244,239,228,.55)">${m.label}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet">
+    <line x1="${pad}" y1="${H-40}" x2="${W-pad}" y2="${H-40}" stroke="rgba(244,239,228,.22)"/>${bars}</svg>`;
+}
+
+function viewPainel(){
+  const at = ativos();
+  const mesKey = isoHoje().slice(0,7);
+  const vendasMes = db.vendas.filter(v => (v.data||'').slice(0,7) === mesKey);
+  const totalMes = vendasMes.reduce((s,v)=>s+vendaTotal(v),0);
+  const totalGeral = db.vendas.reduce((s,v)=>s+vendaTotal(v),0);
+  const mesNome = new Date().toLocaleDateString('pt-BR',{month:'long'});
+  const alvo = Number(db.settings.pesoAlvo)||3.5;
+  const fila = at.filter(c => c.status==='engorda' && c.peso>0).sort((a,b)=>b.peso-a.peso).slice(0,5);
+  const ultimas = [...db.vendas].sort((a,b)=> (b.data||'').localeCompare(a.data||'') || (b.num||0)-(a.num||0)).slice(0,3);
+  const emCarencia = at.filter(c => carenciaCoelho(c));
+
+  const filaHTML = fila.length ? fila.map(c => {
+    const pct = Math.min(100, Math.round(c.peso/alvo*100));
+    const car = carenciaCoelho(c);
+    return `<div class="fila-row" data-id="${c.id}">
+      <div class="fr-main"><b>${esc(c.brinco)}</b><span>${esc(c.raca||'—')} · ${idade(c.nascimento)}</span>
+        <div class="pbar"><i class="${pct>=100?'full':''}" style="width:${pct}%"></i></div></div>
+      <div class="fr-w"><b>${fmtKg(c.peso)}</b>${car
+        ? `<em class="pronto caren">carência ${fmtData(car.fim)}</em>`
+        : pct>=100 ? '<em class="pronto">pronto</em>' : `<span class="hint">${pct}% da meta</span>`}</div>
+    </div>`;
+  }).join('') : `<div class="empty">${bunnySVG('')}<b>Ninguém na fila</b><p>Registre coelhos em engorda e pesos para acompanhá-los aqui.</p></div>`;
+
+  const vendasHTML = ultimas.length ? ultimas.map(v =>
+    `<div class="row" data-id="${v.id}"><div class="row-ico">${ic('tag',19)}</div>
+      <div class="row-main"><b>#${String(v.num).padStart(4,'0')} · ${esc(v.cliente||'Consumidor')}</b>
+      <span>${v.itens.length} ${v.itens.length>1?'itens':'item'} · ${fmtData(v.data)}</span></div>
+      <div class="row-side"><b>${fmtMoeda(vendaTotal(v))}</b><span>${esc(v.pagamento||'')}</span></div></div>`).join('')
+    : `<div class="empty">${ic('tag',30)}<b>Sem vendas ainda</b><p>Toque em “Nova venda” para emitir o primeiro recibo.</p></div>`;
+
+  $('#view').innerHTML = `
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="h-label">Vendas de ${mesNome}</div>
+          <div class="h-val">${fmtMoeda(totalMes)}</div>
+          <div class="h-sub">${vendasMes.length} venda${vendasMes.length===1?'':'s'} este mês · ${fmtMoeda(totalGeral)} acumulado</div>
+        </div>
+        ${bunnySVG('')}
+      </div>
+      <div class="h-chart">${svgBars()}</div>
+    </section>
+    ${emCarencia.length ? `<div class="alerta" id="alertaCar">${ic('warn',18)}<span>${emCarencia.length} coelho${emCarencia.length>1?'s':''} em carência de abate — toque para ver</span></div>` : ''}
+    <div class="stats">
+      <div class="stat"><b>${at.length}</b><span>Plantel</span></div>
+      <div class="stat"><b>${at.filter(c=>c.status==='matriz').length}</b><span>Matrizes</span></div>
+      <div class="stat"><b>${at.filter(c=>c.status==='reprodutor').length}</b><span>Reprodut.</span></div>
+      <div class="stat"><b>${at.filter(c=>c.status==='engorda').length}</b><span>Engorda</span></div>
+    </div>
+    <section>
+      <div class="sec-h"><h2>Fila de abate</h2><span class="chip-meta">meta ${fmtKg(alvo)}</span></div>
+      ${filaHTML}
+    </section>
+    <section>
+      <div class="sec-h"><h2>Últimas vendas</h2><button class="link" id="verVendas">Ver todas</button></div>
+      ${vendasHTML}
+    </section>`;
+  $('#verVendas').onclick = () => { state.tab='vendas'; render(); };
+  const al = $('#alertaCar');
+  if(al) al.onclick = () => { state.tab='manejo'; state.msub='sanidade'; render(); };
+  $$('#view .fila-row').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.id));
+  $$('#view .row').forEach(r => r.onclick = () => sheetRecibo(r.dataset.id));
+}
+
+/* ============================================================
+   COELHOS + NINHADAS
+   ============================================================ */
+function avaCls(c){ return ['vendido','abatido','morto'].includes(c.status) ? 'off' : (c.sexo==='F' ? 'f' : 'm'); }
+
+function listaCoelhosHTML(){
+  const q = state.q.toLowerCase();
+  let lista = db.coelhos.filter(c =>
+    (state.filtro==='todos' && !['vendido','abatido','morto'].includes(c.status)) ||
+    (state.filtro==='matriz' && c.status==='matriz') ||
+    (state.filtro==='reprodutor' && c.status==='reprodutor') ||
+    (state.filtro==='engorda' && c.status==='engorda') ||
+    (state.filtro==='arq' && ['vendido','abatido','morto'].includes(c.status))
+  );
+  if(q) lista = lista.filter(c => ((c.brinco||'')+' '+(c.nome||'')+' '+(c.raca||'')).toLowerCase().includes(q));
+  lista.sort((a,b)=> (a.brinco||'').localeCompare(b.brinco||'', 'pt-BR', {numeric:true}));
+  if(!lista.length) return `<div class="empty">${bunnySVG('')}<b>Nenhum coelho aqui</b><p>Ajuste o filtro ou toque em “Novo coelho”.</p></div>`;
+  return lista.map(c =>
+    `<div class="crow" data-id="${c.id}">
+      <div class="ava ${avaCls(c)}">${esc((c.brinco||'?').replace(/\D/g,'').slice(-2) || (c.brinco||'?').slice(0,2))}</div>
+      <div class="row-main"><b>${esc(c.brinco)}${c.nome ? ' · '+esc(c.nome) : ''}</b>
+        <span>${esc(c.raca||'—')} · ${idade(c.nascimento)}</span></div>
+      <div class="c-side"><b>${c.peso ? fmtKg(c.peso) : '—'}</b>
+        <span class="st ${c.status}">${STATUS_L[c.status]}</span></div>
+    </div>`).join('');
+}
+
+function listaNinhadasHTML(){
+  if(!db.ninhadas.length) return `<div class="empty">${ic('eggs',34)}<b>Nenhuma ninhada</b><p>Registre os nascimentos para acompanhar a reprodução.</p></div>`;
+  const nomeC = id => { const c = porId(id); return c ? c.brinco : '—'; };
+  return [...db.ninhadas].sort((a,b)=>(b.nascimento||'').localeCompare(a.nascimento||'')).map(n =>
+    `<div class="nrow" data-id="${n.id}"><div class="row-ico">${ic('eggs',19)}</div>
+      <div class="row-main"><b>${nomeC(n.matrizId)} × ${nomeC(n.padraoId)}</b>
+        <span>${fmtData(n.nascimento)} · ${idade(n.nascimento)} · ${n.vivos ?? n.nascidos ?? 0} vivo(s)</span></div>
+      <div class="row-side"><b style="font-family:'Fraunces',serif;font-size:15px">${n.nascidos??'—'}</b><span>nascidos</span></div>
+    </div>`).join('');
+}
+
+function viewCoelhos(){
+  $('#view').innerHTML = `
+    <div class="segmini">
+      <button data-sub="plantel" class="${state.sub==='plantel'?'on':''}">Plantel</button>
+      <button data-sub="ninhadas" class="${state.sub==='ninhadas'?'on':''}">Ninhadas</button>
+    </div>
+    <div id="subArea"></div>`;
+  $$('#view .segmini button').forEach(b => b.onclick = () => { state.sub = b.dataset.sub; render(); });
+  renderSub();
+}
+function renderSub(){
+  const area = $('#subArea'); if(!area) return;
+  if(state.sub === 'plantel'){
+    area.innerHTML = `
+      <div class="search">${ic('search',18)}<input id="qCoelhos" type="search" placeholder="Buscar brinco, nome ou raça" value="${esc(state.q)}"></div>
+      <div class="chips">${[['todos','Ativos'],['matriz','Matrizes'],['reprodutor','Reprodutores'],['engorda','Engorda'],['arq','Arquivados']]
+        .map(([k,l])=>`<button class="chip ${state.filtro===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div>
+      <div id="lista">${listaCoelhosHTML()}</div>`;
+    $('#qCoelhos').oninput = e => { state.q = e.target.value; $('#lista').innerHTML = listaCoelhosHTML(); bindLista(); };
+    bindLista();
+  } else {
+    area.innerHTML = `<div id="lista">${listaNinhadasHTML()}</div>`;
+    $$('#lista .nrow').forEach(r => r.onclick = () => sheetNinhadaDet(r.dataset.id));
+  }
+}
+function bindLista(){ $$('#lista .crow').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.id)); }
+
+function sugestaoBrinco(){
+  const nums = db.coelhos.map(c => { const m = (c.brinco||'').match(/\d+/); return m ? parseInt(m[0],10) : 0; });
+  return String(Math.max(0, ...nums) + 1).padStart(3, '0');
+}
+
+function sheetCoelho(id){
+  const c = id ? porId(id) : null;
+  const racaList = RACAS.slice();
+  if(c && c.raca && !racaList.includes(c.raca)) racaList.unshift(c.raca);
+  const racaVal = c ? (c.raca || '') : '';
+  const arquivado = c && ['vendido','abatido','morto'].includes(c.status);
+  const sh = openSheet(c ? 'Editar coelho' : 'Novo coelho', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Brinco *</label><input id="fBrinco" value="${esc(c?c.brinco:sugestaoBrinco())}" placeholder="Ex.: 012"></div>
+        <div class="fld"><label>Nome (opcional)</label><input id="fNome" value="${esc(c?c.nome:'')}" placeholder="Aurora"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Sexo</label><div class="seg" id="fSexo">
+          <button data-v="F" class="${(!c||c.sexo==='F')?'on':''}">Fêmea</button>
+          <button data-v="M" class="${(c&&c.sexo==='M')?'on':''}">Macho</button></div></div>
+        <div class="fld"><label>Categoria</label><div class="seg" id="fCat">
+          <button data-v="matriz" class="${(c?c.status==='matriz':true)?'on':''}">Matriz</button>
+          <button data-v="reprodutor" class="${(c&&c.status==='reprodutor')?'on':''}">Reprod.</button>
+          <button data-v="engorda" class="${(c&&c.status==='engorda')?'on':''}">Engorda</button></div></div>
+      </div>
+      ${arquivado ? `<p class="hint">Este animal está arquivado como <b>${STATUS_L[c.status]}</b> — não aparece no plantel ativo. Deixe como está para manter o status, ou escolha uma categoria acima para reativá-lo.</p>` : ''}
+      <div class="frow">
+        <div class="fld"><label>Raça predefinida</label>
+          <select id="fRacaSel">
+            <option value="">—</option>
+            ${racaList.map(r=>`<option value="${esc(r)}" ${racaVal===r?'selected':''}>${esc(r)}</option>`).join('')}
+            <option value="__out">Outra…</option>
+          </select></div>
+        <div class="fld"><label>Nascimento</label><input id="fNasc" type="date" value="${c?c.nascimento||'':isoHoje()}"></div>
+      </div>
+      <div class="fld" id="fRacaOutWrap" style="display:none"><label>Qual raça?</label><input id="fRacaOut" placeholder="Digite o nome da raça"></div>
+      <div class="fld"><label>Peso atual (kg)</label><input id="fPeso" type="number" inputmode="decimal" min="0" step="0.01" value="${c&&c.peso?c.peso:''}" placeholder="3,50"></div>
+      <div class="fld"><label>Observações</label><textarea id="fObs" placeholder="Origem, temperamento, cobertura…">${esc(c?c.obs:'')}</textarea></div>
+      <button class="btn primary" id="fSalvar">${ic('check',18)} Salvar coelho</button>
+    </div>`);
+  const segVal = (el, def) => { const b = el.querySelector('.on'); return b ? b.dataset.v : def; };
+  ['fSexo','fCat'].forEach(i => sh.querySelectorAll('#'+i+' button').forEach(b => b.onclick = () => {
+    sh.querySelectorAll('#'+i+' button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  }));
+  const rSel = sh.querySelector('#fRacaSel');
+  rSel.onchange = () => { sh.querySelector('#fRacaOutWrap').style.display = rSel.value==='__out' ? '' : 'none'; };
+  sh.querySelector('#fSalvar').onclick = () => {
+    const brinco = sh.querySelector('#fBrinco').value.trim();
+    if(!brinco) return toast('O brinco é obrigatório','x',true);
+    const dup = db.coelhos.find(x => x.brinco.toLowerCase() === brinco.toLowerCase() && (!c || x.id !== c.id));
+    if(dup) return toast('Já existe um coelho com esse brinco','x',true);
+    const sexo = segVal(sh.querySelector('#fSexo'), c ? c.sexo : 'F');
+    const status = segVal(sh.querySelector('#fCat'), c ? c.status : 'matriz');
+    const raca = rSel.value==='__out' ? sh.querySelector('#fRacaOut').value.trim() : rSel.value;
+    const peso = parseFloat(sh.querySelector('#fPeso').value) || null;
+    if(c){
+      Object.assign(c, { brinco, nome:sh.querySelector('#fNome').value.trim(), sexo, status, raca,
+        nascimento:sh.querySelector('#fNasc').value || null,
+        obs:sh.querySelector('#fObs').value.trim() });
+      if(peso && peso !== c.peso){ c.peso = peso; (c.pesos = c.pesos||[]).push({d:isoHoje(), kg:peso}); }
+      toast('Coelho atualizado');
+    } else {
+      db.coelhos.push({ id:uid(), brinco, nome:sh.querySelector('#fNome').value.trim(), sexo, status, raca,
+        nascimento:sh.querySelector('#fNasc').value || null,
+        peso, pesos: peso ? [{d:isoHoje(), kg:peso}] : [], obs:sh.querySelector('#fObs').value.trim() });
+      toast('Coelho cadastrado no plantel');
+    }
+    save(); sh.close(); render();
+  };
+}
+
+function sparkline(pesos){
+  if(!pesos || pesos.length < 2) return '';
+  const W=220, H=44, p=5;
+  const ps = [...pesos].sort((a,b)=>a.d.localeCompare(b.d));
+  const min = Math.min(...ps.map(x=>x.kg)), max = Math.max(...ps.map(x=>x.kg));
+  const rng = (max-min) || 1;
+  const pts = ps.map((x,i)=> [p + i*(W-2*p)/(ps.length-1), H-p - ((x.kg-min)/rng)*(H-2*p)]);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="46" style="margin-top:6px">
+    <polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="#2C5233" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="#D96E30"/>`).join('')}</svg>`;
+}
+
+function sheetDetalhe(id){
+  const c = porId(id); if(!c) return;
+  const vivo = !['vendido','abatido','morto'].includes(c.status);
+  const car = carenciaCoelho(c);
+  const ultima = db.sanidade.filter(s => s.alvoTipo==='individual' && s.coelhoId===id)
+    .sort((a,b)=>(b.data||'').localeCompare(a.data||''))[0];
+  const sh = openSheet('Ficha do coelho', `
+    <div class="d-head">
+      <div class="d-ava ${avaCls(c)}">${esc((c.brinco||'?').slice(0,3))}</div>
+      <div style="flex:1">
+        <div style="font-family:'Fraunces',serif;font-weight:650;font-size:18px">${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</div>
+        <div class="hint">${esc(c.raca||'Raça não informada')} · ${c.sexo==='M'?'Macho':'Fêmea'}</div>
+        <span class="st ${c.status}" style="margin-top:5px">${STATUS_L[c.status]}</span>
+      </div>
+    </div>
+    <div class="d-grid">
+      <div class="d-cell"><span>Nascimento</span><b>${fmtData(c.nascimento)}</b></div>
+      <div class="d-cell"><span>Idade</span><b>${idade(c.nascimento)}</b></div>
+      <div class="d-cell"><span>Peso atual</span><b>${c.peso?fmtKg(c.peso):'—'}</b></div>
+      <div class="d-cell"><span>Registros de peso</span><b>${(c.pesos||[]).length}</b></div>
+      ${ultima ? `<div class="d-cell" style="grid-column:1/-1"><span>Última aplicação</span><b>${esc(ultima.med)} · ${fmtData(ultima.data)}</b></div>` : ''}
+      ${car ? `<div class="d-cell" style="grid-column:1/-1;background:var(--amber-soft);border-color:#E8D3A2"><span>Carência para abate</span><b>${esc(car.med)} · até ${fmtData(car.fim)}</b></div>` : ''}
+    </div>
+    ${sparkline(c.pesos)}
+    ${c.obs ? `<p class="hint" style="margin-top:12px;font-size:13px"><b>Obs.:</b> ${esc(c.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:18px">
+      <button class="btn ghost" id="dPeso">${ic('scale',17)} Peso</button>
+      <button class="btn ghost" id="dEdit">${ic('pencil',17)} Editar</button>
+      ${vivo ? `<button class="btn ghost" id="dMed">${ic('syringe',17)} Medicar</button>
+               <button class="btn ghost" id="dAbate">${ic('knife',17)} Abater</button>
+               <button class="btn ghost" id="dVenda">${ic('tag',17)} Vender</button>` : ''}
+      <button class="btn danger-l" id="dDel">${ic('trash',17)} Excluir</button>
+    </div>`);
+  sh.querySelector('#dPeso').onclick = () => { sh.close(); sheetPeso(id); };
+  sh.querySelector('#dEdit').onclick = () => { sh.close(); sheetCoelho(id); };
+  if(vivo){
+    sh.querySelector('#dMed').onclick = () => { sh.close(); sheetSanidade({coelhoId:id}); };
+    sh.querySelector('#dAbate').onclick = () => { sh.close(); sheetAbate(id); };
+    sh.querySelector('#dVenda').onclick = () => { sh.close(); sheetVenda({ coelhoId:id, desc:c.brinco + (c.raca? ' — '+c.raca:''), qtd:1, un:'un', preco:'' }); };
+  }
+  sh.querySelector('#dDel').onclick = () => confirmSheet('Excluir coelho',
+    `O registro de ${c.brinco} será apagado junto com seu histórico de pesos e aplicações. Essa ação não pode ser desfeita.`,
+    'Excluir', () => {
+      db.coelhos = db.coelhos.filter(x=>x.id!==id);
+      db.ninhadas = db.ninhadas.filter(n => n.matrizId!==id && n.padraoId!==id);
+      db.sanidade = db.sanidade.filter(s => s.coelhoId!==id);
+      save(); toast('Registro excluído'); render();
+    });
+}
+
+function sheetPeso(id){
+  const c = porId(id); if(!c) return;
+  const sh = openSheet('Registrar peso — ' + esc(c.brinco), `
+    <div class="form">
+      <div class="fld"><label>Novo peso (kg)</label><input id="pKg" type="number" inputmode="decimal" min="0" step="0.01" value="${c.peso||''}" placeholder="3,50"></div>
+      <button class="btn primary" id="pSal">${ic('check',18)} Salvar peso</button>
+    </div>`, {cls:'mini'});
+  sh.querySelector('#pSal').onclick = () => {
+    const kg = parseFloat(sh.querySelector('#pKg').value);
+    if(!kg || kg<=0) return toast('Informe um peso válido','x',true);
+    c.peso = kg; (c.pesos = c.pesos||[]).push({d:isoHoje(), kg});
+    save(); sh.close(); toast('Peso de '+c.brinco+' atualizado'); render();
+  };
+}
+
+/* ---------- Ninhadas ---------- */
+function sheetNinhada(id){
+  const n = id ? db.ninhadas.find(x=>x.id===id) : null;
+  const femeas = db.coelhos.filter(c=>c.sexo==='F' && c.status==='matriz');
+  const machos = db.coelhos.filter(c=>c.sexo==='M' && !['vendido','abatido','morto'].includes(c.status));
+  const opF = femeas.map(c=>`<option value="${c.id}" ${n&&n.matrizId===c.id?'selected':''}>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</option>`).join('');
+  const opM = machos.map(c=>`<option value="${c.id}" ${n&&n.padraoId===c.id?'selected':''}>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</option>`).join('');
+  const sh = openSheet(n?'Editar ninhada':'Nova ninhada', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Matriz *</label><select id="nMae"><option value="">Selecione</option>${opF}</select></div>
+        <div class="fld"><label>Padreador</label><select id="nPai"><option value="">Selecione</option>${opM}</select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Nascimento</label><input id="nData" type="date" value="${n?n.nascimento||isoHoje():isoHoje()}"></div>
+        <div class="fld"><label>Nascidos</label><input id="nNasc" type="number" inputmode="numeric" min="0" value="${n?n.nascidos:''}" placeholder="8"></div>
+      </div>
+      <div class="fld"><label>Vivos</label><input id="nVivos" type="number" inputmode="numeric" min="0" value="${n?n.vivos:''}" placeholder="7"></div>
+      <div class="fld"><label>Observações</label><textarea id="nObs" placeholder="Condições do ninho, transferência de filhotes…">${esc(n?n.obs:'')}</textarea></div>
+      <button class="btn primary" id="nSal">${ic('check',18)} Salvar ninhada</button>
+    </div>`);
+  sh.querySelector('#nSal').onclick = () => {
+    const mae = sh.querySelector('#nMae').value;
+    if(!mae) return toast('Selecione a matriz','x',true);
+    const dados = { matrizId:mae, padraoId:sh.querySelector('#nPai').value || null,
+      nascimento:sh.querySelector('#nData').value || isoHoje(),
+      nascidos:parseInt(sh.querySelector('#nNasc').value)||0,
+      vivos:parseInt(sh.querySelector('#nVivos').value)||0,
+      obs:sh.querySelector('#nObs').value.trim() };
+    if(n) Object.assign(n, dados);
+    else db.ninhadas.push({ id:uid(), ...dados });
+    save(); sh.close(); toast('Ninhada registrada'); render();
+  };
+}
+
+function sheetNinhadaDet(id){
+  const n = db.ninhadas.find(x=>x.id===id); if(!n) return;
+  const nomeC = i => { const c = porId(i); return c ? c.brinco+(c.nome?' · '+c.nome:'') : '—'; };
+  const sh = openSheet('Ninhada', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Matriz</span><b>${esc(nomeC(n.matrizId))}</b></div>
+      <div class="d-cell"><span>Padreador</span><b>${esc(nomeC(n.padraoId))}</b></div>
+      <div class="d-cell"><span>Nascimento</span><b>${fmtData(n.nascimento)}</b></div>
+      <div class="d-cell"><span>Idade</span><b>${idade(n.nascimento)}</b></div>
+      <div class="d-cell"><span>Nascidos</span><b>${n.nascidos??'—'}</b></div>
+      <div class="d-cell"><span>Vivos</span><b>${n.vivos??'—'}</b></div>
+    </div>
+    ${n.desmame ? `<p class="hint" style="font-size:13px"><b>Desmame:</b> ${fmtData(n.desmame.data)} · ${n.desmame.vivos} filhote(s)</p>` : ''}
+    ${n.obs ? `<p class="hint" style="margin-top:10px;font-size:13px"><b>Obs.:</b> ${esc(n.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:18px">
+      <button class="btn ghost" id="ndDesmame">${ic('eggs',17)} ${n.desmame?'Ver/Editar desmame':'Registrar desmame'}</button>
+      <button class="btn ghost" id="ndEdit">${ic('pencil',17)} Editar</button>
+      <button class="btn danger-l" id="ndDel">${ic('trash',17)} Excluir</button>
+    </div>`);
+  sh.querySelector('#ndDesmame').onclick = () => {
+    const s2 = openSheet('Desmame', `
+      <div class="form">
+        <div class="frow">
+          <div class="fld"><label>Data</label><input id="dmData" type="date" value="${n.desmame?n.desmame.data:isoHoje()}"></div>
+          <div class="fld"><label>Filhotes desmamados</label><input id="dmV" type="number" inputmode="numeric" min="0" value="${n.desmame?n.desmame.vivos:n.vivos||''}"></div>
+        </div>
+        <button class="btn primary" id="dmSal">${ic('check',18)} Salvar desmame</button>
+      </div>`, {cls:'mini'});
+    s2.querySelector('#dmSal').onclick = () => {
+      n.desmame = { data:s2.querySelector('#dmData').value || isoHoje(), vivos:parseInt(s2.querySelector('#dmV').value)||0 };
+      save(); s2.close(); sh.close(); toast('Desmame registrado'); render();
+    };
+  };
+  sh.querySelector('#ndEdit').onclick = () => { sh.close(); sheetNinhada(id); };
+  sh.querySelector('#ndDel').onclick = () => confirmSheet('Excluir ninhada','O registro da ninhada será apagado.','Excluir',()=>{
+    db.ninhadas = db.ninhadas.filter(x=>x.id!==id); save(); toast('Ninhada excluída'); render();
+  });
+}
+
+/* ============================================================
+   MANEJO — SANIDADE + ALIMENTAÇÃO
+   ============================================================ */
+function viewManejo(){
+  $('#view').innerHTML = `
+    <div class="segmini">
+      <button data-ms="sanidade" class="${state.msub==='sanidade'?'on':''}">Sanidade</button>
+      <button data-ms="alimentacao" class="${state.msub==='alimentacao'?'on':''}">Alimentação</button>
+    </div>
+    <div id="msubArea"></div>`;
+  $$('#view .segmini button').forEach(b => b.onclick = () => { state.msub = b.dataset.ms; render(); });
+  renderMsub();
+}
+
+function renderMsub(){
+  const area = $('#msubArea'); if(!area) return;
+  if(state.msub === 'sanidade'){
+    const hoje = isoHoje();
+    const carens = ativos()
+      .map(c => ({ c, car:carenciaCoelho(c) }))
+      .filter(x => x.car)
+      .map(x => ({ ...x, dias:Math.round((new Date(x.car.fim+'T00:00') - new Date(hoje+'T00:00'))/864e5) }))
+      .sort((a,b)=>a.dias-b.dias);
+    const mesKey = hoje.slice(0,7);
+    const doMes = db.sanidade.filter(s => (s.data||'').slice(0,7) === mesKey);
+    const lista = [...db.sanidade].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+    area.innerHTML = `
+      <div class="tira">
+        <div class="stat"><b>${carens.length}</b><span>Em carência</span></div>
+        <div class="stat"><b>${doMes.length}</b><span>Aplic. no mês</span></div>
+        <div class="stat"><b>${db.sanidade.length}</b><span>Total</span></div>
+      </div>
+      ${carens.length ? `<div class="sec-t" style="margin-top:0">Carência de abate em vigor</div><div id="carens">${carens.map(x=>`
+        <div class="carenc-row" data-cid="${x.c.id}">
+          <div class="row-ico">${ic('warn',18)}</div>
+          <div class="row-main"><b>${esc(x.c.brinco)}${x.c.nome?' · '+esc(x.c.nome):''}</b>
+            <span>${esc(x.car.med)} · até ${fmtData(x.car.fim)}</span></div>
+          <div class="row-side"><b>${x.dias}</b><span>dias rest.</span></div>
+        </div>`).join('')}</div>` : ''}
+      <div class="sec-t">Histórico de aplicações</div>
+      <div id="lista">${lista.length ? lista.map(s => {
+        const temCar = (Number(s.carenciaDias)||0) > 0;
+        return `<div class="row" data-id="${s.id}"><div class="row-ico">${ic('syringe',19)}</div>
+          <div class="row-main"><b>${esc(s.med)}</b>
+            <span>${fmtData(s.data)} · ${esc(alvoDesc(s))}${s.dose?' · '+esc(s.dose):''}</span></div>
+          <div class="row-side">${temCar ? `<span class="st carencia">${s.carenciaDias}d</span>` : `<span style="font-size:11px;color:var(--muted)">${esc(s.via||'')}</span>`}</div>
+        </div>`;
+      }).join('') : `<div class="empty">${ic('syringe',32)}<b>Nenhuma aplicação registrada</b><p>Vermifugações, antibióticos e vitaminas ficam anotados aqui, com o período de carência.</p></div>`}</div>`;
+    $$('#carens .carenc-row').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.cid));
+    $$('#lista .row').forEach(r => r.onclick = () => sheetSanidadeDet(r.dataset.id));
+  } else {
+    const mesKey = isoHoje().slice(0,7);
+    const doMes = db.alimentacao.filter(a => (a.data||'').slice(0,7) === mesKey);
+    const kgMes = doMes.reduce((s,a)=>s+(Number(a.kg)||0),0);
+    const comCusto = doMes.filter(a => Number(a.custoKg)>0);
+    const custoMes = comCusto.reduce((s,a)=>s + a.kg*a.custoKg, 0);
+    const kgCusto = comCusto.reduce((s,a)=>s+a.kg, 0);
+    const medio = kgCusto>0 ? custoMes/kgCusto : 0;
+    const lista = [...db.alimentacao].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+    area.innerHTML = `
+      <div class="tira">
+        <div class="stat"><b>${fmtNum(kgMes)}</b><span>Kg no mês</span></div>
+        <div class="stat"><b>${custoMes?fmtMoeda(custoMes):'—'}</b><span>Custo no mês</span></div>
+        <div class="stat"><b>${medio?fmtMoeda(medio):'—'}</b><span>Média R$/kg</span></div>
+      </div>
+      <div class="sec-t" style="margin-top:0">Fornecimentos</div>
+      <div id="lista">${lista.length ? lista.map(a =>
+        `<div class="row" data-id="${a.id}"><div class="row-ico">${ic('balde',19)}</div>
+          <div class="row-main"><b>${esc(a.racao)}</b>
+            <span>${fmtData(a.data)} · ${esc(alvoDesc(a))}</span></div>
+          <div class="row-side"><b>${fmtNum(a.kg)} kg</b><span>${Number(a.custoKg)>0?fmtMoeda(a.kg*a.custoKg):''}</span></div>
+        </div>`).join('') : `<div class="empty">${ic('balde',32)}<b>Nenhum fornecimento registrado</b><p>Anote a ração de cada fase e o custo para acompanhar o gasto do mês.</p></div>`}</div>`;
+    $$('#lista .row').forEach(r => r.onclick = () => sheetAlimentacaoDet(r.dataset.id));
+  }
+}
+
+const selectAlvo = (pre, pfx) => `
+  <div class="fld"><label>Aplicar a</label>
+    <select id="${pfx}Alvo">
+      <option value="individual" ${pre&&pre.coelhoId?'selected':''}>Coelho individual</option>
+      <option value="matriz">Todas as matrizes</option>
+      <option value="reprodutor">Todos os reprodutores</option>
+      <option value="engorda">Engorda (lote)</option>
+      <option value="ativos">Plantel ativo (todos)</option>
+    </select></div>
+  <div class="fld" id="${pfx}CoelhoWrap" ${pre&&pre.coelhoId?'':'style="display:none"'}><label>Coelho *</label>
+    <select id="${pfx}Coelho"><option value="">Selecione</option>${ativos().map(c =>
+      `<option value="${c.id}" ${pre&&pre.coelhoId===c.id?'selected':''}>${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>`;
+
+function sheetSanidade(pre){
+  const usados = [...new Set(db.sanidade.map(s=>s.med))].filter(m => !MEDS.some(x=>x.n===m));
+  const sh = openSheet('Nova aplicação', `
+    <div class="form">
+      <div class="fld"><label>Medicamento *</label>
+        <select id="mSel">${[...MEDS.map(m=>`<option>${esc(m.n)}</option>`),
+          ...usados.map(m=>`<option>${esc(m)}</option>`), '<option value="__out">Outro…</option>'].join('')}</select></div>
+      <div class="fld" id="mOutWrap" style="display:none"><label>Nome do produto</label><input id="mOut" placeholder="Ex.: Trimexidina"></div>
+      <p class="hint" id="mHint"></p>
+      <div class="frow">
+        <div class="fld"><label>Dose aplicada</label><input id="mDose" placeholder="0,15 mL/kg"></div>
+        <div class="fld"><label>Carência (dias)</label><input id="mCar" type="number" inputmode="numeric" min="0" value="0"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Data</label><input id="mData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Via</label><input id="mVia" placeholder="Injetável / Oral / Água"></div>
+      </div>
+      ${selectAlvo(pre,'m')}
+      <div class="fld"><label>Observações</label><textarea id="mObs" placeholder="Sintomas, lote, responsável pela aplicação…"></textarea></div>
+      <button class="btn primary" id="mSal">${ic('check',18)} Registrar aplicação</button>
+      <p class="hint" style="text-align:center">Doses e carências são referenciais — siga sempre a bula e a orientação de um médico-veterinário.</p>
+    </div>`);
+  const sel = sh.querySelector('#mSel');
+  const hint = () => {
+    const m = MEDS.find(x=>x.n===sel.value);
+    sh.querySelector('#mOutWrap').style.display = sel.value==='__out' ? '' : 'none';
+    sh.querySelector('#mHint').innerHTML = m
+      ? `<b>${m.via}</b> · ${m.ind}<br><b>Dose ref.:</b> ${m.dose} · <b>carência:</b> ${m.car ? m.car+' dia(s)' : 'sem'}`
+      : sel.value==='__out' ? 'Produto personalizado — informe via, dose e carência conforme a bula.' : 'Uso já registrado antes — confira dose e carência na bula.';
+    if(m){
+      sh.querySelector('#mDose').value = m.dose;
+      sh.querySelector('#mVia').value = m.via;
+      sh.querySelector('#mCar').value = m.car;
+    }
+  };
+  sel.onchange = hint; hint();
+  const alvoSel = sh.querySelector('#mAlvo');
+  alvoSel.onchange = () => { sh.querySelector('#mCoelhoWrap').style.display = alvoSel.value==='individual' ? '' : 'none'; };
+  sh.querySelector('#mSal').onclick = () => {
+    const alvo = alvoSel.value;
+    const med = sel.value==='__out' ? sh.querySelector('#mOut').value.trim() : sel.value;
+    if(!med) return toast('Informe o medicamento','x',true);
+    const coelhoId = alvo==='individual' ? sh.querySelector('#mCoelho').value : null;
+    if(alvo==='individual' && !coelhoId) return toast('Selecione o coelho','x',true);
+    db.sanidade.push({ id:uid(), data:sh.querySelector('#mData').value || isoHoje(), med,
+      via:sh.querySelector('#mVia').value.trim(), dose:sh.querySelector('#mDose').value.trim(),
+      carenciaDias:parseInt(sh.querySelector('#mCar').value)||0,
+      alvoTipo:alvo, grupo:alvo==='individual'?null:alvo, coelhoId,
+      obs:sh.querySelector('#mObs').value.trim() });
+    save(); sh.close(); toast('Aplicação registrada'); render();
+  };
+}
+
+function sheetSanidadeDet(id){
+  const s = db.sanidade.find(x=>x.id===id); if(!s) return;
+  const fim = (Number(s.carenciaDias)||0)>0 && s.data ? fmtData(addDias(s.data, s.carenciaDias)) : null;
+  const sh = openSheet('Aplicação', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Medicamento</span><b>${esc(s.med)}</b></div>
+      <div class="d-cell"><span>Data</span><b>${fmtData(s.data)}</b></div>
+      <div class="d-cell"><span>Via</span><b>${esc(s.via||'—')}</b></div>
+      <div class="d-cell"><span>Dose</span><b>${esc(s.dose||'—')}</b></div>
+      <div class="d-cell"><span>Aplicado a</span><b>${esc(alvoDesc(s))}</b></div>
+      <div class="d-cell"><span>Carência p/ abate</span><b>${fim ? s.carenciaDias+' d · até '+fim : 'Sem carência'}</b></div>
+    </div>
+    ${s.obs ? `<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(s.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:16px"><button class="btn danger-l" id="sdDel">${ic('trash',17)} Excluir registro</button></div>`);
+  sh.querySelector('#sdDel').onclick = () => confirmSheet('Excluir aplicação',
+    'O registro será apagado e a carência deixará de valer.', 'Excluir', () => {
+      db.sanidade = db.sanidade.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Registro excluído'); render();
+    });
+}
+
+function sheetAlimentacao(pre){
+  const usadas = [...new Set(db.alimentacao.map(a=>a.racao))].filter(r => !RACOES.some(x=>x.n===r));
+  const sh = openSheet('Novo fornecimento de ração', `
+    <div class="form">
+      <div class="fld"><label>Ração *</label>
+        <select id="aSel">${[...RACOES.map(r=>`<option>${esc(r.n)}</option>`),
+          ...usadas.map(r=>`<option>${esc(r)}</option>`), '<option value="__out">Outra…</option>'].join('')}</select></div>
+      <div class="fld" id="aOutWrap" style="display:none"><label>Nome / tipo</label><input id="aOut" placeholder="Ex.: Ração da casa"></div>
+      <p class="hint" id="aHint"></p>
+      <div class="frow">
+        <div class="fld"><label>Data</label><input id="aData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Quantidade (kg) *</label><input id="aKg" type="number" inputmode="decimal" min="0" step="0.01" placeholder="10"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Custo por kg (opcional)</label><input id="aCusto" type="number" inputmode="decimal" min="0" step="0.01" placeholder="3,50"></div>
+        <div class="fld"><label>Total</label><input id="aTot" readonly value="—"></div>
+      </div>
+      ${selectAlvo(pre,'a')}
+      <div class="fld"><label>Observações</label><textarea id="aObs" placeholder="Marca, fornecedor, mudança de fase…"></textarea></div>
+      <button class="btn primary" id="aSal">${ic('check',18)} Registrar ração</button>
+    </div>`);
+  const sel = sh.querySelector('#aSel');
+  const hint = () => {
+    const r = RACOES.find(x=>x.n===sel.value);
+    sh.querySelector('#aOutWrap').style.display = sel.value==='__out' ? '' : 'none';
+    sh.querySelector('#aHint').textContent = r ? r.fase : 'Ração personalizada.';
+  };
+  sel.onchange = hint; hint();
+  const recalc = () => {
+    const kg = parseFloat(sh.querySelector('#aKg').value)||0;
+    const c = parseFloat(sh.querySelector('#aCusto').value)||0;
+    sh.querySelector('#aTot').value = (kg && c) ? fmtMoeda(kg*c) : '—';
+  };
+  sh.querySelector('#aKg').addEventListener('input', recalc);
+  sh.querySelector('#aCusto').addEventListener('input', recalc);
+  const alvoSel = sh.querySelector('#aAlvo');
+  alvoSel.onchange = () => { sh.querySelector('#aCoelhoWrap').style.display = alvoSel.value==='individual' ? '' : 'none'; };
+  sh.querySelector('#aSal').onclick = () => {
+    const alvo = alvoSel.value;
+    const racao = sel.value==='__out' ? sh.querySelector('#aOut').value.trim() : sel.value;
+    if(!racao) return toast('Informe a ração','x',true);
+    const kg = parseFloat(sh.querySelector('#aKg').value)||0;
+    if(!kg) return toast('Informe a quantidade em kg','x',true);
+    const coelhoId = alvo==='individual' ? sh.querySelector('#aCoelho').value : null;
+    if(alvo==='individual' && !coelhoId) return toast('Selecione o coelho','x',true);
+    db.alimentacao.push({ id:uid(), data:sh.querySelector('#aData').value || isoHoje(), racao, kg,
+      custoKg:parseFloat(sh.querySelector('#aCusto').value)||null,
+      alvoTipo:alvo, grupo:alvo==='individual'?null:alvo, coelhoId,
+      obs:sh.querySelector('#aObs').value.trim() });
+    save(); sh.close(); toast('Ração registrada'); render();
+  };
+}
+
+function sheetAlimentacaoDet(id){
+  const a = db.alimentacao.find(x=>x.id===id); if(!a) return;
+  const total = Number(a.custoKg)>0 ? a.kg*a.custoKg : null;
+  const sh = openSheet('Fornecimento', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Ração</span><b>${esc(a.racao)}</b></div>
+      <div class="d-cell"><span>Data</span><b>${fmtData(a.data)}</b></div>
+      <div class="d-cell"><span>Quantidade</span><b>${fmtNum(a.kg)} kg</b></div>
+      <div class="d-cell"><span>Custo/kg</span><b>${a.custoKg?fmtMoeda(a.custoKg):'—'}</b></div>
+      <div class="d-cell"><span>Custo total</span><b>${total?fmtMoeda(total):'—'}</b></div>
+      <div class="d-cell"><span>Para</span><b>${esc(alvoDesc(a))}</b></div>
+    </div>
+    ${a.obs ? `<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(a.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:16px"><button class="btn danger-l" id="adDel">${ic('trash',17)} Excluir registro</button></div>`);
+  sh.querySelector('#adDel').onclick = () => confirmSheet('Excluir fornecimento',
+    'O registro de ração será apagado.', 'Excluir', () => {
+      db.alimentacao = db.alimentacao.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Registro excluído'); render();
+    });
+}
+
+/* ============================================================
+   ABATES
+   ============================================================ */
+function viewAbates(){
+  const mesKey = isoHoje().slice(0,7);
+  const doMes = db.abates.filter(a => (a.data||'').slice(0,7)===mesKey);
+  const cabecas = doMes.reduce((s,a)=> s + (a.tipo==='lote' ? (a.qtd||0) : 1), 0);
+  const rends = db.abates.filter(a => a.vivo>0 && a.carcaca>0).map(a => a.carcaca/a.vivo*100);
+  const rendMedio = rends.length ? rends.reduce((s,r)=>s+r,0)/rends.length : 0;
+  const lista = [...db.abates].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  $('#view').innerHTML = `
+    <div class="tira">
+      <div class="stat"><b>${cabecas}</b><span>Abates no mês</span></div>
+      <div class="stat"><b>${rends.length?rendMedio.toFixed(1).replace('.',',')+'%':'—'}</b><span>Rendimento médio</span></div>
+      <div class="stat"><b>${db.abates.length}</b><span>Total</span></div>
+    </div>
+    <div id="lista">${lista.length ? lista.map(a => {
+      const c = a.coelhoId ? porId(a.coelhoId) : null;
+      const rend = a.vivo>0 && a.carcaca>0 ? (a.carcaca/a.vivo*100).toFixed(1).replace('.',',')+'%' : null;
+      return `<div class="row" data-id="${a.id}"><div class="row-ico">${ic('knife',19)}</div>
+        <div class="row-main"><b>${a.tipo==='lote' ? 'Lote de '+(a.qtd||'?')+' cabeças' : esc(c?c.brinco:'Coelho removido')}</b>
+        <span>${fmtData(a.data)} · vivo ${fmtKg(a.vivo)}${a.carcaca>0?' · carcaça '+fmtKg(a.carcaca):''}</span></div>
+        <div class="row-side"><b>${rend || fmtKg(a.vivo)}</b><span>${esc(a.destino||'')}</span></div></div>`;
+    }).join('') : `<div class="empty">${ic('knife',32)}<b>Nenhum abate registrado</b><p>Toque em “Novo abate” para registrar individual ou em lote.</p></div>`}</div>`;
+  $$('#lista .row').forEach(r => r.onclick = () => sheetAbateDet(r.dataset.id));
+}
+
+function sheetAbateDet(id){
+  const a = db.abates.find(x=>x.id===id); if(!a) return;
+  const c = a.coelhoId ? porId(a.coelhoId) : null;
+  const rend = a.vivo>0 && a.carcaca>0 ? (a.carcaca/a.vivo*100).toFixed(1).replace('.',',')+'%' : '—';
+  const sh = openSheet('Abate', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Data</span><b>${fmtData(a.data)}</b></div>
+      <div class="d-cell"><span>Origem</span><b>${a.tipo==='lote' ? 'Lote · '+(a.qtd||'?')+' cab.' : esc(c?c.brinco:'—')}</b></div>
+      <div class="d-cell"><span>Peso vivo</span><b>${fmtKg(a.vivo)}</b></div>
+      <div class="d-cell"><span>Carcaça</span><b>${a.carcaca>0?fmtKg(a.carcaca):'—'}</b></div>
+      <div class="d-cell"><span>Rendimento</span><b>${rend}</b></div>
+      <div class="d-cell"><span>Destino</span><b>${esc(a.destino||'—')}</b></div>
+    </div>
+    ${a.obs?`<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(a.obs)}</p>`:''}
+    <div class="d-acts" style="margin-top:18px">
+      <button class="btn danger-l" id="adDel">${ic('trash',17)} Excluir abate</button>
+    </div>`);
+  sh.querySelector('#adDel').onclick = () => confirmSheet('Excluir abate',
+    'Se o abate estava vinculado a um coelho, ele voltará para a engorda.','Excluir',()=>{
+      if(a.coelhoId){ const cc = porId(a.coelhoId); if(cc && cc.status==='abatido') cc.status='engorda'; }
+      db.abates = db.abates.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Abate excluído'); render();
+    });
+}
+
+function sheetAbate(coelhoIdPre){
+  const candidatos = db.coelhos.filter(c=>c.status==='engorda').sort((a,b)=>(a.brinco||'').localeCompare(b.brinco||'','pt-BR',{numeric:true}));
+  const sh = openSheet('Novo abate', `
+    <div class="form">
+      <div class="seg" id="aTipo">
+        <button data-v="individual" class="on">Individual</button>
+        <button data-v="lote">Lote</button>
+      </div>
+      <div class="fld" id="aCoelhoWrap"><label>Coelho *</label>
+        <select id="aCoelho"><option value="">Selecione</option>${candidatos.map(c =>
+          `<option value="${c.id}" ${coelhoIdPre===c.id?'selected':''}>${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}${c.peso?' · '+fmtKg(c.peso):''}</option>`).join('')}</select>
+        <p class="hint" id="aPesoHint" style="margin-top:5px"></p></div>
+      <div class="fld" id="aQtdWrap" style="display:none"><label>Quantidade de cabeças *</label>
+        <input id="aQtd" type="number" inputmode="numeric" min="1" placeholder="6"></div>
+      <div class="frow">
+        <div class="fld"><label>Data</label><input id="aData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Destino</label><select id="aDest">
+          <option>Consumo próprio</option><option selected>Venda</option><option>Encomenda</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Peso vivo (kg)</label><input id="aVivo" type="number" inputmode="decimal" min="0" step="0.01" placeholder="3,80"></div>
+        <div class="fld"><label>Carcaça (kg, opcional)</label><input id="aCarc" type="number" inputmode="decimal" min="0" step="0.01" placeholder="2,10"></div>
+      </div>
+      <div class="aviso" id="aAviso" style="display:none"></div>
+      <div class="fld"><label>Observações</label><textarea id="aObs" placeholder="Jejum, método, destino das peles…"></textarea></div>
+      <button class="btn primary" id="aSal">${ic('check',18)} Registrar abate</button>
+    </div>`);
+  const seg = sh.querySelector('#aTipo');
+  const av = sh.querySelector('#aAviso');
+  const sel = sh.querySelector('#aCoelho');
+  const avisoInd = () => {
+    const c = porId(sel.value);
+    const car = c && carenciaCoelho(c);
+    av.style.display = car ? '' : 'none';
+    if(car) av.innerHTML = `${ic('warn',16)}<span><b>${esc(c.brinco)}</b> está em carência de <b>${esc(car.med)}</b> até ${fmtData(car.fim)}. O ideal é não abater antes dessa data.</span>`;
+  };
+  const avisoLote = () => {
+    const n = db.coelhos.filter(c => c.status==='engorda' && carenciaCoelho(c)).length;
+    av.style.display = n ? '' : 'none';
+    if(n) av.innerHTML = `${ic('warn',16)}<span><b>${n}</b> coelho(s) em engorda estão em carência de medicamento. Confira em Manejo antes de abater o lote.</span>`;
+  };
+  const hintUp = () => {
+    const c = porId(sel.value);
+    sh.querySelector('#aPesoHint').textContent = c && c.peso ? 'Último peso registrado: '+fmtKg(c.peso) : 'Sem peso registrado';
+    if(c && c.peso && !sh.querySelector('#aVivo').value) sh.querySelector('#aVivo').value = c.peso;
+  };
+  sel.onchange = () => { hintUp(); avisoInd(); };
+  if(coelhoIdPre){ hintUp(); avisoInd(); }
+  const setTipo = v => {
+    seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+    sh.querySelector('#aCoelhoWrap').style.display = v==='individual' ? '' : 'none';
+    sh.querySelector('#aQtdWrap').style.display = v==='lote' ? '' : 'none';
+    v==='lote' ? avisoLote() : avisoInd();
+  };
+  seg.querySelectorAll('button').forEach(b => b.onclick = () => setTipo(b.dataset.v));
+  sh.querySelector('#aSal').onclick = () => {
+    const vivo = parseFloat(sh.querySelector('#aVivo').value)||0;
+    const carc = parseFloat(sh.querySelector('#aCarc').value)||0;
+    if(!vivo) return toast('Informe o peso vivo','x',true);
+    const tipo = seg.querySelector('.on').dataset.v;
+    const reg = { id:uid(), tipo, data:sh.querySelector('#aData').value || isoHoje(),
+      vivo, carcaca:carc, destino:sh.querySelector('#aDest').value, obs:sh.querySelector('#aObs').value.trim() };
+    if(tipo==='individual'){
+      const c = porId(sel.value);
+      if(!c) return toast('Selecione o coelho','x',true);
+      reg.coelhoId = c.id; c.status = 'abatido';
+    } else {
+      reg.qtd = parseInt(sh.querySelector('#aQtd').value)||0;
+      if(!reg.qtd) return toast('Informe a quantidade','x',true);
+    }
+    db.abates.push(reg); save(); sh.close(); toast('Abate registrado'); render();
+  };
+}
+
+/* ============================================================
+   VENDAS + RECIBO
+   ============================================================ */
+function viewVendas(){
+  const mesKey = isoHoje().slice(0,7);
+  const doMes = db.vendas.filter(v => (v.data||'').slice(0,7)===mesKey);
+  const totalMes = doMes.reduce((s,v)=>s+vendaTotal(v),0);
+  const lista = [...db.vendas].sort((a,b)=>(b.data||'').localeCompare(a.data||'') || (b.num||0)-(a.num||0));
+  let grupos = '', mesAtual = '';
+  lista.forEach(v => {
+    const k = (v.data||'').slice(0,7);
+    if(k !== mesAtual){
+      mesAtual = k;
+      const d = new Date(k+'-02');
+      grupos += `<div class="grp-h">${d.toLocaleDateString('pt-BR',{month:'long'})} de ${d.getFullYear()}</div>`;
+    }
+    grupos += `<div class="row" data-id="${v.id}"><div class="row-ico">${ic('tag',19)}</div>
+      <div class="row-main"><b>#${String(v.num).padStart(4,'0')} · ${esc(v.cliente||'Consumidor')}</b>
+      <span>${v.itens.length} ${v.itens.length>1?'itens':'item'} · ${fmtData(v.data)}</span></div>
+      <div class="row-side"><b>${fmtMoeda(vendaTotal(v))}</b><span>${esc(v.pagamento||'')}</span></div></div>`;
+  });
+  $('#view').innerHTML = `
+    <div class="tira">
+      <div class="stat"><b>${fmtMoeda(totalMes)}</b><span>Faturado no mês</span></div>
+      <div class="stat"><b>${doMes.length}</b><span>Vendas</span></div>
+      <div class="stat"><b>${db.vendas.length}</b><span>Total</span></div>
+    </div>
+    ${lista.length ? grupos : `<div class="empty">${ic('tag',32)}<b>Nenhuma venda ainda</b><p>Monte a primeira venda e emita o recibo em PDF.</p></div>`}`;
+  $$('#view .row').forEach(r => r.onclick = () => sheetRecibo(r.dataset.id));
+}
+
+function pickerCoelho(cb){
+  const p = openSheet('Coelho do plantel', `
+    <div class="search">${ic('search',18)}<input id="pkQ" type="search" placeholder="Buscar brinco ou raça"></div>
+    <div id="pkLista"></div>`);
+  const render = () => {
+    const q = p.querySelector('#pkQ').value.toLowerCase();
+    const lista = ativos().filter(c => ((c.brinco||'')+' '+(c.raca||'')).toLowerCase().includes(q));
+    p.querySelector('#pkLista').innerHTML = lista.length ? lista.map(c =>
+      `<button class="pk-row" data-id="${c.id}">
+        <div class="ava ${avaCls(c)}">${esc((c.brinco||'?').replace(/\D/g,'').slice(-2) || (c.brinco||'?').slice(0,2))}</div>
+        <div class="row-main"><b>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</b>
+          <span>${esc(c.raca||'—')} · ${c.peso?fmtKg(c.peso):'sem peso'} · ${STATUS_L[c.status]}</span></div>
+        <span style="color:var(--carrot);flex:none">${ic('plus',18)}</span>
+      </button>`).join('') : `<div class="empty">${bunnySVG('')}<b>Nada encontrado</b><p>Nenhum coelho ativo com essa busca.</p></div>`;
+    p.querySelectorAll('.pk-row').forEach(b => b.onclick = () => {
+      const c = porId(b.dataset.id); p.close(); if(c) cb(c);
+    });
+  };
+  p.querySelector('#pkQ').oninput = render;
   render();
 }
- $$('.bnav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
-function render(){({inicio:renderHome,plantel:renderPlantel,racao:renderRacao,vendas:renderVendas,lotes:renderLotes})[cur]()}
 
-/* ================= HOME ================= */
-function renderHome(){
-  const el=$('#v-inicio');
-  if(!S.coelhos.length){
-    el.innerHTML='<div class="empty"><div class="empty-art">'+ic('bunny',62)+'</div>'+
-      '<h2>Nenhum coelho ainda</h2><p>Comece o seu plantel cadastrando o primeiro coelho. Tudo funciona offline, direto no seu aparelho.</p>'+
-      '<button class="btn-big" data-open="coelho"><span class="ck">'+ic('plus',16)+'</span>Cadastrar primeiro coelho</button></div>';
-    return;
-  }
-  const tot=kgDia(), at=ativos();
-  const linhas=Object.keys(TAXAS).map(cat=>{
-    const n=at.filter(c=>c.categoria===cat).length, kg=n*TAXAS[cat], pct=tot>0?Math.round(kg/tot*100):0;
-    return '<div class="crow'+(n===0?' zero':'')+'"><div class="crl"><span class="cdot" style="background:'+CORCAT[cat]+'"></span>'+
-      '<span class="cname">'+cat+'</span><span class="cq">'+n+' × '+fmtKg(TAXAS[cat])+' kg</span><b class="ckg">'+fmtKg(kg)+' kg</b></div>'+
-      '<div class="cbar"><i style="width:'+pct+'%;background:'+CORCAT[cat]+'"></i></div></div>';
-  }).join('');
-  const h=new Date().getHours(), saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
-  el.innerHTML='<div class="ptitle" style="margin-top:2px"><div><h1>'+saud+'</h1><span class="count">Resumo do seu plantel hoje</span></div></div>'+
-    '<div class="sumcard"><div class="sum"><b>'+at.length+'</b><span>Ativos</span></div>'+
-    '<div class="sum"><b>'+S.lotes.length+'</b><span>Lotes</span></div>'+
-    '<div class="sum g"><b>'+fmtKg(tot)+'<em>kg</em></b><span>Kg/dia</span></div></div>'+
-    '<div class="sh">Ações rápidas</div>'+
-    '<div class="acts">'+
-    '<button class="act ab" data-open="cobertura">'+ic('heart',24)+'<span>Cobertura</span></button>'+
-    '<button class="act ag" data-open="parto">'+ic('birth',24)+'<span>Parto</span></button>'+
-    '<button class="act am" data-open="vacina">'+ic('syringe',24)+'<span>Vacina</span></button></div>'+
-    '<div class="sh">Consumo por categoria</div>'+
-    '<div class="cons">'+linhas+'</div>';
-}
+function sheetVenda(pre){
+  const sh = openSheet('Nova venda', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Cliente</label><input id="vCli" list="dlCli" placeholder="Nome do comprador">
+          <datalist id="dlCli">${[...new Set(db.vendas.map(v=>v.cliente).filter(Boolean))].map(c=>`<option>${esc(c)}</option>`).join('')}</datalist></div>
+        <div class="fld"><label>Data</label><input id="vData" type="date" value="${isoHoje()}"></div>
+      </div>
+      <div class="fld"><label>Itens</label>
+        <div class="it-tools">
+          <button id="vAddCoelho">${ic('rabbit',16)}<span>Coelho do plantel</span></button>
+          <button id="vAddLivre" class="sec">${ic('plus',16)}<span>Item livre</span></button>
+        </div>
+        <div id="vItens"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Desconto (R$)</label><input id="vDesc" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00"></div>
+        <div class="fld"><label>Pagamento</label><div class="seg" id="vPag">
+          <button data-v="Dinheiro" class="on">Dinh.</button><button data-v="Pix">Pix</button>
+          <button data-v="Cartão">Cartão</button><button data-v="A prazo">Prazo</button></div></div>
+      </div>
+      <div class="fld"><label>Observações</label><textarea id="vObs" placeholder="Condições, entrega…"></textarea></div>
+    </div>`,
+    { foot:`<div class="vtot"><span>Total da venda</span><b id="vTot">R$ 0,00</b></div>
+            <button class="btn primary" id="vSal" style="flex:none">${ic('check',18)}<span class="serif">Emitir</span></button>` });
 
-/* ================= PLANTEL ================= */
-function cardCoelho(c){
-  const cor=CORCAT[c.categoria]||'#2F80ED';
-  const ini=esc(c.nome.trim().charAt(0).toUpperCase()||'?');
-  const sx=c.sexo==='M'?'<span class="sx M">&#9794;&#xFE0E;</span>':c.sexo==='F'?'<span class="sx F">&#9792;&#xFE0E;</span>':'';
-  return '<div class="ccard" data-act="edit" data-id="'+c.id+'">'+
-    (c.foto?'<img class="av" src="'+c.foto+'" alt="">':'<span class="av avi" style="--c:'+cor+'">'+ini+'</span>')+
-    '<div class="cinfo"><div class="cn"><b>'+esc(c.nome)+'</b>'+sx+'</div>'+
-    '<span class="cm">'+esc(c.raca)+'</span>'+
-    '<span class="cbadges"><i class="badge" style="--c:'+cor+'">'+c.categoria+'</i><i class="badge b2">'+esc(loteNome(c.loteId))+'</i></span></div>'+
-    '<div class="cside"><b class="peso">'+(c.peso!=null?fmtKg(c.peso)+' kg':'—')+'</b>'+
-    '<div class="mini"><button data-act="peso" data-id="'+c.id+'" aria-label="Registrar peso">'+ic('scale',16)+'</button>'+
-    '<button data-act="vender" data-id="'+c.id+'" aria-label="Vender">'+ic('tag',16)+'</button></div></div></div>';
-}
-function renderPlantel(){
-  const el=$('#v-plantel');
-  el.innerHTML='<div class="ptitle" style="margin-top:2px"><h1>Plantel</h1><span class="count">'+ativos().length+' ativo(s)</span></div>'+
-    '<div class="search">'+ic('search',19)+'<input id="q" placeholder="Buscar por nome ou raça" value="'+esc(F.q)+'"></div>'+
-    '<div id="fchipbox">'+(F.lote?'<span class="fchip">Lote: '+esc(loteNome(F.lote))+' <button data-act="clear-lote" aria-label="Remover filtro">'+ic('x',13)+'</button></span>':'')+'</div>'+
-    '<div id="plist"></div>';
-  $('#q').addEventListener('input',ev=>{F.q=ev.target.value;renderPlantelLista()});
-  renderPlantelLista();
-}
-function renderPlantelLista(){
-  const q=semAcento(F.q.trim());
-  let lista=ativos().filter(c=>!q||semAcento(c.nome+' '+c.raca).includes(q));
-  if(F.lote)lista=lista.filter(c=>c.loteId===F.lote);
-  lista.sort((a,b)=>b.criadoEm.localeCompare(a.criadoEm));
-  $('#plist').innerHTML=lista.length
-    ?'<div class="clist">'+lista.map(cardCoelho).join('')+'</div>'
-    :'<div class="mini-vazio">'+(ativos().length?'Nenhum coelho encontrado para esta busca.':'Nenhum coelho no plantel ainda.')+'</div>';
-}
-
-/* ================= RAÇÃO ================= */
-function renderRacao(){
-  const tot=kgDia(), sacos=tot*30/25, at=ativos();
-  const custo=S.config.custoRacao||0;
-  const linhas=Object.keys(TAXAS).map(cat=>{
-    const n=at.filter(c=>c.categoria===cat).length;
-    return '<div class="rrow'+(n===0?' zero':'')+'"><span class="rn"><span class="cdot" style="background:'+CORCAT[cat]+'"></span>'+cat+'</span>'+
-      '<span class="rq">'+n+' coel.</span><span class="rt">'+fmtKg(TAXAS[cat])+' kg</span><b class="rk">'+fmtKg(n*TAXAS[cat])+'</b></div>';
-  }).join('');
-  $('#v-racao').innerHTML='<div class="ptitle" style="margin-top:2px"><h1>Ração</h1></div>'+
-    '<div class="bigcard"><div class="bk"><span>Consumo por dia</span><b>'+fmtKg(tot)+' <em>kg/dia</em></b></div>'+
-    '<div class="bk g"><span>Sacos 25 kg / mês</span><b>'+fmtKg(sacos)+' <em>sacos</em></b></div></div>'+
-    '<p class="hint">Cálculo automático: consumo diário × 30 ÷ 25 kg por saco.'+(custo>0?' Custo estimado: <b style="color:var(--text)">'+fmtMoney(tot*30*custo)+'/mês</b> (custo do kg definido em Vendas).':' Defina o custo do kg em Vendas para estimar gastos.')+'</p>'+
-    '<div class="sh">Consumo automático por categoria</div><div class="rcat">'+linhas+'</div>';
-}
-
-/* ================= VENDAS ================= */
-function gastoVenda(v){
-  const c=byId(v.coelhoId); if(!c)return 0;
-  const d1=new Date(c.criadoEm+'T12:00'), d2=new Date(v.data+'T12:00');
-  const dias=Math.max(1,Math.round((d2-d1)/864e5));
-  return dias*(TAXAS[c.categoria]||0)*(S.config.custoRacao||0);
-}
-function renderVendas(){
-  const totV=S.vendas.reduce((s,v)=>s+v.preco,0);
-  const totG=S.vendas.reduce((s,v)=>s+gastoVenda(v),0);
-  const lucro=totV-totG;
-  const lista=[...S.vendas].sort((a,b)=>b.data.localeCompare(a.data));
-  $('#v-vendas').innerHTML='<div class="ptitle" style="margin-top:2px"><h1>Vendas</h1></div>'+
-    '<div class="sumcard" style="grid-template-columns:1.1fr 1.1fr 1fr"><div class="sum"><b style="font-size:16px">'+fmtMoney(totV)+'</b><span>Vendido</span></div>'+
-    '<div class="sum"><b style="font-size:16px">'+fmtMoney(totG)+'</b><span>Gasto</span></div>'+
-    '<div class="sum '+(lucro>=0?'g':'r')+'"><b style="font-size:16px">'+fmtMoney(lucro)+'</b><span>Lucro</span></div></div>'+
-    '<div class="sh">Custo da ração</div>'+
-    '<div class="field"><label>Custo da ração (R$/kg) — usado para calcular o gasto</label>'+
-    '<div class="moneywrap"><span>R$</span><input id="custoIn" type="number" min="0" step="0.01" inputmode="decimal" value="'+(S.config.custoRacao||0)+'"></div></div>'+
-    '<div class="sh">Histórico de vendas</div>'+
-    (lista.length?'<div class="vlist">'+lista.map(v=>{
-      const c=byId(v.coelhoId);
-      const av=c&&c.foto?'<img class="av" src="'+c.foto+'" alt="">':'<span class="av avi" style="--c:#E8A33D">'+esc(v.nome.charAt(0).toUpperCase())+'</span>';
-      return '<div class="vcard">'+av+'<div class="vinfo"><b>'+esc(v.nome)+'</b><span>'+fmtData(v.data)+' · '+v.qtdKg.toFixed(1)+' kg consumidos</span></div><b class="vpreco">'+fmtMoney(v.preco)+'</b></div>';
-    }).join('')+'</div>'
-    :'<div class="mini-vazio">Nenhuma venda registrada ainda.</div>');
-  $('#custoIn').addEventListener('change',ev=>{
-    S.config.custoRacao=Math.max(0,parseFloat(ev.target.value)||0);
-    salvar();renderVendas();toast('Custo da ração atualizado.');
-  });
-}
-
-/* ================= LOTES ================= */
-function renderLotes(){
-  const el=$('#v-lotes');
-  const lista=[...S.lotes].sort((a,b)=>b.criadoEm.localeCompare(a.criadoEm));
-  el.innerHTML='<div class="ptitle" style="margin-top:2px"><h1>Lotes</h1><button class="pillbtn" data-open="lote">'+ic('plus',15)+'Novo lote</button></div>'+
-    (lista.length?lista.map(l=>{
-      const n=ativos().filter(c=>c.loteId===l.id).length;
-      return '<div class="lcard" data-act="ver-lote" data-id="'+l.id+'"><span class="lic">'+ic('grid',20)+'</span>'+
-        '<div class="lmain"><b>'+esc(l.nome)+'</b><span>criado em '+fmtData(l.criadoEm)+'</span></div>'+
-        '<b class="lcount">'+n+' <em>anim.</em></b>'+
-        (n===0?'<button class="ltrash" data-act="del-lote" data-id="'+l.id+'" aria-label="Excluir lote">'+ic('trash',16)+'</button>':'')+'</div>';
-    }).join('')
-    :'<div class="mini-vazio">Nenhum lote criado ainda. Crie o primeiro para organizar o plantel.</div>');
-}
-
-/* ================= SHEETS ================= */
-function openSheet(id){const el=$('#'+id);el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.classList.add('locked')}
-function closeSheets(){$$('.sheet.open').forEach(s=>{s.classList.remove('open');s.setAttribute('aria-hidden','true')});document.body.classList.remove('locked')}
-function askConfirm(titulo,msg,cb){$('#cfTitle').textContent=titulo;$('#cfMsg').textContent=msg;cfCallback=cb;openSheet('sh-confirm')}
- $('#cfOk').addEventListener('click',()=>{closeSheets();if(cfCallback)cfCallback();cfCallback=null});
-
-function populaCoelhos(sel,femeasOnly){
-  const lista=ativos();
-  const opts=lista.filter(c=>!femeasOnly||c.sexo==='F');
-  sel.innerHTML='<option value="">'+(opts.length?'Selecione…':'Nenhum coelho disponível')+'</option>'+
-    opts.map(c=>'<option value="'+c.id+'">'+esc(c.nome)+' · '+c.categoria+'</option>').join('');
-}
-function populaLotes(sel){
-  sel.innerHTML='<option value="">Sem lote</option>'+S.lotes.map(l=>'<option value="'+l.id+'">'+esc(l.nome)+'</option>').join('');
-}
-function renderChips(selCat){
-  $('#cChips').innerHTML=Object.keys(TAXAS).map(c=>'<button type="button" class="chip'+(c===selCat?' on':'')+'" data-cat="'+c+'">'+c+'</button>').join('');
-}
-function marcaSexo(){
-  $$('#f-coelho .sexbtn').forEach(b=>b.classList.toggle('on',b.dataset.sex===sexoSel));
-}
-
-/* ---- modal coelho ---- */
-function resetCoelho(){
-  editando=null;fotoTemp=null;sexoSel=null;catSel='Crescimento';
-  $('#ct-title').textContent='Novo coelho';$('#ct-sub').textContent='Cadastre um novo animal no plantel';
-  $('#cSubmit').innerHTML='<span class="ck">'+ic('check',14)+'</span>Confirmar e Adicionar';
-  $('#cDel').hidden=true;
-  $('#f-coelho').reset();
-  $('#cPrev').innerHTML=ic('camera',26);
-  renderChips(catSel);marcaSexo();populaLotes($('#cLote'));
-}
-function editarCoelho(id){
-  const c=byId(id); if(!c)return;
-  editando=id;fotoTemp=c.foto||null;sexoSel=c.sexo||null;catSel=c.categoria;
-  $('#ct-title').textContent='Editar coelho';$('#ct-sub').textContent='Toque nos campos para alterar';
-  $('#cSubmit').innerHTML='<span class="ck">'+ic('check',14)+'</span>Salvar alterações';
-  $('#cDel').hidden=false;
-  $('#cNome').value=c.nome;$('#cRaca').value=c.raca;
-  $('#cIdade').value=c.idade!=null?c.idade:'';$('#cPeso').value=c.peso!=null?c.peso:'';
-  $('#cPrev').innerHTML=c.foto?'<img src="'+c.foto+'" alt="">':ic('camera',26);
-  renderChips(catSel);marcaSexo();populaLotes($('#cLote'));$('#cLote').value=c.loteId||'';
-  openSheet('sh-coelho');
-}
-
-/* ---- contadores ---- */
-function bump(el){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
-function updPeso(){const el=$('#pVal');el.textContent=fmtKg(pesoVal)+' kg';bump(el)}
-function updFilhotes(){const el=$('#bVal');el.textContent=filhotes;bump(el)}
-
-/* ---- abrir modais ---- */
-function abrir(nome,id){
-  closeFab();
-  if(nome==='coelho'){resetCoelho();openSheet('sh-coelho');return}
-  if(nome==='peso'){
-    populaCoelhos($('#pCoelho'));
-    const c=id?byId(id):ativos()[0];
-    if(c)$('#pCoelho').value=c.id;
-    pesoVal=(c&&c.peso!=null)?c.peso:1.5;updPeso();
-    openSheet('sh-peso');return;
-  }
-  if(nome==='parto'){
-    populaCoelhos($('#bMae'),true);
-    filhotes=1;updFilhotes();$('#bObs').value='';$('#bAgora').textContent=agoraBR();
-    openSheet('sh-parto');return;
-  }
-  if(nome==='cobertura'){
-    populaCoelhos($('#cvMae'),true);populaCoelhos($('#cvPai'));
-    $('#cvData').value=nowISO();$('#cvObs').value='';updPrevisao();
-    openSheet('sh-cobertura');return;
-  }
-  if(nome==='vacina'){
-    populaCoelhos($('#vcCoelho'));$('#vcTipo').value='';$('#vcData').value=nowISO();
-    openSheet('sh-vacina');return;
-  }
-  if(nome==='venda'){
-    populaCoelhos($('#vdCoelho'));
-    const c=id?byId(id):ativos()[0];
-    if(c)$('#vdCoelho').value=c.id;
-    $('#vdPreco').value='';$('#vdData').value=nowISO();updVendaInfo();
-    openSheet('sh-venda');return;
-  }
-  if(nome==='lote'){$('#ltNome').value='';openSheet('sh-lote')}
-}
-function updPrevisao(){
-  const d=$('#cvData').value?new Date($('#cvData').value+'T12:00'):new Date();
-  d.setDate(d.getDate()+31);
-  $('#cvPrev').textContent=fmtData(nowISO().slice(0,0)+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
-}
-function updVendaInfo(){
-  const c=byId($('#vdCoelho').value);
-  $('#vdInfo').textContent=c?('Peso atual: '+(c.peso!=null?fmtKg(c.peso)+' kg':'—')+' · Categoria: '+c.categoria+' · Raça: '+c.raca):'Selecione um coelho';
-}
-
-/* ================= FAB RADIAL ================= */
-const FABITENS=[
-  ['coelho','Novo coelho','bunny','#27AE60',90],
-  ['peso','Registrar peso','scale','#2F80ED',108],
-  ['parto','Parto','birth','#27AE60',126],
-  ['cobertura','Cobertura','heart','#2F80ED',144],
-  ['vacina','Vacina','syringe','#2BC7A8',162],
-  ['venda','Vender','tag','#E8A33D',180]
-];
-(function montaFab(){
-  const R=116, menu=$('#fabmenu');
-  menu.innerHTML=FABITENS.map((f,i)=>{
-    const rad=f[4]*Math.PI/180, tx=Math.round(R*Math.cos(rad)), ty=Math.round(-R*Math.sin(rad));
-    return '<button class="fabitem" data-open="'+f[0]+'" style="--c:'+f[3]+';--tx:'+tx+'px;--ty:'+ty+'px;--d:'+(i*45)+'ms"><span class="fic">'+ic(f[2],17)+'</span>'+f[1]+'</button>';
-  }).join('');
-})();
-const fab=$('#fab'),fabmenu=$('#fabmenu'),fabdim=$('#fabdim');
-function closeFab(){fab.classList.remove('open');fabmenu.classList.remove('open');fabdim.classList.remove('show')}
-fab.addEventListener('click',()=>{
-  const abre=!fab.classList.contains('open');
-  fab.classList.toggle('open',abre);fabmenu.classList.toggle('open',abre);fabdim.classList.toggle('show',abre);
-});
-fabdim.addEventListener('click',closeFab);
-
-/* ================= DELEGAÇÃO GLOBAL ================= */
-document.addEventListener('click',e=>{
-  const op=e.target.closest('[data-open]');
-  if(op){abrir(op.dataset.open,op.dataset.id);return}
-  if(e.target.closest('[data-close]')){closeSheets();return}
-  const ac=e.target.closest('[data-act]');
-  if(!ac)return;
-  const id=ac.dataset.id;
-  switch(ac.dataset.act){
-    case 'edit': editarCoelho(id); break;
-    case 'peso': abrir('peso',id); break;
-    case 'vender': abrir('venda',id); break;
-    case 'ver-lote': F.lote=id; F.q=''; go('plantel'); break;
-    case 'clear-lote': F.lote=null; renderPlantel(); break;
-    case 'del-lote':{
-      const l=S.lotes.find(x=>x.id===id); if(!l)return;
-      askConfirm('Excluir lote','Excluir o lote "'+l.nome+'"? Ele está vazio.',()=>{
-        S.lotes=S.lotes.filter(x=>x.id!==id); salvarTudo(); toast('Lote excluído.');
-      });
-      break;
-    }
-  }
-});
-
-/* ================= FORMULÁRIOS ================= */
-/* foto */
- $('#cPhotoBtn').addEventListener('click',()=>$('#cFoto').click());
- $('#cFoto').addEventListener('change',ev=>{
-  const f=ev.target.files[0]; if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const max=420, sc=Math.min(1,max/Math.max(img.width,img.height));
-      const cv=document.createElement('canvas');
-      cv.width=Math.round(img.width*sc);cv.height=Math.round(img.height*sc);
-      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
-      fotoTemp=cv.toDataURL('image/jpeg',.78);
-      $('#cPrev').innerHTML='<img src="'+fotoTemp+'" alt="">';
-    };
-    img.src=e.target.result;
+  const recalc = () => {
+    let sub = 0;
+    sh.querySelectorAll('.it-row').forEach(r => {
+      sub += (parseFloat(r.querySelector('.i-qtd').value)||0) * (parseFloat(r.querySelector('.i-preco').value)||0);
+    });
+    const desc = parseFloat(sh.querySelector('#vDesc').value)||0;
+    sh.querySelector('#vTot').textContent = fmtMoeda(Math.max(0, sub - desc));
   };
-  r.readAsDataURL(f);
-});
-/* sexo */
- $$('#f-coelho .sexbtn').forEach(b=>b.addEventListener('click',()=>{sexoSel=b.dataset.sex;marcaSexo()}));
-/* chips categoria */
- $('#cChips').addEventListener('click',e=>{
-  const ch=e.target.closest('.chip'); if(!ch)return;
-  catSel=ch.dataset.cat; renderChips(catSel);
-});
-/* submit coelho */
- $('#f-coelho').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const nome=$('#cNome').value.trim(), raca=$('#cRaca').value;
-  if(!nome){toast('Dê um nome ao coelho.','err');return}
-  if(!raca){toast('Selecione a raça.','err');return}
-  if(!sexoSel){toast('Selecione o sexo: macho ou fêmea.','err');return}
-  const dados={
-    nome,raca,foto:fotoTemp,
-    idade:$('#cIdade').value!==''?Math.max(0,parseInt($('#cIdade').value)||0):null,
-    peso:$('#cPeso').value!==''?Math.max(0,parseFloat($('#cPeso').value)||0):null,
-    sexo:sexoSel,categoria:catSel,loteId:$('#cLote').value||null
+
+  const addItem = it => {
+    const row = document.createElement('div'); row.className = 'it-row';
+    row.innerHTML = `<input class="i-desc" placeholder="Descrição" value="${esc(it.desc||'')}" data-cid="${it.coelhoId||''}">
+      <input class="i-qtd" type="number" inputmode="decimal" min="0" step="any" value="${it.qtd ?? 1}">
+      <select class="i-un"><option${(it.un||'un')==='un'?' selected':''}>un</option><option${it.un==='kg'?' selected':''}>kg</option><option${it.un==='cx'?' selected':''}>cx</option></select>
+      <input class="i-preco" type="number" inputmode="decimal" min="0" step="any" placeholder="0,00" value="${it.preco ?? ''}">
+      <button class="i-x" aria-label="Remover item">${ic('x',15)}</button>`;
+    row.querySelector('.i-x').onclick = () => { row.remove(); recalc(); };
+    row.querySelectorAll('input').forEach(i => i.addEventListener('input', recalc));
+    sh.querySelector('#vItens').appendChild(row); recalc();
   };
-  if(editando){
-    Object.assign(byId(editando),dados);
-    toast(nome+' atualizado!');
-  }else{
-    S.coelhos.push(Object.assign({id:uid(),ativo:true,criadoEm:nowISO(),pesoHist:[]},dados));
-    toast(nome+' adicionado ao plantel!');
-  }
-  closeSheets();salvarTudo();
-});
-/* excluir coelho */
- $('#cDel').addEventListener('click',()=>{
-  const c=byId(editando); if(!c)return;
-  askConfirm('Excluir coelho','Excluir '+c.nome+' do plantel? Essa ação não pode ser desfeita.',()=>{
-    S.coelhos=S.coelhos.filter(x=>x.id!==editando);
-    closeSheets();salvarTudo();toast(c.nome+' foi excluído.');
+  if(pre) addItem(pre); else addItem({desc:'',qtd:1,un:'un',preco:''});
+  sh.querySelector('#vAddLivre').onclick = () => addItem({desc:'',qtd:1,un:'un',preco:''});
+  sh.querySelector('#vAddCoelho').onclick = () => pickerCoelho(c => {
+    addItem({ coelhoId:c.id, desc:c.brinco + (c.raca? ' — '+c.raca : ''), qtd:1, un:'un', preco:'' });
+    toast(c.brinco + ' adicionado à venda');
   });
-});
-
-/* peso */
- $('#pCoelho').addEventListener('change',()=>{
-  const c=byId($('#pCoelho').value);
-  pesoVal=(c&&c.peso!=null)?c.peso:1.5;updPeso();
-});
- $$('#sh-peso .cbtn').forEach(b=>b.addEventListener('click',()=>{
-  pesoVal=Math.round(Math.min(20,Math.max(.1,pesoVal+(b.dataset.st==='+'?.1:-.1)))*10)/10;updPeso();
-}));
- $('#f-peso').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const c=byId($('#pCoelho').value);
-  if(!c){toast('Selecione um coelho.','err');return}
-  c.peso=pesoVal;(c.pesoHist=c.pesoHist||[]).push({d:nowISO(),p:pesoVal});
-  closeSheets();salvarTudo();toast(c.nome+': peso salvo — '+fmtKg(pesoVal)+' kg');
-});
-
-/* parto */
- $$('#sh-parto .cbtn').forEach(b=>b.addEventListener('click',()=>{
-  filhotes=Math.min(16,Math.max(1,filhotes+(b.dataset.bt==='+'?1:-1)));updFilhotes();
-}));
- $('#f-parto').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const mae=byId($('#bMae').value);
-  if(!mae){toast('Selecione a mãe.','err');return}
-  for(let i=0;i<filhotes;i++){
-    S.coelhos.push({id:uid(),nome:'Filhote '+(i+1)+' de '+mae.nome,raca:mae.raca,foto:null,sexo:null,
-      categoria:'Amamentando',loteId:mae.loteId||null,idade:0,peso:null,ativo:true,criadoEm:nowISO(),pesoHist:[]});
-  }
-  S.eventos.push({tipo:'parto',maeId:mae.id,qtd:filhotes,quando:Date.now(),obs:$('#bObs').value.trim()});
-  closeSheets();salvarTudo();
-  toast('Parto registrado: '+filhotes+' filhote(s) em Amamentando!');
-});
-
-/* cobertura */
- $('#cvData').addEventListener('change',updPrevisao);
- $('#f-cobertura').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const mae=byId($('#cvMae').value), pai=byId($('#cvPai').value);
-  if(!mae){toast('Selecione a fêmea.','err');return}
-  if(!pai){toast('Selecione o macho.','err');return}
-  if(mae.id===pai.id){toast('Escolha animais diferentes.','err');return}
-  S.eventos.push({tipo:'cobertura',maeId:mae.id,paiId:pai.id,data:$('#cvData').value,obs:$('#cvObs').value.trim()});
-  closeSheets();salvar();if(cur==='inicio')renderHome();
-  toast('Cobertura registrada: '+mae.nome+' × '+pai.nome);
-});
-
-/* vacina */
- $('#f-vacina').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const c=byId($('#vcCoelho').value);
-  if(!c){toast('Selecione o coelho.','err');return}
-  const tipo=$('#vcTipo').value;
-  if(!tipo){toast('Selecione a vacina.','err');return}
-  S.eventos.push({tipo:'vacina',coelhoId:c.id,vacina:tipo,data:$('#vcData').value});
-  closeSheets();salvar();
-  toast('Vacina '+tipo.split(' ')[0]+' registrada para '+c.nome+'.');
-});
-
-/* venda */
- $('#vdCoelho').addEventListener('change',updVendaInfo);
- $('#f-venda').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const c=byId($('#vdCoelho').value);
-  if(!c){toast('Selecione o coelho.','err');return}
-  const preco=Math.max(0,parseFloat($('#vdPreco').value)||0);
-  if(preco<=0){toast('Informe o preço da venda.','err');return}
-  const data=$('#vdData').value||nowISO();
-  const d1=new Date(c.criadoEm+'T12:00'),d2=new Date(data+'T12:00');
-  const kg=Math.max(1,Math.round((d2-d1)/864e5))*(TAXAS[c.categoria]||0);
-  c.ativo=false;
-  S.vendas.push({id:uid(),coelhoId:c.id,nome:c.nome,preco,data,qtdKg:kg});
-  closeSheets();salvarTudo();
-  toast('Venda de '+c.nome+' registrada — '+fmtMoney(preco));
-});
-
-/* lote */
- $('#f-lote').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const nome=$('#ltNome').value.trim();
-  if(!nome){toast('Dê um nome ao lote.','err');return}
-  S.lotes.push({id:uid(),nome,criadoEm:nowISO()});
-  closeSheets();salvarTudo();toast('Lote "'+nome+'" criado!');
-});
-
-/* ================= TOPO: DATA + ONLINE/OFFLINE ================= */
-function atualizaTopo(){
-  const d=new Date(), ds=['dom','seg','ter','qua','qui','sex','sáb'][d.getDay()];
-  $('#hdate').textContent=fmtData(nowISO())+' · '+ds;
-}
-function atualizaRede(){
-  const on=navigator.onLine, p=$('#netpill');
-  p.classList.toggle('off',!on);
-  p.innerHTML='<i></i>'+(on?'Online':'Offline');
-}
-addEventListener('online',atualizaRede);
-addEventListener('offline',atualizaRede);
-setInterval(atualizaTopo,60000);
-
-/* ================= ÍCONES PWA (canvas → PNG) ================= */
-function desenharCoelho(ctx,u,ox,oy){
-  const el=(x,y,rx,ry,rot,fill)=>{ctx.save();ctx.translate(ox+x*u,oy+y*u);ctx.rotate(rot*Math.PI/180);
-    ctx.beginPath();ctx.ellipse(0,0,rx*u,ry*u,0,0,7);ctx.fillStyle=fill;ctx.fill();ctx.restore()};
-  el(18.6,12.4,4.6,9.6,-10,'#E6EEF8');el(29.4,12.4,4.6,9.6,10,'#E6EEF8');
-  el(18.1,12.6,2,6.2,-10,'#E58FA0');el(29.9,12.6,2,6.2,10,'#E58FA0');
-  ctx.beginPath();ctx.arc(ox+24*u,oy+31.5*u,11.5*u,0,7);ctx.fillStyle='#E6EEF8';ctx.fill();
-  ctx.fillStyle='#0A1931';
-  ctx.beginPath();ctx.arc(ox+19.8*u,oy+29.9*u,1.7*u,0,7);ctx.fill();
-  ctx.beginPath();ctx.arc(ox+28.2*u,oy+29.9*u,1.7*u,0,7);ctx.fill();
-  ctx.fillStyle='#E58FA0';
-  ctx.beginPath();ctx.moveTo(ox+22.4*u,oy+34.4*u);ctx.lineTo(ox+25.6*u,oy+34.4*u);ctx.lineTo(ox+24*u,oy+36.4*u);ctx.closePath();ctx.fill();
-}
-function gerarIcone(size){
-  const cv=document.createElement('canvas');cv.width=cv.height=size;
-  const ctx=cv.getContext('2d');
-  ctx.fillStyle='#0A1931';ctx.fillRect(0,0,size,size);
-  const seguro=size*0.78;               /* zona segura p/ maskable */
-  ctx.fillStyle='#10294F';
-  ctx.beginPath();ctx.arc(size/2,size/2,size*0.42,0,7);ctx.fill();
-  desenharCoelho(ctx,seguro/48,(size-seguro)/2,(size-seguro)/2-2*(seguro/48));
-  return cv.toDataURL('image/png');
-}
-function baixarIcones(){
-  [['icon-512.png',512],['icon-192.png',192],['icon-180.png',180]].forEach(([nome,size],i)=>{
-    setTimeout(()=>{
-      const a=document.createElement('a');
-      a.download=nome;a.href=gerarIcone(size);a.click();
-    },i*450);
+  sh.querySelector('#vDesc').addEventListener('input', recalc);
+  sh.querySelector('#vPag').querySelectorAll('button').forEach(b => b.onclick = () => {
+    sh.querySelectorAll('#vPag button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   });
-  toast('Gerando icon-512, icon-192 e icon-180 — salve na pasta do app!');
+  sh.querySelector('#vSal').onclick = () => {
+    const itens = [];
+    sh.querySelectorAll('.it-row').forEach(r => {
+      const desc = r.querySelector('.i-desc').value.trim();
+      const qtd = parseFloat(r.querySelector('.i-qtd').value)||0;
+      const preco = parseFloat(r.querySelector('.i-preco').value)||0;
+      if(desc && qtd>0) itens.push({ desc, qtd, un:r.querySelector('.i-un').value, preco, coelhoId:r.querySelector('.i-desc').dataset.cid || null });
+    });
+    if(!itens.length) return toast('Adicione pelo menos um item','x',true);
+    /* Snapshot dos animais ANTES de mudar o status — leva ficha sanitária para o PDF */
+    itens.forEach(i => {
+      const c = i.coelhoId ? porId(i.coelhoId) : null;
+      if(c){
+        const san = db.sanidade.filter(s =>
+          s.alvoTipo==='individual' ? s.coelhoId===c.id :
+          (s.grupo==='ativos' || s.grupo===c.status));
+        i.animal = { brinco:c.brinco, raca:c.raca||'', sexo:c.sexo, nascimento:c.nascimento||null,
+          idadeTxt:idade(c.nascimento), peso:c.peso||null,
+          sanidade: san.map(s=>({med:s.med, data:s.data, carenciaDias:Number(s.carenciaDias)||0})) };
+        c.status = 'vendido';
+      }
+    });
+    const pag = sh.querySelector('#vPag .on').dataset.v;
+    const v = { id:uid(), num:proxNum(), data:sh.querySelector('#vData').value || isoHoje(),
+      cliente:sh.querySelector('#vCli').value.trim() || 'Consumidor',
+      itens, desconto:parseFloat(sh.querySelector('#vDesc').value)||0, pagamento:pag,
+      obs:sh.querySelector('#vObs').value.trim(), criadoEm:new Date().toISOString() };
+    db.vendas.push(v); save(); sh.close(); hopBunny();
+    toast('Venda #'+String(v.num).padStart(4,'0')+' emitida'); render(); sheetRecibo(v.id);
+  };
 }
-let toques=0,toquesTimer;
- $('#logoBtn').addEventListener('click',()=>{
-  toques++;clearTimeout(toquesTimer);toquesTimer=setTimeout(()=>toques=0,1200);
-  if(toques>=3){toques=0;baixarIcones()}
-});
 
-/* ================= INICIALIZAÇÃO ================= */
-injetaIcones();
- $('#cRaca').innerHTML='<option value="">Selecione a raça</option>'+RACAS.map(r=>'<option>'+r+'</option>').join('');
-atualizaTopo();atualizaRede();render();
-/* apple-touch-icon + favicon gerados na hora (funcionam mesmo sem os PNGs salvos) */
-(function(){
+function reciboHTML(v){
+  const S = db.settings;
+  const sub = v.itens.reduce((s,i)=>s+i.qtd*i.preco,0);
+  const contato = [S.cidade, S.telefone].filter(Boolean).join('  ·  ') || 'Gestão de cunicultura';
+  const fichas = v.itens.filter(i=>i.animal);
+  const fichaBloco = i => {
+    const a = i.animal;
+    const apps = a.sanidade||[];
+    return `<div class="ficha">
+      <div class="ficha-h"><b>Brinco ${esc(a.brinco)}</b><span>vendido em ${fmtData(v.data)}</span></div>
+      <div class="ficha-l">Raça: <b>${esc(a.raca||'—')}</b> · ${a.sexo==='M'?'Macho':'Fêmea'} · ${esc(a.idadeTxt||'—')}</div>
+      <div class="ficha-l">Peso: <b>${a.peso?fmtKg(a.peso):'—'}</b> · Nascimento: ${fmtData(a.nascimento)}</div>
+      ${apps.length ? apps.map(s=>`<div class="ficha-l">• ${esc(s.med)} — ${fmtData(s.data)}${s.carenciaDias?` · carência até ${fmtData(addDias(s.data,s.carenciaDias))}`:''}</div>`).join('')
+        : '<div class="ficha-l" style="color:var(--muted)">• Sem registros de medicação ou vacinação.</div>'}
+    </div>`;
+  };
+  return `<div class="recibo">
+    <div class="r-head"><div class="r-logo">${bunnySVG('')}</div>
+      <div class="r-name">${esc(S.nome||'Criatório')}</div><div class="r-sub">${esc(contato)}</div></div>
+    <div class="r-title serif">RECIBO DE VENDA<small>documento não fiscal — controle interno</small></div>
+    <div class="r-info">
+      <div class="col"><span>Cliente</span><b>${esc(v.cliente||'Consumidor')}</b></div>
+      <div class="col right"><span>Nº / Data</span><b>#${String(v.num).padStart(4,'0')} · ${fmtData(v.data)}</b></div>
+    </div>
+    <table class="r-items"><thead><tr><th>Descrição</th><th class="num">Qtd</th><th class="num">Unit.</th><th class="num">Valor</th></tr></thead>
+    <tbody>${v.itens.map(i => `<tr><td>${esc(i.desc)}${i.animal?`<div class="r-subline">${esc([i.animal.raca, i.animal.sexo==='M'?'Macho':'Fêmea', i.animal.idadeTxt].filter(Boolean).join(' · '))}</div>`:''}</td>
+      <td class="num">${fmtNum(i.qtd)} ${esc(i.un||'un')}</td>
+      <td class="num">${fmtNum(i.preco)}</td><td class="num"><b>${fmtNum(i.qtd*i.preco)}</b></td></tr>`).join('')}</tbody></table>
+    <div class="r-tots">
+      <div class="tr"><span>Subtotal</span><span>${fmtMoeda(sub)}</span></div>
+      ${v.desconto ? `<div class="tr"><span>Desconto</span><span>− ${fmtMoeda(v.desconto)}</span></div>` : ''}
+      <div class="tr grand"><span>TOTAL</span><span>${fmtMoeda(vendaTotal(v))}</span></div>
+      <div class="tr" style="margin-top:5px"><span>Pagamento</span><span>${esc(v.pagamento||'—')}</span></div>
+    </div>
+    ${fichas.length ? `<div class="sec-t" style="margin-top:14px">Ficha sanitária dos animais vendidos</div>${fichas.map(fichaBloco).join('')}` : ''}
+    ${v.obs?`<div class="r-obs">Obs.: ${esc(v.obs)}</div>`:''}
+    <div class="r-sign"><i></i>Assinatura — ${esc(S.responsavel || S.nome || 'responsável')}</div>
+    <div class="r-foot">Emitido em ${fmtDataHora(new Date())} · Lepus — gestão de cunicultura</div>
+  </div>`;
+}
+
+function sheetRecibo(id){
+  const v = db.vendas.find(x=>x.id===id); if(!v) return;
+  const sh = openSheet('Recibo #'+String(v.num).padStart(4,'0'), reciboHTML(v), {
+    foot:`<button class="btn ghost" id="rShare">${ic('share',18)} Enviar</button>
+          <button class="btn primary" id="rPdf">${ic('download',18)} PDF</button>` });
+  const nomeArq = 'Recibo-' + String(v.num).padStart(4,'0') + '.pdf';
+  sh.querySelector('#rPdf').onclick = () => { const blob = buildVendaPdf(v); downloadBlob(blob, nomeArq); toast('PDF gerado'); };
+  sh.querySelector('#rShare').onclick = () => { const blob = buildVendaPdf(v); sharePdf(blob, nomeArq); };
+  sh.querySelector('.sh-body').insertAdjacentHTML('beforeend',
+    `<button class="link" id="rDel" style="display:block;margin:0 auto 6px;background:none;border:none">${ic('trash',14)} Excluir esta venda</button>`);
+  /* Excluir venda NÃO devolve os animais ao plantel — eles permanecem como "Vendido" */
+  sh.querySelector('#rDel').onclick = () => confirmSheet('Excluir venda',
+    'O recibo será apagado definitivamente. Os animais vendidos permanecem com status “Vendido” e não voltam ao plantel.',
+    'Excluir',()=>{
+      db.vendas = db.vendas.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Venda excluída'); render();
+    });
+}
+
+/* ============================================================
+   GERADOR DE PDF — escrita direta da especificação, sem libs
+   ============================================================ */
+const HELV = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+function pdfEsc(s){
+  s = String(s ?? '');
+  const mapa = {'\u20AC':128,'\u2013':150,'\u2014':151,'\u2018':145,'\u2019':146,'\u201C':147,'\u201D':148,'\u2022':149,'\u2026':133,'\u0152':140,'\u0153':156,'\u0160':138,'\u0161':154,'\u017D':142,'\u017E':158};
+  let out = '';
+  for(const ch of s){
+    let c = ch.codePointAt(0);
+    if(mapa[ch] !== undefined) c = mapa[ch];
+    else if(c > 255) c = 63;
+    out += String.fromCharCode(c);
+  }
+  return out;
+}
+const pdfTxt = s => pdfEsc(s).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+function tw(s, f, size){
+  const t = pdfEsc(s); let w = 0;
+  for(let i=0;i<t.length;i++){ const c = t.charCodeAt(i); w += (c>=32 && c<=126) ? HELV[c-32] : 556; }
+  if(f===2) w *= 1.055;
+  return w * size / 1000;
+}
+const r2 = v => Math.round(v*100)/100;
+const PC = { green:'0.118 0.227 0.149', white:'1 1 1', ink:'0.133 0.188 0.118', muted:'0.43 0.47 0.40',
+  cream:'0.949 0.925 0.863', linec:'0.85 0.82 0.74', carrot:'0.851 0.431 0.188' };
+function T(x, y, s, f, size, col, align){
+  let xx = x; const w = tw(s, f, size);
+  if(align === 'c') xx = x - w/2;
+  if(align === 'r') xx = x - w;
+  return `q ${col} rg BT /F${f} ${size} Tf 1 0 0 1 ${r2(xx)} ${r2(y)} Tm (${pdfTxt(s)}) Tj ET Q\n`;
+}
+function R(x, y, w, h, col){ return `q ${col} rg ${r2(x)} ${r2(y)} ${r2(w)} ${r2(h)} re f Q\n`; }
+function St(x, y, w, h, col){ return `q ${col} RG 0.9 w ${r2(x)} ${r2(y)} ${r2(w)} ${r2(h)} re S Q\n`; }
+function L(x1, y1, x2, y2, col, wd){ return `q ${col} RG ${wd} w ${r2(x1)} ${r2(y1)} m ${r2(x2)} ${r2(y2)} l S Q\n`; }
+function truncPdf(s, maxW, f, size){
+  s = String(s ?? '');
+  if(tw(s,f,size) <= maxW) return s;
+  let t = s;
+  while(tw(t,f,size) > maxW && t.length > 2) t = t.slice(0,-2);
+  return t.trim() + '\u2026';
+}
+function ellPDF(cx, cy, rx, ry, ang, col){
+  const co = Math.cos(ang), si = Math.sin(ang);
+  return `q ${col} rg ${r2(rx*co)} ${r2(rx*si)} ${r2(-ry*si)} ${r2(ry*co)} ${r2(cx)} ${r2(cy)} cm ` +
+    `1 0 m 1 0.5523 0.5523 1 0 1 c -0.5523 1 -1 0.5523 -1 0 c -1 -0.5523 -0.5523 -1 0 -1 c 0.5523 -1 1 -0.5523 1 0 c h f Q\n`;
+}
+function logoPDF(cx, cy, r){
+  const s = r/28;
+  let c = '';
+  c += ellPDF(cx, cy, r, r, 0, PC.cream);
+  c += ellPDF(cx-8*s,  cy+14*s, 5.2*s, 12*s, -0.22, PC.green);
+  c += ellPDF(cx+8*s,  cy+14*s, 5.2*s, 12*s,  0.22, PC.green);
+  c += ellPDF(cx, cy-4*s, 13.5*s, 12*s, 0, PC.green);
+  c += ellPDF(cx-5*s,  cy-2*s, 1.5*s, 1.9*s, 0, PC.cream);
+  c += ellPDF(cx+5*s,  cy-2*s, 1.5*s, 1.9*s, 0, PC.cream);
+  c += `q ${PC.carrot} rg ${r2(cx-2.3*s)} ${r2(cy-8*s)} m ${r2(cx+2.3*s)} ${r2(cy-8*s)} l ${r2(cx)} ${r2(cy-10.6*s)} l h f Q\n`;
+  return c;
+}
+const linhaAnimal = a => [a.raca, a.sexo==='M' ? 'Macho' : 'Fêmea', a.idadeTxt, a.peso ? fmtKg(a.peso) : null].filter(Boolean).join('  ·  ');
+
+function buildVendaPdf(v){
+  const S = db.settings, W = 595.28, H = 841.89, M = 52, XM = W - M;
+  const sub = v.itens.reduce((s,i)=>s+i.qtd*i.preco,0);
+  const desc = Number(v.desconto)||0, tot = Math.max(0, sub - desc);
+  const brl = n => n.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2});
+  const contato = [S.cidade, S.telefone].filter(Boolean).join('   ·   ') || 'Gestão de cunicultura';
+  const fichas = v.itens.filter(i=>i.animal);
+  const numTxt = '#' + String(v.num).padStart(4,'0');
+  const colH = '0.30 0.34 0.28';
+
+  const pages = [];
+  let cur = '', y = 0;
+
+  const startPage = cont => {
+    cur = R(0, H-118, W, 118, PC.green)
+        + logoPDF(M+38, H-59, 28)
+        + T(M+84, H-50, truncPdf(S.nome||'Criatório', 360, 2, 20), 2, 20, PC.white)
+        + T(M+84, H-71, truncPdf(contato, 400, 1, 9), 1, 9, PC.white);
+    y = H - 152;
+    cur += T(W/2, y, 'RECIBO DE VENDA' + (cont ? ' (continuação)' : ''), 2, 15.5, PC.ink, 'c');
+    if(!cont) cur += T(W/2, y-15, 'documento não fiscal — controle interno', 1, 8.5, PC.muted, 'c');
+    y -= cont ? 34 : 44;
+  };
+  const endPage = () => { pages.push(cur); cur = ''; };
+  const need = h => { if(y - h < 66){ endPage(); startPage(true); return true; } return false; };
+  const tabHead = () => {
+    cur += R(M, y-20, XM-M, 20, PC.cream)
+         + T(M+8, y-14, 'DESCRIÇÃO', 2, 7.5, colH)
+         + T(336, y-14, 'QTD', 2, 7.5, colH, 'r')
+         + T(444, y-14, 'UNIT. (R$)', 2, 7.5, colH, 'r')
+         + T(XM-8, y-14, 'VALOR (R$)', 2, 7.5, colH, 'r');
+    y -= 30;
+  };
+
+  startPage(false);
+
+  const bh = 76, bw = XM - M;
+  cur += R(M, y-bh, bw, bh, PC.cream)
+       + T(M+14, y-18, 'CLIENTE', 1, 7, PC.muted)
+       + T(M+14, y-35, truncPdf(v.cliente||'Consumidor', bw-330, 2, 12.5), 2, 12.5, PC.ink)
+       + T(M+14, y-55, 'PAGAMENTO', 1, 7, PC.muted)
+       + T(M+14, y-70, truncPdf(v.pagamento||'—', 240, 2, 10.5), 2, 10.5, PC.ink)
+       + T(M+330, y-18, 'NÚMERO', 1, 7, PC.muted)
+       + T(M+330, y-35, numTxt, 2, 14, PC.carrot)
+       + T(M+330, y-55, 'DATA', 1, 7, PC.muted)
+       + T(M+330, y-70, fmtData(v.data), 2, 10.5, PC.ink);
+  y -= bh + 20;
+  tabHead();
+
+  v.itens.forEach(i => {
+    const a = i.animal, two = !!a;
+    need(two ? 48 : 36);
+    cur += T(M+8, y, truncPdf(i.desc, 250, 2, 10), 2, 10, PC.ink);
+    if(a) cur += T(M+8, y-13, truncPdf(linhaAnimal(a), 250, 1, 7.5), 1, 7.5, PC.muted);
+    cur += T(336, y, fmtNum(i.qtd)+' '+(i.un||'un'), 1, 9.5, PC.ink, 'r')
+         + T(444, y, brl(i.preco), 1, 9.5, PC.ink, 'r')
+         + T(XM-8, y, brl(i.qtd*i.preco), 2, 10, PC.ink, 'r')
+         + L(M, y-(two?22:16), XM, y-(two?22:16), PC.linec, 0.4);
+    y -= two ? 36 : 26;
+  });
+
+  need(130);
+  let yF = y - 8;
+  cur += T(444, yF, 'Subtotal', 1, 9.5, PC.muted, 'r') + T(XM-8, yF, brl(sub), 1, 10, PC.ink, 'r');
+  yF -= 17;
+  if(desc){ cur += T(444, yF, 'Desconto', 1, 9.5, PC.muted, 'r') + T(XM-8, yF, '-'+brl(desc), 1, 10, PC.ink, 'r'); yF -= 17; }
+  cur += R(XM-226, yF-26, 226, 33, PC.green)
+       + T(XM-212, yF-16, 'TOTAL', 2, 10.5, PC.white)
+       + T(XM-14, yF-15, 'R$ ' + brl(tot), 2, 13.5, PC.white, 'r');
+  y = yF - 52;
+  if(v.obs){ need(40); cur += T(M, y, truncPdf('Obs.: '+v.obs, 480, 1, 8.5), 1, 8.5, PC.muted); y -= 26; }
+
+  if(fichas.length){
+    need(80);
+    y -= 12;
+    cur += T(M, y, 'FICHA SANITÁRIA — ANIMAIS VENDIDOS', 2, 10.5, PC.green)
+         + L(M, y-6, XM, y-6, PC.green, 0.8);
+    y -= 24;
+    fichas.forEach(i => {
+      const a = i.animal, apps = a.sanidade || [];
+      const bh2 = 81 + apps.length*13;
+      need(bh2 + 14);
+      cur += St(M, y-bh2, XM-M, bh2, PC.linec)
+           + R(M, y-22, XM-M, 22, PC.cream)
+           + T(M+12, y-15, 'BRINCO  ' + a.brinco, 2, 10.5, PC.ink)
+           + T(XM-12, y-15, 'vendido em ' + fmtData(v.data), 1, 7.5, PC.muted, 'r');
+      let yy = y - 38;
+      cur += T(M+12, yy, truncPdf('Raça: ' + (a.raca||'—') + '   ·   ' + (a.sexo==='M'?'Macho':'Fêmea') + '   ·   ' + (a.idadeTxt||'—'), 460, 1, 8.5), 1, 8.5, PC.ink);
+      yy -= 13;
+      cur += T(M+12, yy, 'Peso: ' + (a.peso ? fmtKg(a.peso) : '—') + '   ·   Nascimento: ' + fmtData(a.nascimento), 1, 8.5, PC.ink);
+      yy -= 18;
+      if(apps.length){
+        cur += T(M+12, yy, 'APLICAÇÕES E VACINAS REGISTRADAS', 1, 6.8, PC.muted);
+        yy -= 13;
+        apps.forEach(s => {
+          const txt = '\u2022  ' + s.med + '  —  ' + fmtData(s.data) +
+            (s.carenciaDias ? '  ·  carência até ' + fmtData(addDias(s.data, s.carenciaDias)) : '  ·  sem carência');
+          cur += T(M+12, yy, truncPdf(txt, 460, 1, 8.5), 1, 8.5, PC.ink);
+          yy -= 13;
+        });
+      } else {
+        cur += T(M+12, yy, 'Sem registros de medicação ou vacinação no período.', 1, 8.5, PC.muted);
+      }
+      y -= bh2 + 14;
+    });
+  }
+
+  need(100);
+  y -= 6;
+  cur += T(W/2, y, 'Obrigado pela preferência!', 2, 11, PC.ink, 'c')
+       + L(W/2-105, y-42, W/2+105, y-42, '0.35 0.39 0.33', 0.7)
+       + T(W/2, y-55, truncPdf('Assinatura — ' + (S.responsavel || S.nome || 'responsável'), 300, 1, 8), 1, 8, PC.muted, 'c');
+  endPage();
+
+  const total = pages.length;
+  const fin = pages.map((c, idx) => c
+    + R(0, 0, W, 30, PC.cream)
+    + T(W/2, 11.5, 'Emitido em ' + fmtDataHora(new Date()) + '  ·  Lepus' + (total>1 ? '  ·  página '+(idx+1)+' de '+total : ''), 1, 7.5, PC.muted, 'c'));
+
+  const nObjs = 4 + fin.length*2;
+  const body = new Array(nObjs+1);
+  body[1] = '<</Type/Catalog/Pages 2 0 R>>';
+  body[2] = `<</Type/Pages/Kids[${fin.map((_,i)=>(5+i*2)+' 0 R').join(' ')}]/Count ${fin.length}>>`;
+  body[3] = '<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>';
+  body[4] = '<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>';
+  fin.forEach((content, i) => {
+    const pid = 5+i*2, cid = pid+1;
+    body[pid] = `<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${W} ${H}]/Resources<</Font<</F1 3 0 R/F2 4 0 R>>>>/Contents ${cid} 0 R>>`;
+    body[cid] = `<</Length ${content.length}>>\nstream\n${content}endstream`;
+  });
+  let out = '%PDF-1.4\n';
+  const offs = [];
+  for(let id=1; id<=nObjs; id++){ offs[id] = out.length; out += `${id} 0 obj\n${body[id]}\nendobj\n`; }
+  const xref = out.length;
+  out += `xref\n0 ${nObjs+1}\n0000000000 65535 f \n`;
+  for(let id=1; id<=nObjs; id++) out += String(offs[id]).padStart(10,'0') + ' 00000 n \n';
+  out += `trailer\n<</Size ${nObjs+1}/Root 1 0 R>>\nstartxref\n${xref}\n%%EOF`;
+  return new Blob([new Uint8Array([...out].map(ch => ch.charCodeAt(0)))], {type:'application/pdf'});
+}
+
+function downloadBlob(blob, nome){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+async function sharePdf(blob, nome){
   try{
-    const l180=document.querySelector('link[rel="apple-touch-icon"]');
-    if(l180)l180.href=gerarIcone(180);
-    let fav=document.querySelector('link[rel="icon"]');
-    if(!fav){fav=document.createElement('link');fav.rel='icon';document.head.appendChild(fav)}
-    fav.href=gerarIcone(64);
-  }catch(e){}
-})();
-/* service worker: cache-first, 100% offline */
-if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    const file = new File([blob], nome, {type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({ files:[file], title:nome });
+      return;
+    }
+  }catch(e){ if(e && e.name === 'AbortError') return; }
+  downloadBlob(blob, nome);
 }
+
+/* ============================================================
+   CONFIGURAÇÕES · BACKUP · EXEMPLO
+   ============================================================ */
+function sheetConfig(){
+  const S = db.settings;
+  const sh = openSheet('Configurações', `
+    <div class="form">
+      <div class="fld"><label>Nome do criatório *</label><input id="sNome" value="${esc(S.nome)}" placeholder="Sítio Boa Esperança"></div>
+      <div class="frow">
+        <div class="fld"><label>Responsável</label><input id="sResp" value="${esc(S.responsavel)}" placeholder="Seu nome"></div>
+        <div class="fld"><label>Telefone</label><input id="sTel" inputmode="tel" value="${esc(S.telefone)}" placeholder="(19) 99999-0000"></div>
+      </div>
+      <div class="fld"><label>Cidade / UF</label><input id="sCid" value="${esc(S.cidade)}" placeholder="Mogi Guaçu, SP"></div>
+      <div class="fld"><label>Peso-alvo de abate (kg)</label><input id="sAlvo" type="number" inputmode="decimal" min="0" step="0.1" value="${S.pesoAlvo||3.5}"></div>
+      <button class="btn primary" id="sSal">${ic('check',18)} Salvar dados do criatório</button>
+
+      <div class="sec-t">App</div>
+      <div class="clist">
+        <button id="cInst">${ic('install',19)}<span>Instalar no aparelho<small id="instHint">Crie um atalho na tela inicial</small></span></button>
+      </div>
+      <div class="sec-t">Dados (ficam salvos neste aparelho)</div>
+      <div class="clist">
+        <button id="cExp">${ic('download',19)}<span>Exportar backup (.json)<small>Guarde uma cópia de segurança</small></span></button>
+        <button id="cImp">${ic('db',19)}<span>Importar backup<small>Restaurar de um arquivo .json</small></span></button>
+        <button id="cExe">${ic('sparkle',19)}<span>Carregar dados de exemplo<small>Para conhecer o app com dados fictícios</small></span></button>
+        <button id="cDel" class="red">${ic('trash',19)}<span>Apagar todos os dados<small>Remove coelhos, manejo, abates e vendas</small></span></button>
+      </div>
+      <input type="file" id="cFile" accept=".json,application/json" style="display:none">
+    </div>`);
+  sh.querySelector('#sSal').onclick = () => {
+    const nome = sh.querySelector('#sNome').value.trim();
+    if(!nome) return toast('Dê um nome ao criatório','x',true);
+    Object.assign(S, { configurado:true, nome, responsavel:sh.querySelector('#sResp').value.trim(),
+      telefone:sh.querySelector('#sTel').value.trim(), cidade:sh.querySelector('#sCid').value.trim(),
+      pesoAlvo:parseFloat(sh.querySelector('#sAlvo').value)||3.5 });
+    save(); sh.close(); toast('Criatório atualizado'); render();
+  };
+  sh.querySelector('#cExp').onclick = () => {
+    downloadBlob(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),
+      'lepus-backup-' + isoHoje() + '.json');
+    toast('Backup exportado');
+  };
+  sh.querySelector('#cImp').onclick = () => sh.querySelector('#cFile').click();
+  sh.querySelector('#cFile').onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try{
+        const d = JSON.parse(rd.result);
+        if(!d || !Array.isArray(d.coelhos) || !Array.isArray(d.vendas)) throw 0;
+        db = normalizaDb(d); save(); sh.close(); toast('Backup restaurado'); render();
+      }catch(err){ toast('Arquivo de backup inválido','x',true); }
+    };
+    rd.readAsText(f);
+  };
+  sh.querySelector('#cExe').onclick = () => confirmSheet('Dados de exemplo',
+    'Serão adicionados coelhos, ninhadas, aplicações, rações, abates e vendas fictícios aos seus dados atuais.', 'Carregar', () => {
+      seedExample(); sh.close(); toast('Exemplos carregados'); render();
+    });
+  sh.querySelector('#cDel').onclick = () => confirmSheet('Apagar tudo',
+    'Todos os registros deste aparelho serão perdidos. Exporte um backup antes se quiser guardar.', 'Apagar tudo', () => {
+      localStorage.removeItem(LS); db = dbPadrao(); save(); sh.close(); toast('Dados apagados'); render(); sheetBoasVindas();
+    });
+  const hint = sh.querySelector('#instHint');
+  if(window._installEvt) hint.textContent = 'Toque para adicionar à tela inicial';
+  else if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone)
+    hint.textContent = 'No iPhone: botão Compartilhar → “Adicionar à Tela de Início”';
+  else hint.textContent = 'Use o menu do navegador → “Instalar app” / “Adicionar à tela inicial”';
+  sh.querySelector('#cInst').onclick = tentarInstalar;
+}
+
+function sheetBoasVindas(){
+  const sh = openSheet('Bem-vindo ao Lepus', `
+    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, manejo sanitário e alimentar, abates, vendas e recibos em PDF. Comece contando quem é o seu criatório.</p>
+    <div class="form" style="margin-top:12px">
+      <div class="fld"><label>Nome do criatório *</label><input id="wNome" placeholder="Sítio Boa Esperança"></div>
+      <div class="frow">
+        <div class="fld"><label>Responsável</label><input id="wResp" placeholder="Seu nome"></div>
+        <div class="fld"><label>Telefone</label><input id="wTel" inputmode="tel" placeholder="(19) 99999-0000"></div>
+      </div>
+      <div class="fld"><label>Cidade / UF</label><input id="wCid" placeholder="Mogi Guaçu, SP"></div>
+      <button class="btn primary" id="wSal">${ic('check',18)} Começar</button>
+      <p class="hint" style="text-align:center">Depois você ajusta tudo em Configurações.</p>
+    </div>`, {cls:'mini'});
+  sh.querySelector('#wSal').onclick = () => {
+    const nome = sh.querySelector('#wNome').value.trim();
+    if(!nome) return toast('Dê um nome ao criatório','x',true);
+    Object.assign(db.settings, { configurado:true, nome, responsavel:sh.querySelector('#wResp').value.trim(),
+      telefone:sh.querySelector('#wTel').value.trim(), cidade:sh.querySelector('#wCid').value.trim() });
+    save(); sh.close(); toast('Pronto! Bem-vindo à criação'); render();
+  };
+}
+
+function seedExample(){
+  const C = (brinco,nome,sexo,status,raca,nasc,peso,dPeso) => ({ id:uid(), brinco, nome, sexo, status, raca,
+    nascimento:diasAtras(nasc), peso, pesos: dPeso ? [{d:diasAtras(dPeso), kg:peso}] : [], obs:'' });
+  const novos = [
+    C('M-01','Aurora','F','matriz','Nova Zelândia Branca',760,4.6,4),
+    C('M-02','Bruma','F','matriz','Californiano',610,4.2,6),
+    C('R-01','Titan','M','reprodutor','Nova Zelândia Branca',690,5.1,6),
+    C('E-101','', 'F','engorda','Nova Zelândia',68,2.2,3),
+    C('E-102','', 'M','engorda','Nova Zelândia',72,2.6,3),
+    C('E-103','', 'F','engorda','Californiano',75,3.0,2),
+    C('E-104','', 'M','engorda','Mestiço',80,3.4,2),
+    C('E-105','', 'M','engorda','Californiano',84,3.7,1),
+    C('V-01','', 'F','vendido','Nova Zelândia',150,3.9,10),
+    C('A-01','', 'M','abatido','Mestiço',130,3.8,10)
+  ];
+  db.coelhos.push(...novos);
+  db.ninhadas.push({ id:uid(), matrizId:novos[0].id, padraoId:novos[2].id, nascimento:diasAtras(28),
+    nascidos:9, vivos:8, obs:'Ninho bem formado, sem perdas.', desmame:null });
+  db.abates.push(
+    { id:uid(), tipo:'individual', coelhoId:novos[9].id, data:diasAtras(18), vivo:3.8, carcaca:2.05, destino:'Venda', obs:'Jejum de 12h.' },
+    { id:uid(), tipo:'lote', qtd:4, data:diasAtras(46), vivo:14.6, carcaca:7.8, destino:'Consumo próprio', obs:'' }
+  );
+  db.sanidade.push(
+    { id:uid(), data:diasAtras(3),  med:'Enrofloxacina 10%', via:'Injetável', dose:'0,15 mL/kg por 4 dias',
+      carenciaDias:14, alvoTipo:'individual', coelhoId:novos[4].id, obs:'Coriza — aplicar no mesmo horário todos os dias.' },
+    { id:uid(), data:diasAtras(40), med:'Albendazol 10%',    via:'Oral',      dose:'1 mL/5 kg',
+      carenciaDias:14, alvoTipo:'grupo', grupo:'ativos', obs:'Vermifugação de rotina.' },
+    { id:uid(), data:diasAtras(6),  med:'Complexo B',        via:'Injetável', dose:'0,8 mL/animal',
+      carenciaDias:0, alvoTipo:'grupo', grupo:'matriz', obs:'' }
+  );
+  db.alimentacao.push(
+    { id:uid(), data:diasAtras(2),  racao:'Crescimento / Engorda', kg:12, custoKg:3.4, alvoTipo:'grupo', grupo:'engorda', obs:'' },
+    { id:uid(), data:diasAtras(5),  racao:'Lactação',              kg:4,  custoKg:3.9, alvoTipo:'individual', coelhoId:novos[0].id, obs:'Matriz Aurora com ninhada.' },
+    { id:uid(), data:diasAtras(12), racao:'Feno de tifton',        kg:2,  custoKg:6.0, alvoTipo:'grupo', grupo:'ativos', obs:'' }
+  );
+  const venda = (n, dAtras, cliente, itens, desc, pag) =>
+    ({ id:uid(), num:n, data:diasAtras(dAtras), cliente, itens, desconto:desc, pagamento:pag, obs:'', criadoEm:new Date().toISOString() });
+  db.vendas.push(
+    venda(1, 130, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:12,un:'kg',preco:24}], 0, 'A prazo'),
+    venda(2, 96, 'Mercearia Dona Lurdes', [{desc:'Coelho vivo — Nova Zelândia',qtd:2,un:'un',preco:120}], 0, 'Dinheiro'),
+    venda(3, 62, 'Restaurante Sabor do Campo', [{desc:'Carcaça fresca',qtd:8,un:'kg',preco:26}], 10, 'Pix'),
+    venda(4, 31, 'Zé dos Ovos', [{desc:'Reprodutor — Californiano',qtd:1,un:'un',preco:180,
+      animal:{ brinco:'V-01', raca:'Californiano', sexo:'F', nascimento:diasAtras(150), idadeTxt:'4 a 11 m', peso:3.9,
+        sanidade:[ {med:'Albendazol 10%', data:diasAtras(45), carenciaDias:14},
+                   {med:'Vitamina A·D·E', data:diasAtras(38), carenciaDias:0} ] }}], 0, 'Pix'),
+    venda(5, 9, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:15,un:'kg',preco:25}], 0, 'A prazo')
+  );
+  save();
+}
+
+/* ============================================================
+   PWA — ícone de fallback + service worker
+   ============================================================ */
+function makeIcon(S, maskable){
+  const c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d');
+  x.fillStyle = '#1E3A26'; x.fillRect(0,0,S,S);
+  const k = maskable ? 0.68 : 0.92;
+  x.save();
+  x.translate(S/2, S/2); x.scale(k, k); x.translate(-256, -285);
+  x.fillStyle = '#F4EFE4';
+  const ear = (cx, rot) => { x.save(); x.translate(cx, 205); x.rotate(rot);
+    x.beginPath(); x.ellipse(0,0,54,112,0,0,7); x.fill(); x.restore(); };
+  ear(210, -0.24); ear(302, 0.24);
+  x.beginPath(); x.ellipse(256, 356, 130, 120, 0, 0, 7); x.fill();
+  x.fillStyle = '#1E3A26';
+  [[210,338],[302,338]].forEach(([ex,ey]) => { x.beginPath(); x.ellipse(ex, ey, 11, 14, 0, 0, 7); x.fill(); });
+  x.fillStyle = '#D96E30';
+  x.beginPath(); x.moveTo(256, 392); x.lineTo(243, 374); x.lineTo(269, 374); x.closePath(); x.fill();
+  x.restore();
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  /* Fallback: sem os PNGs físicos (arquivo aberto direto, sem servidor),
+     gera ícone e manifest embutidos em runtime. */
+  const gerarFallback = () => {
+    try{
+      document.querySelectorAll('link[rel=manifest]').forEach(l => l.remove());
+      const t = document.createElement('link');
+      t.rel = 'apple-touch-icon'; t.href = makeIcon(180);
+      document.head.appendChild(t);
+      const man = { name:'Lepus — Cunicultura', short_name:'Lepus',
+        description:'Criação, manejo, abates e vendas para cunicultores. Funciona offline.',
+        start_url:'.', display:'standalone', background_color:'#F4EFE4', theme_color:'#1E3A26',
+        icons:[ {src:makeIcon(192), sizes:'192x192', type:'image/png', purpose:'any'},
+                {src:makeIcon(512), sizes:'512x512', type:'image/png', purpose:'any'},
+                {src:makeIcon(512, true), sizes:'512x512', type:'image/png', purpose:'maskable'} ] };
+      const l = document.createElement('link');
+      l.rel = 'manifest';
+      l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(man));
+      document.head.appendChild(l);
+    }catch(e){}
+  };
+  fetch('icon-192.png', {method:'HEAD'})
+    .then(r => { if(!r.ok) gerarFallback(); })
+    .catch(gerarFallback);
+  /* Service worker: só funciona servido por http/https */
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); window._installEvt = e; renderHeader();
+  });
+  window.addEventListener('appinstalled', () => {
+    window._installEvt = null; toast('Lepus instalado no aparelho'); renderHeader();
+  });
+}
+function tentarInstalar(){
+  if(window._installEvt){
+    window._installEvt.prompt();
+    window._installEvt.userChoice.finally(() => { window._installEvt = null; renderHeader(); });
+  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+    toast('No iPhone: Compartilhar → Adicionar à Tela de Início','share');
+  } else {
+    toast('Use o menu do navegador → Instalar app','install');
+  }
+}
+
+/* ---------- Início ---------- */
+setupPWA();
+render();
+if(!db.settings.configurado) sheetBoasVindas();
 </script>
 </body>
 </html>
