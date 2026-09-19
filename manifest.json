@@ -1,22 +1,19 @@
 {
-  "name": "CuniCoelho 2.0",
-  "short_name": "CuniCoelho",
-  "description": "Gestão de coelhos 100% offline: plantel, lotes, ração, partos e vendas.",
-  "id": "cunicoelho-2",
+  "name": "Lepus — Cunicultura",
+  "short_name": "Lepus",
+  "description": "Criação, manejo sanitário e alimentar, abates e vendas para cunicultores. Funciona offline.",
   "lang": "pt-BR",
   "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#06152B",
-  "theme_color": "#0A1931",
-  "categories": ["productivity", "utilities"],
+  "background_color": "#F4EFE4",
+  "theme_color": "#1E3A26",
+  "categories": ["productivity", "business"],
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
