@@ -19,9 +19,12 @@
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
 <title>Lepus — Cunicultura</title>
+<!-- Fontes carregadas SEM bloquear a abertura offline -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap"></noscript>
 <style>
 :root{
   --bg:#F4EFE4; --paper:#FFFDF6; --ink:#22301E; --muted:#6E7A63;
@@ -33,7 +36,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:'Outfit','Segoe UI',sans-serif; background:var(--deep); color:var(--ink);
+  font-family:'Outfit',system-ui,'Segoe UI',Roboto,sans-serif; background:var(--deep); color:var(--ink);
   font-size:15px; line-height:1.45;
 }
 body::before{
@@ -47,7 +50,7 @@ body::before{
 }
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input,select,textarea{font:inherit;color:var(--ink)}
-h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+h1,h2,h3,.serif{font-family:'Fraunces',Georgia,'Times New Roman',serif}
 svg{display:block}
 
 header#hdr{
@@ -325,6 +328,12 @@ table.r-items td{padding:6px 2px; border-bottom:1px dashed var(--line); vertical
 .clist button svg{color:var(--green); flex:none}
 .clist button small{display:block; font-weight:400; font-size:11.5px; color:var(--muted)}
 .clist .red, .clist .red svg{color:var(--bad)}
+.stbox{background:var(--paper); border:1px solid var(--line); border-radius:14px; margin-top:10px; padding:6px 15px; font-size:13px}
+.stbox .l{display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px dashed var(--line)}
+.stbox .l:last-child{border-bottom:none}
+.stbox .l span{color:var(--muted)}
+.stbox .l b{text-align:right; font-weight:600}
+.stbox .ok{color:var(--green)} .stbox .warn{color:var(--amber)} .stbox .err{color:var(--bad)}
 
 @media (min-width:700px){
   .sheet{border-radius:22px; bottom:40px; max-height:82dvh}
@@ -442,12 +451,9 @@ function normalizaDb(d){
   const out = Object.assign({}, p, (d && typeof d === 'object') ? d : {});
   out.settings = Object.assign({}, p.settings, (d && d.settings) || {});
   ['coelhos','ninhadas','abates','vendas','sanidade','alimentacao'].forEach(k => { if(!Array.isArray(out[k])) out[k] = []; });
-
-  /* Migração de nomes de raça para a grafia correta em português */
   const renomeia = (de, para) => out.coelhos.forEach(c => { if(c.raca === de) c.raca = para; });
   renomeia('Flanders', 'Gigante de Flandres');
   renomeia('Branco de Vila Récal', 'Branco de Vila Real');
-
   return out;
 }
 let db;
@@ -459,7 +465,6 @@ const ativos = () => db.coelhos.filter(c => !['vendido','abatido','morto'].inclu
 const porId = id => db.coelhos.find(c => c.id === id);
 const proxNum = () => Math.max(0, ...db.vendas.map(v=>v.num||0)) + 1;
 
-/* Carência de medicamento para abate */
 function carenciaCoelho(c){
   const hoje = isoHoje(); let melhor = null;
   db.sanidade.forEach(s => {
@@ -497,7 +502,6 @@ function hopBunny(){
   if(b){ b.classList.add('hop'); setTimeout(()=>b.classList.remove('hop'), 900); }
 }
 
-/* ---------- Toast ---------- */
 function toast(msg, icon='check', err=false){
   const t = document.createElement('div');
   t.className = 'toast' + (err ? ' err' : '');
@@ -506,7 +510,6 @@ function toast(msg, icon='check', err=false){
   setTimeout(()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(), 320); }, 2600);
 }
 
-/* ---------- Sheets ---------- */
 function openSheet(title, bodyHTML, opts={}){
   const ov = document.createElement('div');
   ov.className = 'ov';
@@ -532,7 +535,6 @@ function confirmSheet(titulo, msg, acao, cb){
   sh.querySelector('[data-a=y]').onclick = () => { sh.close(); cb(); };
 }
 
-/* ---------- Cabeçalho / abas / FAB ---------- */
 function renderHeader(){
   let t, s;
   if(state.tab === 'painel'){
@@ -885,7 +887,6 @@ function sheetPeso(id){
   };
 }
 
-/* ---------- Ninhadas ---------- */
 function sheetNinhada(id){
   const n = id ? db.ninhadas.find(x=>x.id===id) : null;
   const femeas = db.coelhos.filter(c=>c.sexo==='F' && c.status==='matriz');
@@ -1440,7 +1441,6 @@ function sheetVenda(pre){
       if(desc && qtd>0) itens.push({ desc, qtd, un:r.querySelector('.i-un').value, preco, coelhoId:r.querySelector('.i-desc').dataset.cid || null });
     });
     if(!itens.length) return toast('Adicione pelo menos um item','x',true);
-    /* Snapshot dos animais ANTES de mudar o status — leva ficha sanitária para o PDF */
     itens.forEach(i => {
       const c = i.coelhoId ? porId(i.coelhoId) : null;
       if(c){
@@ -1514,7 +1514,6 @@ function sheetRecibo(id){
   sh.querySelector('#rShare').onclick = () => { const blob = buildVendaPdf(v); sharePdf(blob, nomeArq); };
   sh.querySelector('.sh-body').insertAdjacentHTML('beforeend',
     `<button class="link" id="rDel" style="display:block;margin:0 auto 6px;background:none;border:none">${ic('trash',14)} Excluir esta venda</button>`);
-  /* Excluir venda NÃO devolve os animais ao plantel — eles permanecem como "Vendido" */
   sh.querySelector('#rDel').onclick = () => confirmSheet('Excluir venda',
     'O recibo será apagado definitivamente. Os animais vendidos permanecem com status “Vendido” e não voltam ao plantel.',
     'Excluir',()=>{
@@ -1742,7 +1741,7 @@ async function sharePdf(blob, nome){
 }
 
 /* ============================================================
-   CONFIGURAÇÕES · BACKUP · EXEMPLO
+   CONFIGURAÇÕES · STATUS OFFLINE · BACKUP · EXEMPLO
    ============================================================ */
 function sheetConfig(){
   const S = db.settings;
@@ -1757,6 +1756,9 @@ function sheetConfig(){
       <div class="fld"><label>Peso-alvo de abate (kg)</label><input id="sAlvo" type="number" inputmode="decimal" min="0" step="0.1" value="${S.pesoAlvo||3.5}"></div>
       <button class="btn primary" id="sSal">${ic('check',18)} Salvar dados do criatório</button>
 
+      <div class="sec-t">Status offline</div>
+      <div class="stbox" id="stBox"><span class="hint">Verificando…</span></div>
+
       <div class="sec-t">App</div>
       <div class="clist">
         <button id="cInst">${ic('install',19)}<span>Instalar no aparelho<small id="instHint">Crie um atalho na tela inicial</small></span></button>
@@ -1770,6 +1772,35 @@ function sheetConfig(){
       </div>
       <input type="file" id="cFile" accept=".json,application/json" style="display:none">
     </div>`);
+
+  /* Diagnóstico do modo offline */
+  (async () => {
+    const box = sh.querySelector('#stBox'); if(!box) return;
+    const L = (k, v, cls) => `<div class="l"><span>${esc(k)}</span><b class="${cls||''}">${esc(v)}</b></div>`;
+    let html = '';
+    if(location.protocol === 'file:'){
+      html = L('Modo', 'Arquivo local', 'ok')
+           + L('Offline', 'Sempre funciona — o app está no aparelho', 'ok');
+    } else if(!location.protocol.startsWith('http')){
+      html = L('Modo', location.protocol, 'warn');
+    } else {
+      let reg = null;
+      if('serviceWorker' in navigator){
+        reg = await navigator.serviceWorker.getRegistration().catch(()=>null);
+      }
+      html += L('Service Worker', reg ? 'Ativo' : 'Não registrado', reg ? 'ok' : 'warn');
+      if(reg){
+        let names = [];
+        try{ names = (await caches.keys()).filter(k => k.startsWith('lepus-')); }catch(e){}
+        html += L('Cache do app', names.length ? 'Salvo ✓ (' + names.join(', ') + ')' : 'Vazio — abra online e recarregue', names.length ? 'ok' : 'err');
+      } else {
+        html += L('Cache do app', 'Depende do Service Worker', 'warn');
+      }
+      html += L('Internet agora', navigator.onLine ? 'Online' : 'Offline', navigator.onLine ? '' : 'warn');
+    }
+    box.innerHTML = html;
+  })();
+
   sh.querySelector('#sSal').onclick = () => {
     const nome = sh.querySelector('#sNome').value.trim();
     if(!nome) return toast('Dê um nome ao criatório','x',true);
@@ -1885,7 +1916,7 @@ function seedExample(){
 }
 
 /* ============================================================
-   PWA — ícone de fallback + service worker
+   PWA — fallback em arquivo local + service worker
    ============================================================ */
 function makeIcon(S, maskable){
   const c = document.createElement('canvas'); c.width = c.height = S;
@@ -1907,9 +1938,9 @@ function makeIcon(S, maskable){
   return c.toDataURL('image/png');
 }
 function setupPWA(){
-  /* Fallback: sem os PNGs físicos (arquivo aberto direto, sem servidor),
-     gera ícone e manifest embutidos em runtime. */
-  const gerarFallback = () => {
+  /* Fallback SOMENTE em arquivo local (file:), onde os PNGs/manifest
+     físicos não existem. Em site hospedado, os arquivos de verdade são usados. */
+  if(location.protocol === 'file:'){
     try{
       document.querySelectorAll('link[rel=manifest]').forEach(l => l.remove());
       const t = document.createElement('link');
@@ -1926,11 +1957,8 @@ function setupPWA(){
       l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(man));
       document.head.appendChild(l);
     }catch(e){}
-  };
-  fetch('icon-192.png', {method:'HEAD'})
-    .then(r => { if(!r.ok) gerarFallback(); })
-    .catch(gerarFallback);
-  /* Service worker: só funciona servido por http/https */
+  }
+  /* Service worker: só existe servido por http/https */
   if('serviceWorker' in navigator && location.protocol.startsWith('http')){
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(()=>{});
