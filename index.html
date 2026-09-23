@@ -55,7 +55,7 @@ main#view{padding:6px 18px calc(170px + var(--sab))}
 @keyframes flick{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(-15deg)}93%{transform:rotate(6deg)}}
 
 .stats,.tira{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:16px;margin-top:14px;padding:13px 4px}
-.tira{margin-bottom:16px}
+.tira{margin-bottom:10px}
 .stat{flex:1;text-align:center;border-left:1px solid var(--line);padding:0 4px;min-width:0}
 .stat:first-child{border-left:none}
 .stat b{font-family:'Fraunces',serif;font-size:19px;font-weight:650;color:var(--deep);display:block;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -93,10 +93,9 @@ section{margin-top:22px}
 .row-side b{font-family:'Fraunces',serif;font-size:16px;font-weight:650;display:block}
 .row-side span{font-size:11px;color:var(--muted)}
 .tcheck{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
-.tcheck.on{background:var(--green-soft);border-color:var(--green-soft);color:var(--green)}
 .tundo{width:34px;height:34px;border-radius:50%;background:#EFE9DA;color:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
 
-.ava{width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:.3px;font-family:'Fraunces',serif}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;font-family:'Fraunces',serif}
 img.ava{object-fit:cover}
 .ava.f{background:var(--carrot-soft);color:#9C4A15}
 .ava.m{background:var(--green-soft);color:var(--green)}
@@ -174,7 +173,7 @@ nav#tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:4
 .frow{display:flex;gap:10px}
 .frow>.fld{flex:1}
 .seg{display:flex;background:#ECE5D2;border-radius:11px;padding:3px}
-.seg button{flex:1;padding:9px 4px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button{flex:1;padding:9px 2px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
 .seg button.on{background:var(--paper);color:var(--deep);box-shadow:0 1px 3px rgba(40,50,30,.12)}
 .btn{min-height:48px;border-radius:13px;padding:12px 18px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;flex:1}
 .btn.primary{background:var(--deep);color:#F4EFE4}
@@ -327,6 +326,7 @@ const P = {
   heart:'<path d="M12 20.5s-7.5-4.7-9.3-9A5.2 5.2 0 0 1 12 6.6a5.2 5.2 0 0 1 9.3 4.9c-1.8 4.3-9.3 9-9.3 9z"/>',
   tarefa:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',
   undo:'<path d="M4 9h10a5 5 0 0 1 0 10h-3"/><path d="M8 5 4 9l4 4"/>',
+  bell:'<path d="M18 9.5a6 6 0 1 0-12 0c0 4.8-1.8 6-1.8 6h15.6s-1.8-1.2-1.8-6z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>',
   install:'<path d="M12 3v12M8 11.2l4 4 4-4"/><rect x="4" y="17.5" width="16" height="3.5" rx="1.5"/>',
   db:'<ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v13c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-13"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>',
   sparkle:'<path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4L4.7 10.8 10.2 9z"/><path d="M18.5 16.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>'
@@ -343,7 +343,6 @@ const bunnySVG = cls => `<svg class="bunny ${cls||''}" viewBox="0 0 96 96" fill=
 
 /* ---------- Predefinidos ---------- */
 const RACAS_BASE = ['Nova Zelândia Branca','Californiano','Branco de Vila Real','Chinchila','Gigante de Flandres','Angorá','Rex','Belo Holandês','Mestiço'];
-const TIPOS_TAREFA = ['Vermifugação','Vacinação','Pesagem','Trocar água','Limpeza de jaula','Corte de unhas','Inspeção de ninho','Outros cuidados'];
 const MEDS = [
   {n:'Sulfaquinoxalina 20%',    via:'Água de bebida',  ind:'Coccidiose',               dose:'0,5–1 mL/L de água, 3–5 dias',        car:10},
   {n:'Amprolium 20%',           via:'Água de bebida',  ind:'Coccidiose',               dose:'1 mL/L de água, 5–7 dias',             car:7},
@@ -371,7 +370,7 @@ const racasTodas = () => RACAS_BASE.concat(db.settings.racasCustom || []);
 
 /* ---------- Banco local (com migração) ---------- */
 const LS = 'lepus_db_v1';
-const dbPadrao = () => ({ settings:{configurado:false, nome:'', responsavel:'', telefone:'', cidade:'', pesoAlvo:3.5, racasCustom:[]},
+const dbPadrao = () => ({ settings:{configurado:false, nome:'', responsavel:'', telefone:'', cidade:'', pesoAlvo:3.5, racasCustom:[], somTarefas:true},
   coelhos:[], ninhadas:[], acasalamentos:[], tarefas:[], abates:[], vendas:[], sanidade:[], alimentacao:[] });
 function normalizaDb(d){
   const p = dbPadrao();
@@ -413,8 +412,224 @@ function carenciaCoelho(c){
   return melhor;
 }
 function alvoDesc(s){
-  if(s.alvoTipo === 'individual'){ const c = porId(s.coelhoId); return c ? 'Coelho '+c.brinco : 'Coelho (removido)'; }
-  return { matriz:'Todas as matrizes', reprodutor:'Reprodutores', engorda:'Engorda (lote)', ativos:'Plantel ativo' }[s.grupo] || '—';
+  if(s.alvoTipo === 'individual'){ const c = porId(s.coelhoId); return c ? 'coelho '+c.brinco : 'coelho (removido)'; }
+  return { matriz:'todas as matrizes', reprodutor:'reprodutores', engorda:'engorda (lote)', ativos:'plantel todo' }[s.grupo] || '—';
+}
+
+/* ============================================================
+   LEMBRETES COM ALARME OFFLINE
+   - APK Capacitor: LocalNotifications (allowWhileIdle) toca com
+     o APP FECHADO — 100% local, sem Firebase.
+   - PWA no navegador: sirene + notificação com o app aberto.
+   Fonte: localStorage["tarefas"]
+   { id, nome, data, hora, repetir, feita, alarmeTocou, notifId, tipo, coelhoId }
+   ============================================================ */
+const TAREFAS_KEY = 'tarefas';
+function tarefasGet(){
+  try{ const a = JSON.parse(localStorage.getItem(TAREFAS_KEY)); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tarefasSet(arr){ try{ localStorage.setItem(TAREFAS_KEY, JSON.stringify(arr)); }catch(e){} }
+
+/* Migra tarefas antigas do db.tarefas (roda no boot e ao importar backup) */
+function migraTarefasDeBackup(){
+  const atuais = tarefasGet();
+  if(!atuais.length && Array.isArray(db.tarefas) && db.tarefas.length){
+    tarefasSet(db.tarefas.map(x => ({
+      id: x.id || uid(), nome: x.titulo || 'Tarefa',
+      data: x.data || isoHoje(), hora: x.hora || null,
+      repetir: 'nao', feita: !!x.concluida, alarmeTocou: false,
+      tipo: x.tipo || 'Outros cuidados', coelhoId: x.coelhoId || null
+    })));
+  }
+  db.tarefas = [];
+}
+
+/* Ponte com o Capacitor — só existe dentro do APK */
+const _Cap = (typeof window !== 'undefined' && window.Capacitor) ? window.Capacitor : null;
+const _LN  = (_Cap && _Cap.isNativePlatform && _Cap.isNativePlatform()) ? _Cap.Plugins.LocalNotifications : null;
+
+const _REPETE_DIAS = { diario:1, semanal:7, '14dias':14 };
+function isoDeData(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function hashId(s){ let h = 0; for(const ch of String(s)) h = (h*31 + ch.charCodeAt(0))|0; return Math.abs(h); }
+function proximaOcorrencia(t){
+  if(!t.data) return null;
+  const [hh,mm] = String(t.hora || '08:00').split(':').map(Number);
+  const dt = new Date(t.data + 'T00:00');
+  dt.setHours(hh||0, mm||0, 0, 0);
+  return dt;
+}
+
+/* Sirene alta dentro do app (WebAudio — offline, sem arquivo) */
+let _audioCtx = null;
+function ensureAudio(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    if(!_audioCtx) _audioCtx = new AC();
+    if(_audioCtx.state === 'suspended') _audioCtx.resume();
+    return _audioCtx;
+  }catch(e){ return null; }
+}
+function beepHz(freq, start, dur){
+  const ctx = _audioCtx;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, start);
+  g.gain.linearRampToValueAtTime(0.95, start + 0.012);
+  g.gain.setValueAtTime(0.95, start + dur - 0.02);
+  g.gain.linearRampToValueAtTime(0.0001, start + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(start); o.stop(start + dur + 0.02);
+}
+function sirene(){
+  if(db.settings.somTarefas === false) return;
+  const ctx = ensureAudio(); if(!ctx || ctx.state !== 'running') return;
+  const t = ctx.currentTime + 0.03;
+  for(let i=0;i<2;i++){
+    const b = t + i*1.15;
+    beepHz(988,  b,        0.16);
+    beepHz(1319, b + 0.20, 0.16);
+    beepHz(988,  b + 0.40, 0.16);
+    beepHz(1319, b + 0.60, 0.30);
+  }
+  try{ navigator.vibrate && navigator.vibrate([250,120,250,120,250,120,400]); }catch(e){}
+}
+
+/* Canal de alarmes no Android (som custom + vibração, importância máxima) */
+async function lnCanal(){
+  if(!_LN) return;
+  try{
+    await _LN.createChannel({
+      id:'lepus-alarmes', name:'Alarmes de tarefas',
+      description:'Lembretes sonoros do criatório',
+      importance:5, sound:'alarm.mp3', vibration:true, visibility:2
+    });
+  }catch(e){}
+}
+
+/* Botão "Tocar alarme agora": permissões + notificação de teste + sirene */
+async function tocarAlarme(){
+  try{
+    if(_LN){
+      const st = await _LN.checkPermissions();
+      if(st.display !== 'granted'){
+        const r = await _LN.requestPermissions();
+        if(r.display !== 'granted') toast('Permissão de notificação negada','x',true);
+      }
+      await lnCanal();
+      await _LN.schedule({ notifications:[{
+        id: 1, title:'Lepus — Alarme de teste',
+        body:'Se isto apareceu, o alarme offline funciona neste aparelho.',
+        schedule:{ at:new Date(Date.now()+1500), allowWhileIdle:true },
+        sound:'alarm.mp3', channelId:'lepus-alarmes'
+      }]});
+    } else if('Notification' in window){
+      let p = Notification.permission;
+      if(p === 'default') p = await Notification.requestPermission();
+      if(p === 'granted'){
+        try{ new Notification('Lepus — Alarme de teste',{ body:'Notificações ativas (com o app aberto).' }); }catch(e){}
+      } else if(p === 'denied'){
+        toast('Permissão de notificação negada','x',true);
+      }
+    }
+  }catch(e){}
+  sirene();
+}
+
+/* Agenda a notificação nativa futura de uma tarefa */
+async function lnAgendar(t){
+  if(!_LN || t.feita) return;
+  if(!t.notifId) t.notifId = hashId(t.id) % 2147483000 + 1;
+  const alvo = proximaOcorrencia(t);
+  if(!alvo || alvo.getTime() <= Date.now()) return;
+  try{
+    await lnCanal();
+    await _LN.schedule({ notifications:[{
+      id: t.notifId,
+      title: 'Lepus — ' + (t.tipo || 'Tarefa'),
+      body: t.nome + (t.hora ? ' · ' + t.hora : ''),
+      schedule: { at: alvo, allowWhileIdle: true },
+      sound: 'alarm.mp3', channelId: 'lepus-alarmes',
+      extra: { tarefaId: t.id }
+    }]});
+    tarefasSet(tarefasGet());
+  }catch(e){}
+}
+async function lnCancelar(t){
+  if(!_LN || !t.notifId) return;
+  try{ await _LN.cancel({ notifications:[{ id:t.notifId }] }); }catch(e){}
+}
+async function lnAgendarTodas(){
+  for(const t of tarefasGet()){ if(!t.feita) await lnAgendar(t); }
+}
+
+/* Ao abrir o app: verifica atrasadas, dispara notificação + sirene, reagenda */
+async function verificarAtrasadas(){
+  const hoje = isoHoje(), agora = new Date();
+  const arr = tarefasGet();
+  let tocou = false;
+  for(const t of arr){
+    if(t.feita || t.alarmeTocou) continue;
+    const alvo = proximaOcorrencia(t);
+    if(!alvo) continue;
+    const vencida = (t.data < hoje) || (t.data === hoje && alvo.getTime() <= agora.getTime());
+    if(!vencida) continue;
+    tocou = true;
+    t.alarmeTocou = true;
+    if(_LN){
+      try{
+        await _LN.schedule({ notifications:[{
+          id: t.notifId || hashId(t.id) % 2147483000 + 1,
+          title: '⚠️ Tarefa atrasada',
+          body: t.nome + ' — está atrasada desde ' + fmtData(t.data) + '!',
+          schedule:{ at:new Date(Date.now()+500), allowWhileIdle:true },
+          sound:'alarm.mp3', channelId:'lepus-alarmes', extra:{ tarefaId:t.id }
+        }]});
+      }catch(e){}
+    } else if('Notification' in window && Notification.permission === 'granted'){
+      try{ new Notification('⚠️ Tarefa atrasada', { body: t.nome + ' — desde ' + fmtData(t.data) }); }catch(e){}
+    }
+  }
+  if(tocou){ tarefasSet(arr); sirene(); }
+  for(const t of arr){ if(!t.feita) lnAgendar(t); }
+}
+
+/* Concluir: se repetir, avança a data e reagenda */
+function concluirTarefa(id){
+  const arr = tarefasGet(); const t = arr.find(x=>x.id===id); if(!t) return;
+  if(t.repetir && t.repetir !== 'nao' && _REPETE_DIAS[t.repetir]){
+    const d = new Date(t.data + 'T00:00');
+    d.setDate(d.getDate() + _REPETE_DIAS[t.repetir]);
+    t.data = isoDeData(d);
+    t.feita = false; t.alarmeTocou = false;
+    lnAgendar(t);
+    toast('Concluída! Reagendada para ' + fmtData(t.data));
+  } else {
+    t.feita = true; lnCancelar(t);
+    toast('Tarefa concluída');
+  }
+  tarefasSet(arr); render();
+}
+function reabrirTarefa(id){
+  const arr = tarefasGet(); const t = arr.find(x=>x.id===id); if(!t) return;
+  t.feita = false; t.alarmeTocou = false;
+  tarefasSet(arr); lnAgendar(t); render();
+}
+function excluirTarefa(id){
+  const arr = tarefasGet(); const t = arr.find(x=>x.id===id);
+  if(t){ lnCancelar(t); tarefasSet(arr.filter(x=>x.id!==id)); }
+  toast('Tarefa excluída'); render();
+}
+
+/* Notificação nativa tocada → marca e leva para a aba de tarefas */
+if(_LN){
+  _LN.addListener('localNotificationActionPerformed', ({ notification }) => {
+    const tid = notification && notification.data && notification.data.tarefaId;
+    const arr = tarefasGet(); const t = arr.find(x=>x.id===tid);
+    if(t){ t.alarmeTocou = true; tarefasSet(arr); }
+    state.tab = 'manejo'; state.msub = 'tarefas'; render();
+  });
 }
 
 /* ---------- Estado ---------- */
@@ -463,6 +678,7 @@ function confirmSheet(titulo, msg, acao, cb){
   sh.querySelector('[data-a=y]').onclick = () => { sh.close(); cb(); };
 }
 
+/* ---------- Cabeçalho / abas / FAB ---------- */
 function renderHeader(){
   let t, s;
   if(state.tab === 'painel'){
@@ -471,7 +687,7 @@ function renderHeader(){
   } else if(state.tab === 'coelhos'){
     t = 'Coelhos'; s = ativos().length + ' ativos · ' + db.coelhos.length + ' registros';
   } else if(state.tab === 'manejo'){
-    t = 'Manejo'; s = db.tarefas.filter(t=>!t.concluida).length + ' tarefas pendentes';
+    t = 'Manejo'; s = tarefasGet().filter(x=>!x.feita && x.data<=isoHoje()).length + ' tarefas pendentes';
   } else if(state.tab === 'abates'){
     t = 'Abates'; s = db.abates.length + ' registros';
   } else {
@@ -487,7 +703,7 @@ function renderFab(){
   const fab = $('#fab');
   let label = 'Nova venda';
   if(state.tab === 'coelhos') label = state.sub==='plantel' ? 'Novo coelho' : state.sub==='repro' ? 'Novo acasalamento' : 'Nova ninhada';
-  if(state.tab === 'manejo')  label = state.msub==='sanidade' ? 'Nova aplicação' : state.msub==='alimentacao' ? 'Nova ração' : 'Nova tarefa';
+  if(state.tab === 'manejo')  label = state.msub==='sanidade' ? 'Nova aplicação' : state.msub==='alimentacao' ? 'Registrar ração' : '+ Nova tarefa';
   if(state.tab === 'abates')  label = 'Novo abate';
   fab.innerHTML = ic('plus', 18) + '<span>' + label + '</span>';
   fab.onclick = () => {
@@ -557,7 +773,7 @@ function viewPainel(){
   const ultimas = [...db.vendas].sort((a,b)=> (b.data||'').localeCompare(a.data||'') || (b.num||0)-(a.num||0)).slice(0,3);
   const emCarencia = at.filter(c => carenciaCoelho(c));
   const aNascer = db.acasalamentos.filter(g => ['acasalada','prenhe'].includes(g.status) && g.prevista && g.prevista <= addDias(hoje,3)).sort((a,b)=>a.prevista.localeCompare(b.prevista));
-  const tPend = db.tarefas.filter(t => !t.concluida && (t.data||'') <= hoje).sort((a,b)=>(a.data||'').localeCompare(b.data||''));
+  const tPend = tarefasGet().filter(t => !t.feita && (t.data||'') <= hoje).sort((a,b)=>(a.data||'').localeCompare(b.data||''));
 
   const filaHTML = fila.length ? fila.map(c => {
     const pct = Math.min(100, Math.round(c.peso/alvo*100));
@@ -581,14 +797,15 @@ function viewPainel(){
   const agendaHTML = (aNascer.length || tPend.length) ? `
     <section>
       <div class="sec-h"><h2>Agenda de hoje</h2></div>
+      ${tPend.map(t => `<div class="trow ${t.data<hoje?'atras':t.data===hoje?'hoje2':''}" data-tid="${t.id}">
+        <div class="row-ico">${ic('bell',17)}</div>
+        <div class="row-main"><b>${esc(t.nome)}</b>
+          <span>${fmtData(t.data)}${t.hora?' · '+esc(t.hora):''}</span></div>
+        <span class="st ${t.data<hoje?'falhou':'acasalada'}">${t.data<hoje?'atrasada':'hoje'}</span></div>`).join('')}
       ${aNascer.map(g => `<button class="gest-row" data-id="${g.id}"><div class="row-ico">${ic('eggs',18)}</div>
         <div class="row-main"><b>${esc(nomeCoelho(g.matrizId))} × ${esc(nomeCoelho(g.padraoId))}</b>
         <span>Parto previsto para ${fmtData(g.prevista)}</span></div>
         <span class="st ${g.prevista<=hoje?'falhou':'acasalada'}">${g.prevista<=hoje?'nasceu?':'a nascer'}</span></button>`).join('')}
-      ${tPend.length ? `<div class="row" id="agendaTarefas"><div class="row-ico">${ic('tarefa',18)}</div>
-        <div class="row-main"><b>${tPend.length} tarefa${tPend.length>1?'s':''} pendente${tPend.length>1?'s':''}</b>
-        <span>Próxima: ${esc(tPend[0].titulo)} · ${fmtData(tPend[0].data)}</span></div>
-        <span class="st ${tPend[0].data<hoje?'falhou':'acasalada'}">${tPend[0].data<hoje?'atrasada':'hoje'}</span></div>` : ''}
     </section>` : '';
 
   $('#view').innerHTML = `
@@ -621,10 +838,10 @@ function viewPainel(){
     </section>`;
   $('#verVendas').onclick = () => { state.tab='vendas'; render(); };
   const al = $('#alertaCar'); if(al) al.onclick = () => { state.tab='manejo'; state.msub='sanidade'; render(); };
-  const ag = $('#agendaTarefas'); if(ag) ag.onclick = () => { state.tab='manejo'; state.msub='tarefas'; render(); };
   $$('#view .fila-row').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.id));
   $$('#view .gest-row').forEach(r => r.onclick = () => sheetGestDet(r.dataset.id));
   $$('#view .row').forEach(r => r.onclick = () => sheetRecibo(r.dataset.id));
+  $$('#view [data-tid]').forEach(r => r.onclick = () => { state.tab='manejo'; state.msub='tarefas'; render(); });
 }
 
 /* ============================================================
@@ -711,11 +928,11 @@ function renderSub(){
     bindLista();
   } else if(state.sub === 'repro'){
     const hoje = isoHoje();
-    const ativas = db.acasalamentos.filter(g=>['acasalada','prenhe'].includes(g.status));
-    const breve = ativas.filter(g=>g.prevista && g.prevista <= addDias(hoje,3));
+    const ativasG = db.acasalamentos.filter(g=>['acasalada','prenhe'].includes(g.status));
+    const breve = ativasG.filter(g=>g.prevista && g.prevista <= addDias(hoje,3));
     area.innerHTML = `
       <div class="tira">
-        <div class="stat"><b>${ativas.length}</b><span>Em gestação</span></div>
+        <div class="stat"><b>${ativasG.length}</b><span>Em gestação</span></div>
         <div class="stat"><b>${breve.length}</b><span>A nascer</span></div>
         <div class="stat"><b>${db.acasalamentos.filter(g=>g.status==='nascida').length}</b><span>Nascidas</span></div>
       </div>
@@ -896,7 +1113,7 @@ function sheetDetalhe(id){
       db.ninhadas = db.ninhadas.filter(n => n.matrizId!==id && n.padraoId!==id);
       db.acasalamentos = db.acasalamentos.filter(g => g.matrizId!==id && g.padraoId!==id);
       db.sanidade = db.sanidade.filter(s => s.coelhoId!==id);
-      db.tarefas = db.tarefas.filter(t => t.coelhoId!==id);
+      tarefasSet(tarefasGet().filter(t => t.coelhoId!==id));
       save(); toast('Registro excluído'); render();
     });
 }
@@ -1123,6 +1340,7 @@ function renderMsub(){
       }).join('') : `<div class="empty">${ic('syringe',32)}<b>Nenhuma aplicação registrada</b><p>Vermifugações, antibióticos e vitaminas ficam anotados aqui, com o período de carência.</p></div>`}</div>`;
     $$('#carens .carenc-row').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.cid));
     $$('#lista .row').forEach(r => r.onclick = () => sheetSanidadeDet(r.dataset.id));
+
   } else if(state.msub === 'alimentacao'){
     const mesKey = isoHoje().slice(0,7);
     const doMes = db.alimentacao.filter(a => (a.data||'').slice(0,7) === mesKey);
@@ -1133,104 +1351,135 @@ function renderMsub(){
     const medio = kgCusto>0 ? custoMes/kgCusto : 0;
     const lista = [...db.alimentacao].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
     area.innerHTML = `
+      <p class="hint" style="margin:2px 2px 0;line-height:1.5">Como funciona: toque num atalho abaixo (ou em “Registrar ração”), informe <b>qual ração</b>, <b>quantos kg</b> e <b>para quem</b> você deu. O app soma o gasto do mês sozinho.</p>
       <div class="tira">
-        <div class="stat"><b>${fmtNum(kgMes)}</b><span>Kg no mês</span></div>
-        <div class="stat"><b>${custoMes?fmtMoeda(custoMes):'—'}</b><span>Custo no mês</span></div>
+        <div class="stat"><b>${fmtNum(kgMes)} kg</b><span>Dados no mês</span></div>
+        <div class="stat"><b>${custoMes?fmtMoeda(custoMes):'—'}</b><span>Gasto no mês</span></div>
         <div class="stat"><b>${medio?fmtMoeda(medio):'—'}</b><span>Média R$/kg</span></div>
       </div>
-      <div class="sec-t" style="margin-top:0">Fornecimentos</div>
-      <div id="lista">${lista.length ? lista.map(a =>
-        `<div class="row" data-id="${a.id}"><div class="row-ico">${ic('balde',19)}</div>
-          <div class="row-main"><b>${esc(a.racao)}</b>
-            <span>${fmtData(a.data)} · ${esc(alvoDesc(a))}</span></div>
-          <div class="row-side"><b>${fmtNum(a.kg)} kg</b><span>${Number(a.custoKg)>0?fmtMoeda(a.kg*a.custoKg):''}</span></div>
-        </div>`).join('') : `<div class="empty">${ic('balde',32)}<b>Nenhum fornecimento registrado</b><p>Anote a ração de cada fase e o custo para acompanhar o gasto do mês.</p></div>`}</div>`;
+      <div class="sec-t" style="margin-top:0">Dar ração para…</div>
+      <div class="chips" style="margin-bottom:14px">
+        <button class="chip" data-g="engorda">Engorda (lote)</button>
+        <button class="chip" data-g="matriz">Matrizes</button>
+        <button class="chip" data-g="reprodutor">Reprodutores</button>
+        <button class="chip" data-g="ativos">Plantel todo</button>
+      </div>
+      <div class="sec-t">Rações dadas</div>
+      <div id="lista">${lista.length ? lista.map(a => {
+        const custo = Number(a.custoKg)>0;
+        return `<div class="row" data-id="${a.id}"><div class="row-ico">${ic('balde',19)}</div>
+          <div class="row-main"><b>${esc(a.racao)} · ${fmtNum(a.kg)} kg</b>
+            <span>${fmtData(a.data)} · para ${esc(alvoDesc(a))}</span></div>
+          <div class="row-side">${custo
+            ? `<b>${fmtMoeda(a.kg*a.custoKg)}</b><span>${fmtMoeda(a.custoKg)}/kg</span>`
+            : `<b>—</b><span>sem custo</span>`}</div>
+        </div>`;
+      }).join('') : `<div class="empty">${ic('balde',32)}<b>Nada registrado ainda</b><p>Use os atalhos “Dar ração para…” acima — abre o formulário já preenchido com a data de hoje.</p></div>`}</div>`;
+    $$('#msubArea .chip[data-g]').forEach(ch => ch.onclick = () => sheetAlimentacao({grupo: ch.dataset.g}));
     $$('#lista .row').forEach(r => r.onclick = () => sheetAlimentacaoDet(r.dataset.id));
+
   } else {
+    /* ---- Tarefas: ATRASADAS / PARA HOJE / PENDENTES ---- */
     const hoje = isoHoje();
-    const pend = db.tarefas.filter(t=>!t.concluida).sort((a,b)=>(a.data||'').localeCompare(b.data||''));
-    const atras = pend.filter(t=>(t.data||'')<hoje).length;
-    const hojeN = pend.filter(t=>t.data===hoje).length;
-    const conc = db.tarefas.filter(t=>t.concluida).sort((a,b)=>(b.dataConclusao||'').localeCompare(a.dataConclusao||'')).slice(0,8);
-    const tipoRow = t => `<div class="trow ${t.data<hoje?'atras':t.data===hoje?'hoje2':''}" data-id="${t.id}">
+    const arr = tarefasGet();
+    const atras = arr.filter(t=>!t.feita && t.data < hoje);
+    const hojeN = arr.filter(t=>!t.feita && t.data === hoje);
+    const futuras = arr.filter(t=>!t.feita && t.data > hoje);
+    const conc = arr.filter(t=>t.feita).slice(-8).reverse();
+    const REP_L = { diario:'repete todo dia', semanal:'repete toda semana', '14dias':'repete a cada 14 dias' };
+    const row = t => `<div class="trow ${t.data<hoje?'atras':t.data===hoje?'hoje2':''}" data-id="${t.id}">
       <button class="tcheck" data-tk="${t.id}" aria-label="Concluir">${ic('check',17)}</button>
-      <div class="row-main"><b>${esc(t.titulo)}</b>
-        <span>${esc(t.tipo)} · ${fmtData(t.data)}${t.coelhoId?' · '+esc(nomeCoelho(t.coelhoId)):''}</span></div>
-      <span class="st ${t.data<hoje?'falhou':t.data===hoje?'acasalada':'prenhe'}">${t.data<hoje?'atrasada':t.data===hoje?'hoje':'futura'}</span>
+      <div class="row-main"><b>${esc(t.nome)}</b>
+        <span>${esc(t.tipo||'Tarefa')} · ${fmtData(t.data)}${t.hora?' · '+esc(t.hora):''}${t.repetir&&t.repetir!=='nao'?' · '+REP_L[t.repetir]:''}</span></div>
+      <span class="st ${t.data<hoje?'falhou':t.data===hoje?'acasalada':'prenhe'}">${t.data<hoje?'atrasada':t.data===hoje?'hoje':'agenda'}</span>
     </div>`;
     area.innerHTML = `
       <div class="tira">
-        <div class="stat"><b>${atras}</b><span>Atrasadas</span></div>
-        <div class="stat"><b>${hojeN}</b><span>Para hoje</span></div>
-        <div class="stat"><b>${pend.length}</b><span>Pendentes</span></div>
+        <div class="stat"><b>${atras.length}</b><span>Atrasadas</span></div>
+        <div class="stat"><b>${hojeN.length}</b><span>Para hoje</span></div>
+        <div class="stat"><b>${futuras.length}</b><span>Pendentes</span></div>
       </div>
-      <div id="lista">${pend.length ? pend.map(tipoRow).join('') : `<div class="empty">${ic('tarefa',32)}<b>Tudo em ordem</b><p>Nenhuma tarefa pendente. Toque em “Nova tarefa” para agendar.</p></div>`}</div>
-      ${conc.length ? `<div class="sec-t">Concluídas recentemente</div><div id="conc">${conc.map(t =>
-        `<div class="trow" data-id="${t.id}" style="opacity:.7">
+      <div style="display:flex;justify-content:flex-end;margin:-2px 2px 12px">
+        <button class="link" id="btnAlarme">${ic('bell',15)} Tocar alarme agora</button>
+      </div>
+      ${atras.length ? `<div class="sec-t" style="margin-top:0">Atrasadas</div>${atras.map(row).join('')}` : ''}
+      ${hojeN.length ? `<div class="sec-t" style="margin-top:0">Para hoje</div>${hojeN.map(row).join('')}` : ''}
+      <div id="lista">${futuras.length ? `<div class="sec-t" style="margin-top:0">Agendadas</div>${futuras.map(row).join('')}`
+        : (atras.length||hojeN.length) ? '' : `<div class="empty">${ic('tarefa',32)}<b>Tudo em ordem</b><p>Nenhuma tarefa pendente.</p></div>`}</div>
+      ${conc.length ? `<div class="sec-t">Concluídas</div>${conc.map(t =>
+        `<div class="trow" style="opacity:.7">
           <span class="tundo" data-ud="${t.id}" role="button" aria-label="Reabrir">${ic('undo',16)}</span>
-          <div class="row-main"><b style="text-decoration:line-through">${esc(t.titulo)}</b>
-            <span>${esc(t.tipo)} · concluída em ${fmtData(t.dataConclusao||t.data)}</span></div>
-        </div>`).join('')}</div>` : ''}`;
-    $$('#lista .tcheck, #conc .tcheck').forEach(b => b.onclick = e => { e.stopPropagation(); toggleTarefa(b.dataset.tk); });
-    $$('#conc .tundo').forEach(b => b.onclick = e => { e.stopPropagation(); toggleTarefa(b.dataset.ud); });
-    $$('#lista .trow, #conc .trow').forEach(r => r.onclick = () => {
-      const t = db.tarefas.find(x=>x.id===r.dataset.id);
-      if(t && !t.concluida){ t.concluida = true; t.dataConclusao = isoHoje(); save(); toast('Tarefa concluída'); render(); }
-    });
+          <div class="row-main"><b style="text-decoration:line-through">${esc(t.nome)}</b>
+            <span>${esc(t.tipo||'Tarefa')} · ${fmtData(t.data)}</span></div>
+          <button class="tundo" data-ex="${t.id}" aria-label="Excluir">${ic('trash',15)}</button>
+        </div>`).join('')}` : ''}`;
+    $$('#msubArea [data-tk]').forEach(b => b.onclick = e => { e.stopPropagation(); concluirTarefa(b.dataset.tk); });
+    $$('#msubArea [data-ud]').forEach(b => b.onclick = e => { e.stopPropagation(); reabrirTarefa(b.dataset.ud); });
+    $$('#msubArea [data-ex]').forEach(b => b.onclick = e => { e.stopPropagation(); excluirTarefa(b.dataset.ex); });
+    const btnAl = $('#btnAlarme');
+    if(btnAl) btnAl.onclick = e => { e.stopPropagation(); tocarAlarme(); toast('Alarme de teste'); };
+    verificarAtrasadas(); /* re-checa ao entrar na aba */
   }
 }
 
-function toggleTarefa(id){
-  const t = db.tarefas.find(x=>x.id===id); if(!t) return;
-  t.concluida = !t.concluida;
-  t.dataConclusao = t.concluida ? isoHoje() : null;
-  save(); toast(t.concluida ? 'Tarefa concluída' : 'Tarefa reaberta'); render();
-}
-
+/* ---------- Nova tarefa: data + hora + repetição ---------- */
 function sheetTarefa(){
-  const usados = [...new Set(db.tarefas.map(t=>t.tipo))].filter(x => !TIPOS_TAREFA.includes(x));
   const sh = openSheet('Nova tarefa', `
     <div class="form">
-      <div class="fld"><label>Tipo *</label>
-        <select id="tTipo">${[...TIPOS_TAREFA, ...usados].map(t=>`<option>${esc(t)}</option>`).join('')}<option value="__out">Outro…</option></select></div>
-      <div class="fld" id="tOutWrap" style="display:none"><label>Qual tipo?</label><input id="tOut" placeholder="Ex.: Aplicar pomada ocular"></div>
-      <div class="fld"><label>Tarefa *</label><input id="tTitulo" placeholder="Ex.: Vermifugar matrizes"></div>
+      <div class="fld"><label>O que fazer? *</label><input id="tNome" placeholder="Ex.: Dar remédio"></div>
       <div class="frow">
         <div class="fld"><label>Data *</label><input id="tData" type="date" value="${isoHoje()}"></div>
-        <div class="fld"><label>Coelho (opcional)</label><select id="tCoelho"><option value="">—</option>${ativos().map(c =>
-          `<option value="${c.id}">${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>
+        <div class="fld"><label>Hora do alarme *</label><input id="tHora" type="time" value="08:00"></div>
       </div>
-      <button class="btn primary" id="tSal">${ic('check',18)} Agendar tarefa</button>
+      <div class="fld"><label>Repetir</label><div class="seg" id="tRep">
+        <button data-v="nao" class="on">Não repete</button>
+        <button data-v="diario">Diário</button>
+        <button data-v="semanal">Semanal</button>
+        <button data-v="14dias">14 dias</button>
+      </div></div>
+      <div class="fld"><label>Coelho (opcional)</label><select id="tCoelho"><option value="">—</option>${ativos().map(c =>
+        `<option value="${c.id}">${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>
+      <button class="btn primary" id="tSal">${ic('check',18)} Agendar com alarme</button>
+      <p class="hint" style="text-align:center">No app instalado (APK), o alarme toca na data/hora mesmo com o aplicativo fechado.</p>
     </div>`);
-  const sel = sh.querySelector('#tTipo');
-  sel.onchange = () => {
-    sh.querySelector('#tOutWrap').style.display = sel.value==='__out' ? '' : 'none';
-    if(sel.value !== '__out' && !sh.querySelector('#tTitulo').value.trim()) sh.querySelector('#tTitulo').value = sel.value;
-  };
+  sh.querySelectorAll('#tRep button').forEach(b => b.onclick = () => {
+    sh.querySelectorAll('#tRep button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  });
   sh.querySelector('#tSal').onclick = () => {
-    const tipo = sel.value==='__out' ? sh.querySelector('#tOut').value.trim() : sel.value;
-    const titulo = sh.querySelector('#tTitulo').value.trim();
-    if(!titulo) return toast('Descreva a tarefa','x',true);
-    db.tarefas.push({ id:uid(), tipo: tipo || 'Outros cuidados', titulo,
+    const nome = sh.querySelector('#tNome').value.trim();
+    if(!nome) return toast('Descreva a tarefa','x',true);
+    const id = uid();
+    const t = {
+      id, nome,
       data: sh.querySelector('#tData').value || isoHoje(),
+      hora: sh.querySelector('#tHora').value || '08:00',
+      repetir: sh.querySelector('#tRep .on').dataset.v,
+      feita: false, alarmeTocou: false,
+      tipo: 'Outros cuidados',
       coelhoId: sh.querySelector('#tCoelho').value || null,
-      concluida:false, dataConclusao:null });
-    save(); sh.close(); toast('Tarefa agendada'); render();
+      notifId: hashId(id) % 2147483000 + 1
+    };
+    const arr = tarefasGet(); arr.push(t); tarefasSet(arr);
+    lnAgendar(t);
+    save(); sh.close(); toast('Tarefa agendada — alarme na data/hora'); render();
   };
 }
 
-const selectAlvo = (pre, pfx) => `
-  <div class="fld"><label>Aplicar a</label>
+const selectAlvo = (pre, pfx) => {
+  const sv = pre ? (pre.coelhoId ? 'individual' : (pre.grupo || '')) : '';
+  return `
+  <div class="fld"><label>Para quem?</label>
     <select id="${pfx}Alvo">
-      <option value="individual" ${pre&&pre.coelhoId?'selected':''}>Coelho individual</option>
-      <option value="matriz">Todas as matrizes</option>
-      <option value="reprodutor">Todos os reprodutores</option>
-      <option value="engorda">Engorda (lote)</option>
-      <option value="ativos">Plantel ativo (todos)</option>
+      <option value="individual" ${sv==='individual'?'selected':''}>Um coelho específico</option>
+      <option value="matriz" ${sv==='matriz'?'selected':''}>Todas as matrizes</option>
+      <option value="reprodutor" ${sv==='reprodutor'?'selected':''}>Todos os reprodutores</option>
+      <option value="engorda" ${sv==='engorda'?'selected':''}>Engorda (lote inteiro)</option>
+      <option value="ativos" ${sv==='ativos'?'selected':''}>Plantel ativo (todo mundo)</option>
     </select></div>
-  <div class="fld" id="${pfx}CoelhoWrap" ${pre&&pre.coelhoId?'':'style="display:none"'}><label>Coelho *</label>
+  <div class="fld" id="${pfx}CoelhoWrap" ${sv==='individual'?'':'style="display:none"'}><label>Coelho *</label>
     <select id="${pfx}Coelho"><option value="">Selecione</option>${ativos().map(c =>
       `<option value="${c.id}" ${pre&&pre.coelhoId===c.id?'selected':''}>${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>`;
+};
 
 function sheetSanidade(pre){
   const usados = [...new Set(db.sanidade.map(s=>s.med))].filter(m => !MEDS.some(x=>x.n===m));
@@ -1308,9 +1557,10 @@ function sheetSanidadeDet(id){
 
 function sheetAlimentacao(pre){
   const usadas = [...new Set(db.alimentacao.map(a=>a.racao))].filter(r => !RACOES.some(x=>x.n===r));
-  const sh = openSheet('Novo fornecimento de ração', `
+  const sh = openSheet('Registrar alimentação', `
     <div class="form">
-      <div class="fld"><label>Ração *</label>
+      <p class="hint" style="margin-top:0">Diga <b>o que</b> você deu, <b>quanto</b> (kg) e <b>para quem</b>. O custo do mês é calculado sozinho.</p>
+      <div class="fld"><label>Qual ração você deu? *</label>
         <select id="aSel">${[...RACOES.map(r=>`<option>${esc(r.n)}</option>`),
           ...usadas.map(r=>`<option>${esc(r)}</option>`), '<option value="__out">Outra…</option>'].join('')}</select></div>
       <div class="fld" id="aOutWrap" style="display:none"><label>Nome / tipo</label><input id="aOut" placeholder="Ex.: Ração da casa"></div>
@@ -1321,11 +1571,11 @@ function sheetAlimentacao(pre){
       </div>
       <div class="frow">
         <div class="fld"><label>Custo por kg (opcional)</label><input id="aCusto" type="number" inputmode="decimal" min="0" step="0.01" placeholder="3,50"></div>
-        <div class="fld"><label>Total</label><input id="aTot" readonly value="—"></div>
+        <div class="fld"><label>Custo total</label><input id="aTot" readonly value="—"></div>
       </div>
       ${selectAlvo(pre,'a')}
       <div class="fld"><label>Observações</label><textarea id="aObs" placeholder="Marca, fornecedor, mudança de fase…"></textarea></div>
-      <button class="btn primary" id="aSal">${ic('check',18)} Registrar ração</button>
+      <button class="btn primary" id="aSal">${ic('check',18)} Registrar alimentação</button>
     </div>`);
   const sel = sh.querySelector('#aSel');
   const hint = () => {
@@ -1355,14 +1605,14 @@ function sheetAlimentacao(pre){
       custoKg:parseFloat(sh.querySelector('#aCusto').value)||null,
       alvoTipo:alvo, grupo:alvo==='individual'?null:alvo, coelhoId,
       obs:sh.querySelector('#aObs').value.trim() });
-    save(); sh.close(); toast('Ração registrada'); render();
+    save(); sh.close(); toast('Alimentação registrada'); render();
   };
 }
 
 function sheetAlimentacaoDet(id){
   const a = db.alimentacao.find(x=>x.id===id); if(!a) return;
   const total = Number(a.custoKg)>0 ? a.kg*a.custoKg : null;
-  const sh = openSheet('Fornecimento', `
+  const sh = openSheet('Alimentação registrada', `
     <div class="d-grid">
       <div class="d-cell"><span>Ração</span><b>${esc(a.racao)}</b></div>
       <div class="d-cell"><span>Data</span><b>${fmtData(a.data)}</b></div>
@@ -1373,7 +1623,7 @@ function sheetAlimentacaoDet(id){
     </div>
     ${a.obs ? `<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(a.obs)}</p>` : ''}
     <div class="d-acts" style="margin-top:16px"><button class="btn danger-l" id="adDel">${ic('trash',17)} Excluir registro</button></div>`);
-  sh.querySelector('#adDel').onclick = () => confirmSheet('Excluir fornecimento',
+  sh.querySelector('#adDel').onclick = () => confirmSheet('Excluir registro',
     'O registro de ração será apagado.', 'Excluir', () => {
       db.alimentacao = db.alimentacao.filter(x=>x.id!==id);
       save(); sh.close(); toast('Registro excluído'); render();
@@ -1924,7 +2174,7 @@ async function sharePdf(blob, nome){
 }
 
 /* ============================================================
-   CONFIGURAÇÕES · STATUS OFFLINE · BACKUP · EXEMPLO
+   CONFIGURAÇÕES · STATUS OFFLINE · ALERTAS · BACKUP
    ============================================================ */
 function sheetConfig(){
   const S = db.settings;
@@ -1938,6 +2188,12 @@ function sheetConfig(){
       <div class="fld"><label>Cidade / UF</label><input id="sCid" value="${esc(S.cidade)}" placeholder="Mogi Guaçu, SP"></div>
       <div class="fld"><label>Peso-alvo de abate (kg)</label><input id="sAlvo" type="number" inputmode="decimal" min="0" step="0.1" value="${S.pesoAlvo||3.5}"></div>
       <button class="btn primary" id="sSal">${ic('check',18)} Salvar dados do criatório</button>
+
+      <div class="sec-t">Alertas</div>
+      <div class="clist">
+        <button id="cSom">${ic('bell',19)}<span>Alerta sonoro de tarefas<small id="somHint"></small></span></button>
+        <button id="cSomTest">${ic('bell',19)}<span>Tocar alarme agora<small>Testa permissões e o volume do alarme</small></span></button>
+      </div>
 
       <div class="sec-t">Raças personalizadas</div>
       <div id="rcArea">
@@ -1967,20 +2223,34 @@ function sheetConfig(){
       <input type="file" id="cFile" accept=".json,application/json" style="display:none">
     </div>`);
 
+  /* Alerta sonoro: liga/desliga + teste */
+  const somHint = sh.querySelector('#somHint');
+  const updSom = () => {
+    somHint.textContent = (S.somTarefas === false)
+      ? 'Desligado — toque para ligar'
+      : 'Ligado — toca alto quando há tarefas de hoje ou atrasadas';
+  };
+  updSom();
+  sh.querySelector('#cSom').onclick = () => {
+    S.somTarefas = (S.somTarefas === false);
+    save(); updSom();
+    toast(S.somTarefas === false ? 'Alerta sonoro desligado' : 'Alerta sonoro ligado');
+  };
+  sh.querySelector('#cSomTest').onclick = () => { tocarAlarme(); toast('Alarme de teste'); };
+
   /* Raças personalizadas */
-  const rcAdd = sh.querySelector('#rcAdd');
-  rcAdd.onclick = () => {
+  sh.querySelector('#rcAdd').onclick = () => {
     const inp = sh.querySelector('#rcNova');
     const r = inp.value.trim();
     if(!r) return toast('Digite o nome da raça','x',true);
     if(racasTodas().some(x => x.toLowerCase() === r.toLowerCase())) return toast('Essa raça já existe','x',true);
-    S.racasCustom.push(r); save(); inp.value = '';
+    S.racasCustom.push(r); save();
     toast('Raça adicionada');
-    rcAdd.closest('.ov').close(); sheetConfig();
+    sh.close(); sheetConfig();
   };
   sh.querySelectorAll('[data-rc]').forEach(b => b.onclick = () => {
     S.racasCustom.splice(parseInt(b.dataset.rc),1); save(); toast('Raça removida');
-    b.closest('.ov').close(); sheetConfig();
+    sh.close(); sheetConfig();
   });
 
   /* Diagnóstico do modo offline */
@@ -1988,7 +2258,10 @@ function sheetConfig(){
     const box = sh.querySelector('#stBox'); if(!box) return;
     const L = (k, v, cls) => `<div class="l"><span>${esc(k)}</span><b class="${cls||''}">${esc(v)}</b></div>`;
     let html = '';
-    if(location.protocol === 'file:'){
+    if(_LN){
+      html = L('Modo', 'App instalado (APK)', 'ok')
+           + L('Alarme offline', 'Ativo — toca com o app fechado', 'ok');
+    } else if(location.protocol === 'file:'){
       html = L('Modo', 'Arquivo local', 'ok')
            + L('Offline', 'Sempre funciona — o app está no aparelho', 'ok');
     } else if(!location.protocol.startsWith('http')){
@@ -2020,7 +2293,8 @@ function sheetConfig(){
     save(); sh.close(); toast('Criatório atualizado'); render();
   };
   sh.querySelector('#cExp').onclick = () => {
-    downloadBlob(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),
+    const backup = Object.assign({}, db, { tarefas: tarefasGet() });
+    downloadBlob(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),
       'lepus-backup-' + isoHoje() + '.json');
     toast('Backup exportado');
   };
@@ -2032,7 +2306,10 @@ function sheetConfig(){
       try{
         const d = JSON.parse(rd.result);
         if(!d || !Array.isArray(d.coelhos) || !Array.isArray(d.vendas)) throw 0;
-        db = normalizaDb(d); save(); sh.close(); toast('Backup restaurado'); render();
+        db = normalizaDb(d);
+        if(Array.isArray(d.tarefas)) tarefasSet(d.tarefas); /* backup novo já vem na chave certa */
+        migraTarefasDeBackup();
+        save(); sh.close(); toast('Backup restaurado'); render();
       }catch(err){ toast('Arquivo de backup inválido','x',true); }
     };
     rd.readAsText(f);
@@ -2043,7 +2320,8 @@ function sheetConfig(){
     });
   sh.querySelector('#cDel').onclick = () => confirmSheet('Apagar tudo',
     'Todos os registros deste aparelho serão perdidos. Exporte um backup antes se quiser guardar.', 'Apagar tudo', () => {
-      localStorage.removeItem(LS); db = dbPadrao(); save(); sh.close(); toast('Dados apagados'); render(); sheetBoasVindas();
+      localStorage.removeItem(LS); localStorage.removeItem(TAREFAS_KEY);
+      db = dbPadrao(); save(); sh.close(); toast('Dados apagados'); render(); sheetBoasVindas();
     });
   const hint = sh.querySelector('#instHint');
   if(window._installEvt) hint.textContent = 'Toque para adicionar à tela inicial';
@@ -2055,7 +2333,7 @@ function sheetConfig(){
 
 function sheetBoasVindas(){
   const sh = openSheet('Bem-vindo ao Lepus', `
-    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas, abates, vendas e recibos em PDF. Comece contando quem é o seu criatório.</p>
+    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas com alarme, abates, vendas e recibos em PDF. Comece contando quem é o seu criatório.</p>
     <div class="form" style="margin-top:12px">
       <div class="fld"><label>Nome do criatório *</label><input id="wNome" placeholder="Sítio Boa Esperança"></div>
       <div class="frow">
@@ -2098,11 +2376,15 @@ function seedExample(){
   );
   db.ninhadas.push({ id:uid(), matrizId:novos[1].id, padraoId:novos[2].id, nascimento:diasAtras(28),
     nascidos:9, vivos:8, obs:'Ninho bem formado, sem perdas.', desmame:null });
-  db.tarefas.push(
-    { id:uid(), tipo:'Vermifugação', titulo:'Vermifugar matrizes', data:isoHoje(), coelhoId:novos[0].id, concluida:false, dataConclusao:null },
-    { id:uid(), tipo:'Limpeza de jaula', titulo:'Desinfetar gaiolas do setor B', data:diasAtras(2), coelhoId:null, concluida:false, dataConclusao:null },
-    { id:uid(), tipo:'Pesagem', titulo:'Pesar ninhada da Bruma', data:diasAtras(6), coelhoId:null, concluida:true, dataConclusao:diasAtras(6) }
-  );
+  /* Tarefas no formato novo — uma atrasada de propósito para testar o alarme */
+  tarefasSet(tarefasGet().concat([
+    { id:uid(), nome:'Vermifugar matrizes', data:diasAtras(1), hora:'08:00', repetir:'semanal',
+      feita:false, alarmeTocou:false, tipo:'Vermifugação', coelhoId:null },
+    { id:uid(), nome:'Trocar água de todas as jaulas', data:isoHoje(), hora:'18:00', repetir:'diario',
+      feita:false, alarmeTocou:false, tipo:'Outros cuidados', coelhoId:null },
+    { id:uid(), nome:'Pesar ninhada da Bruma', data:diasAtras(6), hora:'09:00', repetir:'nao',
+      feita:true, alarmeTocou:true, tipo:'Pesagem', coelhoId:null }
+  ]));
   db.abates.push(
     { id:uid(), tipo:'individual', coelhoId:novos[9].id, data:diasAtras(18), vivo:3.8, carcaca:2.05, destino:'Venda', obs:'Jejum de 12h.' },
     { id:uid(), tipo:'lote', qtd:4, data:diasAtras(46), vivo:14.6, carcaca:7.8, destino:'Consumo próprio', obs:'' }
@@ -2201,7 +2483,10 @@ function tentarInstalar(){
 
 /* ---------- Início ---------- */
 setupPWA();
+migraTarefasDeBackup();
 render();
+verificarAtrasadas();   /* ao abrir: notificação + sirene para todas as atrasadas */
+lnAgendarTodas();       /* (re)agenda notificações nativas futuras — APK */
 if(!db.settings.configurado) sheetBoasVindas();
 </script>
 </body>
