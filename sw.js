@@ -1,24 +1,12 @@
 /* ============================================================
-   LEPUS — Service Worker
-   Ao atualizar o app no servidor, mude a versão abaixo
-   (ex.: lepus-v4) para o celular baixar a nova versão.
+   LEPUS — Service Worker (cache offline)
+   Ao atualizar o app no futuro, mude 'lepus-v3' para 'lepus-v4'.
    ============================================================ */
 const CACHE = 'lepus-v3';
-
-/* Mesma URL exata das fontes usada no index.html */
-const FONTE_CSS = 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap';
-
 const SHELL = [
   './',
   './index.html',
-  './manifest.json',
-  './icon-16.png',
-  './icon-32.png',
-  './icon-180.png',
-  './icon-192.png',
-  './icon-512.png',
-  './icon-512-maskable.png',
-  FONTE_CSS
+  './manifest.json'
 ];
 
 self.addEventListener('install', e => {
@@ -41,8 +29,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
 
-  /* Navegação (abrir o app): cache primeiro = abre instantâneo offline;
-     quando há internet, atualiza o cache em segundo plano. */
+  /* Abrir o app: cache primeiro = abre instantâneo offline; online atualiza em segundo plano */
   if (req.mode === 'navigate') {
     e.respondWith(
       caches.match('./index.html').then(hit => {
@@ -61,8 +48,8 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  /* Demais recursos (ícones, fontes, manifest): cache primeiro,
-     revalida em segundo plano quando online. */
+  /* Demais recursos: cache primeiro, revalida quando online.
+     Ícones que falharem são cacheados sob demanda sem travar. */
   e.respondWith(
     caches.match(req).then(hit => {
       const rede = fetch(req)
