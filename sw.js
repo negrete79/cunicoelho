@@ -1,8 +1,8 @@
 /* ============================================================
    LEPUS — Service Worker (cache offline)
-   Ao atualizar o app no futuro, mude 'lepus-v3' para 'lepus-v4'.
+   Ao atualizar o app no futuro, mude 'lepus-v4' para 'lepus-v5'.
    ============================================================ */
-const CACHE = 'lepus-v3';
+const CACHE = 'lepus-v5';
 const SHELL = [
   './',
   './index.html',
