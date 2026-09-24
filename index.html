@@ -368,7 +368,7 @@ const RACOES = [
 ];
 const racasTodas = () => RACAS_BASE.concat(db.settings.racasCustom || []);
 
-/* ---------- Banco local (com migração) ---------- */
+/* ---------- Banco local ---------- */
 const LS = 'lepus_db_v1';
 const dbPadrao = () => ({ settings:{configurado:false, nome:'', responsavel:'', telefone:'', cidade:'', pesoAlvo:3.5, racasCustom:[], somTarefas:true},
   coelhos:[], ninhadas:[], acasalamentos:[], tarefas:[], abates:[], vendas:[], sanidade:[], alimentacao:[] });
@@ -417,11 +417,10 @@ function alvoDesc(s){
 }
 
 /* ============================================================
-   LEMBRETES COM ALARME OFFLINE
-   - APK Capacitor: LocalNotifications (allowWhileIdle) toca com
-     o APP FECHADO — 100% local, sem Firebase.
-   - PWA no navegador: sirene + notificação com o app aberto.
-   Fonte: localStorage["tarefas"]
+   LEMBRETES COM ALARME OFFLINE — 100% nativo
+   @capacitor/local-notifications · sem Firebase · sem Notification API
+   Toca com APP FECHADO e TELA APAGADA (allowWhileIdle + canal importância 5).
+   localStorage["tarefas"]:
    { id, nome, data, hora, repetir, feita, alarmeTocou, notifId, tipo, coelhoId }
    ============================================================ */
 const TAREFAS_KEY = 'tarefas';
@@ -431,13 +430,12 @@ function tarefasGet(){
 }
 function tarefasSet(arr){ try{ localStorage.setItem(TAREFAS_KEY, JSON.stringify(arr)); }catch(e){} }
 
-/* Migra tarefas antigas do db.tarefas (roda no boot e ao importar backup) */
 function migraTarefasDeBackup(){
   const atuais = tarefasGet();
   if(!atuais.length && Array.isArray(db.tarefas) && db.tarefas.length){
     tarefasSet(db.tarefas.map(x => ({
       id: x.id || uid(), nome: x.titulo || 'Tarefa',
-      data: x.data || isoHoje(), hora: x.hora || null,
+      data: x.data || isoHoje(), hora: x.hora || '08:00',
       repetir: 'nao', feita: !!x.concluida, alarmeTocou: false,
       tipo: x.tipo || 'Outros cuidados', coelhoId: x.coelhoId || null
     })));
@@ -445,22 +443,20 @@ function migraTarefasDeBackup(){
   db.tarefas = [];
 }
 
-/* Ponte com o Capacitor — só existe dentro do APK */
+/* Ponte nativa — só existe dentro do APK Capacitor */
 const _Cap = (typeof window !== 'undefined' && window.Capacitor) ? window.Capacitor : null;
 const _LN  = (_Cap && _Cap.isNativePlatform && _Cap.isNativePlatform()) ? _Cap.Plugins.LocalNotifications : null;
 
+const CANAL = 'lembretes-coelhos';
+const SOM   = 'alarme.mp3';   /* android/app/src/main/res/raw/alarme.mp3 */
 const _REPETE_DIAS = { diario:1, semanal:7, '14dias':14 };
+
 function isoDeData(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function hashId(s){ let h = 0; for(const ch of String(s)) h = (h*31 + ch.charCodeAt(0))|0; return Math.abs(h); }
-function proximaOcorrencia(t){
-  if(!t.data) return null;
-  const [hh,mm] = String(t.hora || '08:00').split(':').map(Number);
-  const dt = new Date(t.data + 'T00:00');
-  dt.setHours(hh||0, mm||0, 0, 0);
-  return dt;
-}
+function idNotif(t){ return t.notifId || (t.notifId = hashId(t.id) % 2147483000 + 1); }
+function dataHoraTarefa(t){ return new Date((t.data||isoHoje()) + 'T' + (t.hora || '08:00')); }
 
-/* Sirene alta dentro do app (WebAudio — offline, sem arquivo) */
+/* Sirene interna (WebAudio) — usada ao abrir o app com atrasadas */
 let _audioCtx = null;
 function ensureAudio(){
   try{
@@ -496,61 +492,85 @@ function sirene(){
   try{ navigator.vibrate && navigator.vibrate([250,120,250,120,250,120,400]); }catch(e){}
 }
 
-/* Canal de alarmes no Android (som custom + vibração, importância máxima) */
+/* Canal de importância MÁXIMA: tela acende, som toca, vibra — mesmo com tela apagada */
 async function lnCanal(){
   if(!_LN) return;
   try{
     await _LN.createChannel({
-      id:'lepus-alarmes', name:'Alarmes de tarefas',
-      description:'Lembretes sonoros do criatório',
-      importance:5, sound:'alarm.mp3', vibration:true, visibility:2
+      id: CANAL, name: 'Lembretes de coelhos',
+      description: 'Alarmes de tarefas do criatório',
+      importance: 5, sound: SOM, vibration: true, visibility: 2, enableLights: true
     });
   }catch(e){}
 }
 
-/* Botão "Tocar alarme agora": permissões + notificação de teste + sirene */
-async function tocarAlarme(){
+/* Permissões: POST_NOTIFICATIONS (Android 13+) */
+async function lnPerm(){
+  if(!_LN) return false;
   try{
-    if(_LN){
-      const st = await _LN.checkPermissions();
-      if(st.display !== 'granted'){
-        const r = await _LN.requestPermissions();
-        if(r.display !== 'granted') toast('Permissão de notificação negada','x',true);
-      }
-      await lnCanal();
-      await _LN.schedule({ notifications:[{
-        id: 1, title:'Lepus — Alarme de teste',
-        body:'Se isto apareceu, o alarme offline funciona neste aparelho.',
-        schedule:{ at:new Date(Date.now()+1500), allowWhileIdle:true },
-        sound:'alarm.mp3', channelId:'lepus-alarmes'
-      }]});
-    } else if('Notification' in window){
-      let p = Notification.permission;
-      if(p === 'default') p = await Notification.requestPermission();
-      if(p === 'granted'){
-        try{ new Notification('Lepus — Alarme de teste',{ body:'Notificações ativas (com o app aberto).' }); }catch(e){}
-      } else if(p === 'denied'){
-        toast('Permissão de notificação negada','x',true);
+    const st = await _LN.checkPermissions();
+    if(st.display === 'granted') return true;
+    const r = await _LN.requestPermissions();
+    return r.display === 'granted';
+  }catch(e){ return false; }
+}
+
+/* Alarmes EXATOS (Android 12+): abre a tela "Alarmes e lembretes" se negado */
+async function lnAlarmeExato(){
+  if(!_LN) return true;
+  try{
+    if(typeof _LN.checkExactNotificationSetting === 'function'){
+      const s = await _LN.checkExactNotificationSetting();
+      if(s && s.exactNotificationSettingEnabled === false &&
+         typeof _LN.openExactNotificationSetting === 'function'){
+        await _LN.openExactNotificationSetting();
+        toast('Autorize “Alarmes e lembretes” para o alarme tocar na hora certa','bell');
       }
     }
   }catch(e){}
-  sirene();
+  return true;
 }
 
-/* Agenda a notificação nativa futura de uma tarefa */
+/* BOTÃO "Tocar alarme agora": permissões + teste em 10 s (critério: tela apagada toca) */
+async function tocarAlarme(){
+  if(!_LN){
+    sirene();
+    toast('Modo navegador: alarme offline exige o APK instalado','bell');
+    return;
+  }
+  const ok = await lnPerm();
+  if(!ok){ toast('Permissão de notificação negada','x',true); return; }
+  await lnCanal();
+  await lnAlarmeExato();
+  try{
+    await _LN.schedule({ notifications:[{
+      id: 1,
+      title: 'CuniCoelho 🐰',
+      body: 'TESTE DO ALARME — apague a tela agora! Toca em 10 segundos.',
+      schedule: { at: new Date(Date.now() + 10000), allowWhileIdle: true },
+      sound: SOM, channelId: CANAL
+    }]});
+    toast('Teste agendado — apague a tela e aguarde 10 s','bell');
+  }catch(e){
+    toast('Falha ao agendar: ' + (e && e.message ? e.message : 'erro'), 'x', true);
+  }
+}
+
+/* Agenda a notificação futura de uma tarefa (com app fechado) */
 async function lnAgendar(t){
   if(!_LN || t.feita) return;
-  if(!t.notifId) t.notifId = hashId(t.id) % 2147483000 + 1;
-  const alvo = proximaOcorrencia(t);
-  if(!alvo || alvo.getTime() <= Date.now()) return;
+  const id = idNotif(t);
+  const alvo = dataHoraTarefa(t);
+  if(!alvo || isNaN(alvo.getTime()) || alvo.getTime() <= Date.now()) return;
   try{
     await lnCanal();
+    await lnCancelar(t); /* evita duplicidade ao reagendar repetitivas */
     await _LN.schedule({ notifications:[{
-      id: t.notifId,
-      title: 'Lepus — ' + (t.tipo || 'Tarefa'),
+      id,
+      title: 'CuniCoelho 🐰',
       body: t.nome + (t.hora ? ' · ' + t.hora : ''),
       schedule: { at: alvo, allowWhileIdle: true },
-      sound: 'alarm.mp3', channelId: 'lepus-alarmes',
+      sound: SOM, channelId: CANAL,
       extra: { tarefaId: t.id }
     }]});
     tarefasSet(tarefasGet());
@@ -558,44 +578,45 @@ async function lnAgendar(t){
 }
 async function lnCancelar(t){
   if(!_LN || !t.notifId) return;
-  try{ await _LN.cancel({ notifications:[{ id:t.notifId }] }); }catch(e){}
+  try{ await _LN.cancel({ notifications:[{ id: t.notifId }] }); }catch(e){}
 }
 async function lnAgendarTodas(){
   for(const t of tarefasGet()){ if(!t.feita) await lnAgendar(t); }
 }
 
-/* Ao abrir o app: verifica atrasadas, dispara notificação + sirene, reagenda */
+/* Ao abrir o app: alarme de cobrança para TODAS as atrasadas + reagenda futuras */
 async function verificarAtrasadas(){
   const hoje = isoHoje(), agora = new Date();
   const arr = tarefasGet();
-  let tocou = false;
+  let novasAtrasadas = 0;
   for(const t of arr){
     if(t.feita || t.alarmeTocou) continue;
-    const alvo = proximaOcorrencia(t);
-    if(!alvo) continue;
+    const alvo = dataHoraTarefa(t);
+    if(!alvo || isNaN(alvo.getTime())) continue;
     const vencida = (t.data < hoje) || (t.data === hoje && alvo.getTime() <= agora.getTime());
     if(!vencida) continue;
-    tocou = true;
+    novasAtrasadas++;
     t.alarmeTocou = true;
     if(_LN){
       try{
         await _LN.schedule({ notifications:[{
-          id: t.notifId || hashId(t.id) % 2147483000 + 1,
-          title: '⚠️ Tarefa atrasada',
-          body: t.nome + ' — está atrasada desde ' + fmtData(t.data) + '!',
-          schedule:{ at:new Date(Date.now()+500), allowWhileIdle:true },
-          sound:'alarm.mp3', channelId:'lepus-alarmes', extra:{ tarefaId:t.id }
+          id: idNotif(t) + 500000000,
+          title: '⚠️ Tarefa atrasada — CuniCoelho 🐰',
+          body: t.nome + ' — atrasada desde ' + fmtData(t.data) + '!',
+          schedule: { at: new Date(Date.now() + 600 * novasAtrasadas), allowWhileIdle: true },
+          sound: SOM, channelId: CANAL, extra: { tarefaId: t.id }
         }]});
       }catch(e){}
-    } else if('Notification' in window && Notification.permission === 'granted'){
-      try{ new Notification('⚠️ Tarefa atrasada', { body: t.nome + ' — desde ' + fmtData(t.data) }); }catch(e){}
     }
   }
-  if(tocou){ tarefasSet(arr); sirene(); }
-  for(const t of arr){ if(!t.feita) lnAgendar(t); }
+  if(novasAtrasadas){
+    tarefasSet(arr);
+    sirene();
+  }
+  for(const t of arr){ if(!t.feita) await lnAgendar(t); }
 }
 
-/* Concluir: se repetir, avança a data e reagenda */
+/* Concluir: tarefa repetitiva avança a data e reagenda */
 function concluirTarefa(id){
   const arr = tarefasGet(); const t = arr.find(x=>x.id===id); if(!t) return;
   if(t.repetir && t.repetir !== 'nao' && _REPETE_DIAS[t.repetir]){
@@ -622,7 +643,7 @@ function excluirTarefa(id){
   toast('Tarefa excluída'); render();
 }
 
-/* Notificação nativa tocada → marca e leva para a aba de tarefas */
+/* Toque na notificação → marca e abre a aba Tarefas */
 if(_LN){
   _LN.addListener('localNotificationActionPerformed', ({ notification }) => {
     const tid = notification && notification.data && notification.data.tarefaId;
@@ -1417,7 +1438,7 @@ function renderMsub(){
     $$('#msubArea [data-ud]').forEach(b => b.onclick = e => { e.stopPropagation(); reabrirTarefa(b.dataset.ud); });
     $$('#msubArea [data-ex]').forEach(b => b.onclick = e => { e.stopPropagation(); excluirTarefa(b.dataset.ex); });
     const btnAl = $('#btnAlarme');
-    if(btnAl) btnAl.onclick = e => { e.stopPropagation(); tocarAlarme(); toast('Alarme de teste'); };
+    if(btnAl) btnAl.onclick = e => { e.stopPropagation(); tocarAlarme(); };
     verificarAtrasadas(); /* re-checa ao entrar na aba */
   }
 }
@@ -1440,12 +1461,12 @@ function sheetTarefa(){
       <div class="fld"><label>Coelho (opcional)</label><select id="tCoelho"><option value="">—</option>${ativos().map(c =>
         `<option value="${c.id}">${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>
       <button class="btn primary" id="tSal">${ic('check',18)} Agendar com alarme</button>
-      <p class="hint" style="text-align:center">No app instalado (APK), o alarme toca na data/hora mesmo com o aplicativo fechado.</p>
+      <p class="hint" style="text-align:center">No app instalado (APK), o alarme toca na data/hora mesmo com o aplicativo fechado e a tela apagada.</p>
     </div>`);
   sh.querySelectorAll('#tRep button').forEach(b => b.onclick = () => {
     sh.querySelectorAll('#tRep button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   });
-  sh.querySelector('#tSal').onclick = () => {
+  sh.querySelector('#tSal').onclick = async () => {
     const nome = sh.querySelector('#tNome').value.trim();
     if(!nome) return toast('Descreva a tarefa','x',true);
     const id = uid();
@@ -1460,7 +1481,7 @@ function sheetTarefa(){
       notifId: hashId(id) % 2147483000 + 1
     };
     const arr = tarefasGet(); arr.push(t); tarefasSet(arr);
-    lnAgendar(t);
+    await lnAgendar(t);
     save(); sh.close(); toast('Tarefa agendada — alarme na data/hora'); render();
   };
 }
@@ -2174,7 +2195,7 @@ async function sharePdf(blob, nome){
 }
 
 /* ============================================================
-   CONFIGURAÇÕES · STATUS OFFLINE · ALERTAS · BACKUP
+   CONFIGURAÇÕES · STATUS · ALERTAS · BACKUP
    ============================================================ */
 function sheetConfig(){
   const S = db.settings;
@@ -2192,7 +2213,7 @@ function sheetConfig(){
       <div class="sec-t">Alertas</div>
       <div class="clist">
         <button id="cSom">${ic('bell',19)}<span>Alerta sonoro de tarefas<small id="somHint"></small></span></button>
-        <button id="cSomTest">${ic('bell',19)}<span>Tocar alarme agora<small>Testa permissões e o volume do alarme</small></span></button>
+        <button id="cSomTest">${ic('bell',19)}<span>Tocar alarme agora<small>Permissões + teste em 10 s (apague a tela)</small></span></button>
       </div>
 
       <div class="sec-t">Raças personalizadas</div>
@@ -2206,7 +2227,7 @@ function sheetConfig(){
         </div>
       </div>
 
-      <div class="sec-t">Status offline</div>
+      <div class="sec-t">Status</div>
       <div class="stbox" id="stBox"><span class="hint">Verificando…</span></div>
 
       <div class="sec-t">App</div>
@@ -2223,7 +2244,6 @@ function sheetConfig(){
       <input type="file" id="cFile" accept=".json,application/json" style="display:none">
     </div>`);
 
-  /* Alerta sonoro: liga/desliga + teste */
   const somHint = sh.querySelector('#somHint');
   const updSom = () => {
     somHint.textContent = (S.somTarefas === false)
@@ -2236,9 +2256,8 @@ function sheetConfig(){
     save(); updSom();
     toast(S.somTarefas === false ? 'Alerta sonoro desligado' : 'Alerta sonoro ligado');
   };
-  sh.querySelector('#cSomTest').onclick = () => { tocarAlarme(); toast('Alarme de teste'); };
+  sh.querySelector('#cSomTest').onclick = () => { tocarAlarme(); };
 
-  /* Raças personalizadas */
   sh.querySelector('#rcAdd').onclick = () => {
     const inp = sh.querySelector('#rcNova');
     const r = inp.value.trim();
@@ -2253,33 +2272,28 @@ function sheetConfig(){
     sh.close(); sheetConfig();
   });
 
-  /* Diagnóstico do modo offline */
   (async () => {
     const box = sh.querySelector('#stBox'); if(!box) return;
     const L = (k, v, cls) => `<div class="l"><span>${esc(k)}</span><b class="${cls||''}">${esc(v)}</b></div>`;
     let html = '';
     if(_LN){
       html = L('Modo', 'App instalado (APK)', 'ok')
-           + L('Alarme offline', 'Ativo — toca com o app fechado', 'ok');
+           + L('Alarme offline', 'Ativo — toca com app fechado e tela apagada', 'ok')
+           + L('Canal', CANAL + ' · ' + SOM, 'ok');
     } else if(location.protocol === 'file:'){
       html = L('Modo', 'Arquivo local', 'ok')
-           + L('Offline', 'Sempre funciona — o app está no aparelho', 'ok');
-    } else if(!location.protocol.startsWith('http')){
-      html = L('Modo', location.protocol, 'warn');
-    } else {
+           + L('Alarme', 'Sirene com o app aberto (instale o APK para alarme fechado)', 'warn');
+    } else if(location.protocol.startsWith('http')){
       let reg = null;
       if('serviceWorker' in navigator){
         reg = await navigator.serviceWorker.getRegistration().catch(()=>null);
       }
-      html += L('Service Worker', reg ? 'Ativo' : 'Não registrado', reg ? 'ok' : 'warn');
-      if(reg){
-        let names = [];
-        try{ names = (await caches.keys()).filter(k => k.startsWith('lepus-')); }catch(e){}
-        html += L('Cache do app', names.length ? 'Salvo ✓ (' + names.join(', ') + ')' : 'Vazio — abra online e recarregue', names.length ? 'ok' : 'err');
-      } else {
-        html += L('Cache do app', 'Depende do Service Worker', 'warn');
-      }
-      html += L('Internet agora', navigator.onLine ? 'Online' : 'Offline', navigator.onLine ? '' : 'warn');
+      html += L('Modo', 'PWA (navegador)', 'warn')
+           + L('Alarme offline', 'Requer APK Capacitor — navegador não permite', 'warn')
+           + L('Service Worker', reg ? 'Ativo' : 'Não registrado', reg ? 'ok' : 'warn')
+           + L('Internet agora', navigator.onLine ? 'Online' : 'Offline', navigator.onLine ? '' : 'warn');
+    } else {
+      html = L('Modo', esc(location.protocol), 'warn');
     }
     box.innerHTML = html;
   })();
@@ -2307,7 +2321,7 @@ function sheetConfig(){
         const d = JSON.parse(rd.result);
         if(!d || !Array.isArray(d.coelhos) || !Array.isArray(d.vendas)) throw 0;
         db = normalizaDb(d);
-        if(Array.isArray(d.tarefas)) tarefasSet(d.tarefas); /* backup novo já vem na chave certa */
+        if(Array.isArray(d.tarefas)) tarefasSet(d.tarefas);
         migraTarefasDeBackup();
         save(); sh.close(); toast('Backup restaurado'); render();
       }catch(err){ toast('Arquivo de backup inválido','x',true); }
@@ -2333,7 +2347,7 @@ function sheetConfig(){
 
 function sheetBoasVindas(){
   const sh = openSheet('Bem-vindo ao Lepus', `
-    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas com alarme, abates, vendas e recibos em PDF. Comece contando quem é o seu criatório.</p>
+    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas com alarme offline, abates, vendas e recibos em PDF. Comece contando quem é o seu criatório.</p>
     <div class="form" style="margin-top:12px">
       <div class="fld"><label>Nome do criatório *</label><input id="wNome" placeholder="Sítio Boa Esperança"></div>
       <div class="frow">
@@ -2378,8 +2392,8 @@ function seedExample(){
     nascidos:9, vivos:8, obs:'Ninho bem formado, sem perdas.', desmame:null });
   /* Tarefas no formato novo — uma atrasada de propósito para testar o alarme */
   tarefasSet(tarefasGet().concat([
-    { id:uid(), nome:'Vermifugar matrizes', data:diasAtras(1), hora:'08:00', repetir:'semanal',
-      feita:false, alarmeTocou:false, tipo:'Vermifugação', coelhoId:null },
+    { id:uid(), nome:'Dar remédio', data:diasAtras(1), hora:'08:00', repetir:'diario',
+      feita:false, alarmeTocou:false, tipo:'Outros cuidados', coelhoId:null },
     { id:uid(), nome:'Trocar água de todas as jaulas', data:isoHoje(), hora:'18:00', repetir:'diario',
       feita:false, alarmeTocou:false, tipo:'Outros cuidados', coelhoId:null },
     { id:uid(), nome:'Pesar ninhada da Bruma', data:diasAtras(6), hora:'09:00', repetir:'nao',
@@ -2485,8 +2499,8 @@ function tentarInstalar(){
 setupPWA();
 migraTarefasDeBackup();
 render();
-verificarAtrasadas();   /* ao abrir: notificação + sirene para todas as atrasadas */
-lnAgendarTodas();       /* (re)agenda notificações nativas futuras — APK */
+verificarAtrasadas();   /* ao abrir: alarme de cobrança para todas as atrasadas */
+lnAgendarTodas();       /* (re)agenda as notificações nativas futuras — APK */
 if(!db.settings.configurado) sheetBoasVindas();
 </script>
 </body>
