@@ -342,7 +342,30 @@ const bunnySVG = cls => `<svg class="bunny ${cls||''}" viewBox="0 0 96 96" fill=
 </svg>`;
 
 /* ---------- Predefinidos ---------- */
-const RACAS_BASE = ['Nova Zelândia Branca','Californiano','Branco de Vila Real','Chinchila','Gigante de Flandres','Angorá','Rex','Belo Holandês','Mestiço'];
+/* Raças: as 5 variedades de Nova Zelândia + as demais do criatório */
+const RACAS_BASE = [
+  'Nova Zelândia Branco',
+  'Nova Zelândia Vermelho',
+  'Nova Zelândia Preto',
+  'Nova Zelândia Azul',
+  'Nova Zelândia Broken',
+  'Californiano',
+  'Branco de Vila Real',
+  'Chinchila',
+  'Gigante de Flandres',
+  'Angorá',
+  'Rex',
+  'Belo Holandês',
+  'Mestiço'
+];
+/* Descrição da pelagem exibida como dica ao cadastrar */
+const RACA_INFO = {
+  'Nova Zelândia Branco':   'O mais famoso: todo branco, olho vermelho/rosa',
+  'Nova Zelândia Vermelho': 'Avermelhado brilhante — o menor da raça',
+  'Nova Zelândia Preto':    'Preto azeviche uniforme, fundo azul-ardósia',
+  'Nova Zelândia Azul':     'Cinza-azulado uniforme',
+  'Nova Zelândia Broken':   'Branco com manchas pretas ou vermelhas'
+};
 const MEDS = [
   {n:'Sulfaquinoxalina 20%',    via:'Água de bebida',  ind:'Coccidiose',               dose:'0,5–1 mL/L de água, 3–5 dias',        car:10},
   {n:'Amprolium 20%',           via:'Água de bebida',  ind:'Coccidiose',               dose:'1 mL/L de água, 5–7 dias',             car:7},
@@ -378,9 +401,11 @@ function normalizaDb(d){
   out.settings = Object.assign({}, p.settings, (d && d.settings) || {});
   if(!Array.isArray(out.settings.racasCustom)) out.settings.racasCustom = [];
   ['coelhos','ninhadas','acasalamentos','tarefas','abates','vendas','sanidade','alimentacao'].forEach(k => { if(!Array.isArray(out[k])) out[k] = []; });
+  /* Migração de grafias/nomes de raças antigas */
   const renomeia = (de, para) => out.coelhos.forEach(c => { if(c.raca === de) c.raca = para; });
   renomeia('Flanders', 'Gigante de Flandres');
   renomeia('Branco de Vila Récal', 'Branco de Vila Real');
+  renomeia('Nova Zelândia Branca', 'Nova Zelândia Branco');
   return out;
 }
 let db;
@@ -1019,6 +1044,7 @@ function sheetCoelho(id){
           </select></div>
         <div class="fld"><label>Nascimento</label><input id="fNasc" type="date" value="${c?c.nascimento||'':isoHoje()}"></div>
       </div>
+      <p class="hint" id="fRacaHint" style="margin-top:-6px"></p>
       <div class="fld" id="fRacaOutWrap" style="display:none"><label>Qual raça?</label><input id="fRacaOut" placeholder="Digite o nome da raça"></div>
       <div class="frow">
         <div class="fld"><label>Jaula / gaiola</label><input id="fJaula" value="${esc(c?c.jaula:'')}" placeholder="01"></div>
@@ -1037,7 +1063,12 @@ function sheetCoelho(id){
     sh.querySelectorAll('#'+i+' button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   }));
   const rSel = sh.querySelector('#fRacaSel');
-  rSel.onchange = () => { sh.querySelector('#fRacaOutWrap').style.display = rSel.value==='__out' ? '' : 'none'; };
+  const updRacaHint = () => {
+    sh.querySelector('#fRacaOutWrap').style.display = rSel.value==='__out' ? '' : 'none';
+    const info = RACA_INFO[rSel.value];
+    sh.querySelector('#fRacaHint').textContent = info ? 'Pelagem: ' + info : '';
+  };
+  rSel.onchange = updRacaHint; updRacaHint();
   let novaFoto = null;
   sh.querySelector('#fFoto').onchange = e => {
     const f = e.target.files[0]; if(!f) return;
@@ -1089,6 +1120,7 @@ function sheetDetalhe(id){
   const ultima = db.sanidade.filter(s => s.alvoTipo==='individual' && s.coelhoId===id)
     .sort((a,b)=>(b.data||'').localeCompare(a.data||''))[0];
   const gestAtiva = db.acasalamentos.find(g => g.matrizId===id && ['acasalada','prenhe'].includes(g.status));
+  const pelagem = RACA_INFO[c.raca];
   const sh = openSheet('Ficha do coelho', `
     <div class="d-head">
       ${c.foto ? `<img class="d-ava" src="${c.foto}" alt="" style="background:#EFE9DA">` : `<div class="d-ava ${avaCls(c)}">${esc((c.brinco||'?').slice(0,3))}</div>`}
@@ -1103,6 +1135,7 @@ function sheetDetalhe(id){
       <div class="d-cell"><span>Idade</span><b>${idade(c.nascimento)}</b></div>
       <div class="d-cell"><span>Peso atual</span><b>${c.peso?fmtKg(c.peso):'—'}</b></div>
       <div class="d-cell"><span>Jaula</span><b>${esc(c.jaula||'—')}</b></div>
+      ${pelagem ? `<div class="d-cell" style="grid-column:1/-1"><span>Pelagem da raça</span><b>${esc(pelagem)}</b></div>` : ''}
       ${gestAtiva ? `<div class="d-cell" style="grid-column:1/-1;background:var(--green-soft);border-color:#CFDDC4"><span>Gestação em curso</span><b>Parto previsto ${fmtData(gestAtiva.prevista)}</b></div>` : ''}
       ${ultima ? `<div class="d-cell" style="grid-column:1/-1"><span>Última aplicação</span><b>${esc(ultima.med)} · ${fmtData(ultima.data)}</b></div>` : ''}
       ${car ? `<div class="d-cell" style="grid-column:1/-1;background:var(--amber-soft);border-color:#E8D3A2"><span>Carência para abate</span><b>${esc(car.med)} · até ${fmtData(car.fim)}</b></div>` : ''}
@@ -2372,15 +2405,15 @@ function seedExample(){
     nascimento:diasAtras(nasc), peso, jaula:jaula||'', foto:null,
     pesos: dPeso ? [{d:diasAtras(dPeso), kg:peso}] : [], obs:'' });
   const novos = [
-    C('M-01','Aurora','F','matriz','Nova Zelândia Branca',760,4.6,4,'01'),
+    C('M-01','Aurora','F','matriz','Nova Zelândia Branco',760,4.6,4,'01'),
     C('M-02','Bruma','F','matriz','Californiano',610,4.2,6,'02'),
-    C('R-01','Titan','M','reprodutor','Nova Zelândia Branca',690,5.1,6,'03'),
-    C('E-101','', 'F','engorda','Nova Zelândia',68,2.2,3,'10'),
-    C('E-102','', 'M','engorda','Nova Zelândia',72,2.6,3,'11'),
-    C('E-103','', 'F','engorda','Californiano',75,3.0,2,'12'),
+    C('R-01','Titan','M','reprodutor','Nova Zelândia Preto',690,5.1,6,'03'),
+    C('E-101','', 'F','engorda','Nova Zelândia Azul',68,2.2,3,'10'),
+    C('E-102','', 'M','engorda','Nova Zelândia Vermelho',72,2.6,3,'11'),
+    C('E-103','', 'F','engorda','Nova Zelândia Broken',75,3.0,2,'12'),
     C('E-104','', 'M','engorda','Mestiço',80,3.4,2,'13'),
     C('E-105','', 'M','engorda','Californiano',84,3.7,1,'14'),
-    C('V-01','', 'F','vendido','Nova Zelândia',150,3.9,10,''),
+    C('V-01','', 'F','vendido','Nova Zelândia Branco',150,3.9,10,''),
     C('A-01','', 'M','abatido','Mestiço',130,3.8,10,'')
   ];
   db.coelhos.push(...novos);
@@ -2420,10 +2453,10 @@ function seedExample(){
     ({ id:uid(), num:n, data:diasAtras(dAtras), cliente, itens, desconto:desc, pagamento:pag, obs:'', criadoEm:new Date().toISOString() });
   db.vendas.push(
     venda(1, 130, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:12,un:'kg',preco:24}], 0, 'A prazo'),
-    venda(2, 96, 'Mercearia Dona Lurdes', [{desc:'Coelho vivo — Nova Zelândia',qtd:2,un:'un',preco:120}], 0, 'Dinheiro'),
+    venda(2, 96, 'Mercearia Dona Lurdes', [{desc:'Coelho vivo — Nova Zelândia Branco',qtd:2,un:'un',preco:120}], 0, 'Dinheiro'),
     venda(3, 62, 'Restaurante Sabor do Campo', [{desc:'Carcaça fresca',qtd:8,un:'kg',preco:26}], 10, 'Pix'),
-    venda(4, 31, 'Zé dos Ovos', [{desc:'Reprodutor — Californiano',qtd:1,un:'un',preco:180,
-      animal:{ brinco:'V-01', raca:'Californiano', sexo:'F', nascimento:diasAtras(150), idadeTxt:'4 a 11 m', peso:3.9, jaula:'',
+    venda(4, 31, 'Zé dos Ovos', [{desc:'Reprodutor — Nova Zelândia Preto',qtd:1,un:'un',preco:180,
+      animal:{ brinco:'V-01', raca:'Nova Zelândia Preto', sexo:'F', nascimento:diasAtras(150), idadeTxt:'4 a 11 m', peso:3.9, jaula:'',
         sanidade:[ {med:'Albendazol 10%', data:diasAtras(45), carenciaDias:14},
                    {med:'Vitamina A·D·E', data:diasAtras(38), carenciaDias:0} ] }}], 0, 'Pix'),
     venda(5, 9, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:15,un:'kg',preco:25}], 0, 'A prazo')
