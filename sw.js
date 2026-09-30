@@ -1,8 +1,9 @@
 /* ============================================================
    LEPUS — Service Worker (cache offline)
-   Ao atualizar o app no futuro, mude 'lepus-v,5' para 'lepus-v6'.
+   Ao atualizar o app no futuro, mude a versão abaixo
+   (lepus-v9 → lepus-v10) para o celular baixar a nova versão.
    ============================================================ */
-const CACHE = 'lepus-v6';
+const CACHE = 'lepus-v9';
 const SHELL = [
   './',
   './index.html',
@@ -29,7 +30,8 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
 
-  /* Abrir o app: cache primeiro = abre instantâneo offline; online atualiza em segundo plano */
+  /* Abrir o app: cache primeiro = abre instantâneo offline;
+     online, atualiza o cache em segundo plano. */
   if (req.mode === 'navigate') {
     e.respondWith(
       caches.match('./index.html').then(hit => {
@@ -48,8 +50,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  /* Demais recursos: cache primeiro, revalida quando online.
-     Ícones que falharem são cacheados sob demanda sem travar. */
+  /* Demais recursos: cache primeiro, revalida quando online. */
   e.respondWith(
     caches.match(req).then(hit => {
       const rede = fetch(req)
