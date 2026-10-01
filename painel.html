@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Painel VIP — Lepus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4EFE4; --paper:#FFFDF6; --ink:#22301E; --muted:#6E7A63;
+  --line:#E3DCC8; --green:#2C5233; --deep:#1E3A26;
+  --carrot:#D96E30; --bad:#B23A2E; --bad-soft:#F6E0DC; --amber:#A8741F; --amber-soft:#F3E8D2;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',system-ui,sans-serif;background:var(--deep);color:var(--ink);font-size:15px;line-height:1.45;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px}
+.wrap{width:100%;max-width:640px}
+.card{background:var(--paper);border-radius:18px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.35);margin-bottom:16px}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.top h1{font-size:22px;font-weight:650}
+.muted{color:var(--muted);font-size:13px}
+label{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 5px}
+input{width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 13px;font-size:16px}
+input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(44,82,51,.13)}
+.btn{min-height:48px;border-radius:13px;padding:12px 18px;font-weight:700;font-size:15px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px}
+.btn.p{background:var(--deep);color:#F4EFE4}
+.btn.g{background:#fff;border:1px solid var(--line);color:var(--deep)}
+.btn.d{background:var(--bad);color:#fff}
+.err{background:#F6E0DC;color:var(--bad);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;margin-top:12px;display:none}
+.res{display:none;background:var(--amber-soft);border:1px solid #E8D3A2;border-radius:14px;padding:14px;margin-top:16px}
+.res .cod{font-family:'Fraunces',serif;font-size:24px;font-weight:650;letter-spacing:1px;background:#fff;border:1.5px dashed var(--deep);border-radius:12px;padding:10px;text-align:center;margin:8px 0}
+.row2{display:flex;gap:8px;margin-top:6px}
+.row2 .btn{flex:1;margin-top:0;font-size:13px;min-height:44px}
+.cli{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.cli b{display:block;font-size:14px}
+.cli span{font-size:11.5px;color:var(--muted);word-break:break-all}
+.tot{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px}
+button.mini{font-size:11px;background:#EFE9DA;color:var(--muted);border:none;border-radius:8px;padding:5px 9px;cursor:pointer;flex:none}
+.vipbadge{background:var(--deep);color:#F4EFE4;border-radius:999px;padding:4px 12px;font-size:11px;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <div class="card" id="telaLogin">
+    <h1 style="font-size:24px;font-weight:650">👑 Painel VIP</h1>
+    <p class="muted" style="margin:2px 0 6px">Área restrita — Lepus Negret's</p>
+    <label>Usuário</label>
+    <input id="user" placeholder="admin" autocomplete="username">
+    <label>Senha</label>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn p" onclick="login()">ENTRAR</button>
+    <div class="err" id="loginErr">Usuário ou senha incorretos.</div>
+  </div>
+
+  <!-- PAINEL -->
+  <div id="telaPainel" style="display:none">
+    <div class="card">
+      <div class="top">
+        <h1>👑 Painel VIP</h1>
+        <button class="mini" onclick="logout()">Sair</button>
+      </div>
+      <p class="muted">Gere códigos de liberação para os IDs dos clientes.</p>
+
+      <label>ID do cliente *</label>
+      <input id="idCliente" placeholder="LEPUS-XXXX-XXXX" style="text-transform:uppercase">
+      <label>Nome do cliente (opcional)</label>
+      <input id="nomeCliente" placeholder="Ex.: Elias">
+      <button class="btn p" onclick="gerar()">GERAR CÓDIGO</button>
+      <div class="err" id="genErr"></div>
+
+      <div class="res" id="resBox">
+        <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--amber)">Código gerado</div>
+        <div class="cod" id="resCod">—</div>
+        <p class="muted" id="resInfo" style="font-size:12px;margin-bottom:6px"></p>
+        <div class="row2">
+          <button class="btn g" onclick="copiar(codigoAtual)">📋 Copiar código</button>
+          <button class="btn g" onclick="copiar(msgWa())">💬 Copiar msg WhatsApp</button>
+        </div>
+        <div class="row2">
+          <a class="btn g" id="lnkWa" target="_blank" style="text-decoration:none">Abrir WhatsApp</a>
+          <button class="btn p" onclick="confirmarLiberacao()">✓ Confirmar liberação</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top" style="margin-bottom:8px">
+        <h2 style="font-size:17px;font-weight:650">Clientes liberados</h2>
+        <span class="vipbadge" id="totCli">0</span>
+      </div>
+      <div id="listaCli"></div>
+      <div class="row2" style="margin-top:12px">
+        <button class="btn g" onclick="exportar()">⬇ Exportar JSON</button>
+        <button class="btn d" onclick="limpar()">🗑 Limpar lista</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   PAINEL VIP — LEPUS (arquivo independente)
+   Login: admin / negret2026  (troque SENHA aqui)
+   ============================================================ */
+const USUARIO = 'admin';
+const SENHA = 'negret2026';
+const WHATS = '5531982517147';
+
+/* Mesmo algoritmo do index.html — código derivado do ID */
+function codigoPara(id){
+  return 'LIBERA-' + btoa(id + SENHA).substring(0,4).toUpperCase() + '-' + btoa(id).substring(2,6).toUpperCase();
+}
+function clientesGet(){
+  try{ const a = JSON.parse(localStorage.getItem('lepus_clientes')); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function clientesSet(arr){ localStorage.setItem('lepus_clientes', JSON.stringify(arr)); }
+
+function login(){
+  const u = document.getElementById('user').value.trim();
+  const p = document.getElementById('pass').value;
+  if(u === USUARIO && p === SENHA){
+    localStorage.setItem('lepus_painel_logado','1');
+    mostrarPainel();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+function logout(){
+  localStorage.removeItem('lepus_painel_logado');
+  location.reload();
+}
+function mostrarPainel(){
+  document.getElementById('telaLogin').style.display = 'none';
+  document.getElementById('telaPainel').style.display = 'block';
+  renderLista();
+}
+function logout(){ localStorage.removeItem('lepus_painel_logado'); location.reload(); }
+
+let codigoAtual = '', idAtual = '', nomeAtual = '';
+
+function gerar(){
+  const err = document.getElementById('genErr');
+  err.style.display = 'none';
+  const id = document.getElementById('idCliente').value.trim().toUpperCase();
+  if(!/^LEPUS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(id)){
+    err.textContent = 'ID inválido. Formato: LEPUS-XXXX-XXXX (ex.: LEPUS-A3K9-7X2P).';
+    err.style.display = 'block';
+    return;
+  }
+  idAtual = id;
+  nomeAtual = document.getElementById('nomeCliente').value.trim();
+  codigoAtual = codigoPara(id);
+  document.getElementById('resCod').textContent = codigoAtual;
+  document.getElementById('resInfo').textContent = 'Cliente: ' + id + (nomeAtual ? ' · ' + nomeAtual : '');
+  const msg = msgWa();
+  document.getElementById('lnkWa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  document.getElementById('resBox').style.display = 'block';
+}
+function msgWa(){
+  return 'Olá' + (nomeAtual ? ' ' + nomeAtual : '') + '! Seu acesso VIP do app Lepus foi liberado 🎉\n\nID: ' + idAtual + '\nCódigo: ' + codigoAtual + '\n\nAbra o app > Perfil > Gerenciar acesso VIP, e digite o código.';
+}
+function copiar(txt){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>alert('Copiado!'), ()=>fallbackCopy(txt));
+  } else fallbackCopy(txt);
+}
+function fallbackCopy(txt){
+  const ta = document.createElement('textarea');
+  ta.value = txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); alert('Copiado!'); }catch(e){}
+  ta.remove();
+}
+function confirmarLiberacao(){
+  if(!codigoAtual) return;
+  const arr = clientesGet();
+  if(arr.some(c => c.id === idAtual)){
+    if(!confirm('Este ID já está na lista. Adicionar novamente?')) return;
+  }
+  arr.unshift({ id:idAtual, nome:nomeAtual, codigo:codigoAtual, data:new Date().toISOString() });
+  clientesSet(arr);
+  renderLista();
+  alert('Liberação confirmada e salva!');
+}
+function renderLista(){
+  const arr = clientesGet();
+  document.getElementById('totCli').textContent = arr.length;
+  const box = document.getElementById('listaCli');
+  if(!arr.length){
+    box.innerHTML = '<p class="muted">Nenhum cliente registrado ainda.</p>';
+    return;
+  }
+  box.innerHTML = arr.map((c,i) =>
+    `<div class="cli">
+      <div style="flex:1;min-width:0">
+        <b>${(c.nome || 'Cliente') .replace(/</g,'&lt;')} — ${c.id.replace(/</g,'&lt;')}</b>
+        <span>${c.codigo.replace(/</g,'&lt;')} · ${new Date(c.data).toLocaleString('pt-BR')}</span>
+      </div>
+      <button class="mini" onclick="copiar('${c.codigo.replace(/'/g,"\\'")}')">copiar</button>
+      <button class="mini" onclick="removerCli(${i})">✕</button>
+    </div>`).join('');
+}
+function removerCli(i){
+  if(!confirm('Remover este cliente da lista?')) return;
+  const arr = clientesGet(); arr.splice(i,1); clientesSet(arr); renderLista();
+}
+function exportar(){
+  const blob = new Blob([JSON.stringify(clientesGet(),null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'clientes-lepus.json';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function limpar(){
+  if(!confirm('Apagar TODA a lista de clientes? Essa ação não pode ser desfeita.')) return;
+  clientesSet([]); renderLista();
+}
+
+/* Boot: se já logado, pula o login */
+if(localStorage.getItem('lepus_painel_logado') === '1') mostrarPainel();
+document.getElementById('pass').addEventListener('keydown', e => { if(e.key === 'Enter') login(); });
+document.getElementById('user').addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('pass').focus(); });
+</script>
+</body>
+</html>
