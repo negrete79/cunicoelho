@@ -270,8 +270,8 @@ table.r-items td{padding:6px 2px;border-bottom:1px dashed var(--line);vertical-a
   .sheet{border-radius:22px;bottom:40px;max-height:82dvh}
 }
 
-/* ---------- DESKTOP ---------- */
-@media (min-width:900px){
+/* ---------- DESKTOP: só em telas grandes COM mouse ---------- */
+@media (min-width:1024px) and (hover:hover) and (pointer:fine){
   body{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:0;min-height:100vh;background:#F4EFE4}
   header{grid-column:1/-1}
   #view{padding:24px}
@@ -280,7 +280,7 @@ table.r-items td{padding:6px 2px;border-bottom:1px dashed var(--line);vertical-a
   nav.menu-lateral{display:flex!important;flex-direction:column;position:sticky;top:0;height:100vh;background:#1E3A26;color:white;padding:20px}
   nav.menu-inferior{display:none!important}
 }
-@media (max-width:899px){
+@media (max-width:1023.98px){
   nav.menu-lateral{display:none!important}
 }
 nav.menu-lateral{display:none}
@@ -357,11 +357,12 @@ function idade(d){
 const vendaTotal = v => v.itens.reduce((s,i)=> s + (Number(i.qtd)||0)*(Number(i.preco)||0), 0) - (Number(v.desconto)||0);
 
 /* ============================================================
-   FREEMIUM · TRIAL 7 DIAS · VIP POR ID+CODIGO
+   FREEMIUM · TRIAL 7 DIAS · VIP — validação local (offline)
    - Trial: acesso total por 7 dias desde a 1ª abertura.
    - VIP: 'lepus_vip'==='1' → acesso total permanente.
-   - Código LIBERA-XXXX-XXXX derivado do ID do cliente;
-     gerado no painel.html (admin) e validado aqui.
+   - Código LIBERA-XXXX-XXXX derivado do ID do cliente
+     (mesmo algoritmo do painel.html).
+   - Códigos universais embutidos abaixo (base64).
    ============================================================ */
 const SENHA_MESTRA = 'negret2026';
 const RACAS_PREMIUM = ['Nova Zelândia Branco','Nova Zelândia Azul','Nova Zelândia Vermelho','Gigante de Flandres'];
@@ -388,16 +389,21 @@ function gerarIdCliente(){
   }
   return id;
 }
-/* Mesmo algoritmo do painel.html — código derivado do ID */
 function codigoEsperadoPara(id){
   return 'LIBERA-' + btoa(id + SENHA_MESTRA).substring(0,4).toUpperCase() + '-' + btoa(id).substring(2,6).toUpperCase();
 }
-/* Núcleo de validação (sem UI): true/false */
+/* Códigos universais (equivalente ao antigo vip-codes.js, agora embutido):
+   LNPREM-MARIA-8214 · LNPREM-JOAO-4692 · LNPREM-NEGRET-002147 */
+const _cx = ["TE5QUkVNLU1BUklBLTgyMTQ=","TE5QUkVNLUpPQU8tNDY5Mg==","TE5QUkVNLU5FR1JFVC0wMDIxNDc="];
+function codigoUniversalValido(c){
+  try{ return _cx.some(s => { try{ return atob(s) === c; }catch(e){ return false; } }); }
+  catch(e){ return false }
+}
 function checkVipCore(codigo){
   const c = String(codigo || '').trim().toUpperCase();
   if(!c) return false;
   if(c === codigoEsperadoPara(gerarIdCliente())) return true;
-  if(typeof window.validarCodigoExterno === 'function' && window.validarCodigoExterno(c)) return true;
+  if(codigoUniversalValido(c)) return true;
   return false;
 }
 function checkVip(){
@@ -463,7 +469,7 @@ document.addEventListener('click', e => {
   const t = e.target && e.target.closest && e.target.closest('.vip-locked');
   if(t){ e.preventDefault(); e.stopPropagation(); abrirVipModal(); }
 }, true);
-/* Link mágico futuro: ?vip=LIBERA-XXXX-XXXX ativa automaticamente */
+/* Link mágico: ?vip=LIBERA-XXXX-XXXX ativa automaticamente */
 (function(){
   try{
     const p = new URLSearchParams(location.search);
@@ -2721,10 +2727,8 @@ verificarAtrasadas();
 lnAgendarTodas();
 if(!db.settings.configurado) sheetBoasVindas();
 </script>
-
-<script src="vip-codes.js"></script>
 <script>
-/* Ligações do modal VIP (elementos no HTML) */
+/* Ligações do modal VIP */
 document.getElementById('btnLiberar').onclick = () => checkVip();
 document.getElementById('vipInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkVip(); });
 document.getElementById('btnVipClose').onclick = () => fecharVipModal();
