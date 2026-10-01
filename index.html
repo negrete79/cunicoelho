@@ -257,23 +257,77 @@ table.r-items td{padding:6px 2px;border-bottom:1px dashed var(--line);vertical-a
 .rc-row span{flex:1}
 .rc-row button{color:var(--bad);flex:none}
 
+/* ---------- FREEMIUM / VIP ---------- */
+.vip-locked{position:relative;filter:blur(2.5px);opacity:.55;pointer-events:none;user-select:none}
+.vip-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1E3A26;color:#F4EFE4;padding:8px 14px;border-radius:999px;font-weight:800;font-size:12px;display:flex;align-items:center;gap:6px;z-index:5;box-shadow:0 4px 15px rgba(0,0,0,.3);pointer-events:auto;cursor:pointer}
+.vip-locked{pointer-events:auto}
+#vipBox{position:fixed;inset:0;background:rgba(15,29,54,.88);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
+#vipBox.on{display:flex}
+.vip-card{background:#FFFDF6;border-radius:20px;padding:24px;max-width:380px;width:100%;text-align:center;max-height:90dvh;overflow-y:auto}
+.vip-id{font-family:'Fraunces',serif;font-size:26px;font-weight:650;letter-spacing:1px;background:var(--bg);border:1.5px dashed var(--deep);border-radius:12px;padding:10px;margin:12px 0}
+
 @media (min-width:700px){
   .sheet{border-radius:22px;bottom:40px;max-height:82dvh}
 }
+
+/* ---------- DESKTOP ---------- */
+@media (min-width:900px){
+  body{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:0;min-height:100vh;background:#F4EFE4}
+  header{grid-column:1/-1}
+  #view{padding:24px}
+  .grid-racas{grid-template-columns:repeat(2,1fr);gap:20px}
+  #app{max-width:none;box-shadow:none;margin:0;border:0}
+  nav.menu-lateral{display:flex!important;flex-direction:column;position:sticky;top:0;height:100vh;background:#1E3A26;color:white;padding:20px}
+  nav.menu-inferior{display:none!important}
+}
+@media (max-width:899px){
+  nav.menu-lateral{display:none!important}
+}
+nav.menu-lateral{display:none}
+.menu-lateral .m-titulo{font-family:'Fraunces',serif;font-size:22px;font-weight:650;color:#F4EFE4}
+.menu-lateral .m-sub{font-size:11px;color:#9FAF8F;margin:2px 0 18px;letter-spacing:.4px}
+.menu-lateral .m-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;color:#D7DEC9;font-weight:600;font-size:14.5px;text-align:left;margin-bottom:6px;transition:background .15s}
+.menu-lateral .m-item:hover{background:rgba(244,239,228,.08)}
+.menu-lateral .m-item.on{background:rgba(244,239,228,.14);color:#F4EFE4}
+.menu-lateral .m-item svg{flex:none}
+.menu-lateral .m-sep{height:1px;background:rgba(244,239,228,.14);margin:12px 0}
+.menu-lateral .m-vip{font-size:12px;font-weight:700;color:#E8A66B;padding:10px 2px 0}
 </style>
 </head>
 <body>
+
+<nav class="menu-lateral" id="menuLat" aria-label="Menu principal"></nav>
+
 <div id="app">
+  <div id="trialBanner" style="display:none;background:#F3E8D2;border:1px solid #E8D3A2;color:#7A5510;padding:10px 14px;border-radius:12px;font-size:13px;font-weight:700;margin:12px"></div>
   <header id="hdr"></header>
   <main id="view"></main>
 </div>
+
 <button id="fab" aria-label="Ação principal"></button>
-<nav id="tabbar"></nav>
+<nav id="tabbar" class="menu-inferior"></nav>
 <div id="toastRoot"></div>
+
+<!-- Modal VIP: ID do cliente + código de liberação -->
+<div id="vipBox">
+  <div class="vip-card">
+    <h3 style="font-family:'Fraunces',serif;font-size:21px">👑 Acesso VIP Lepus</h3>
+    <p class="hint" style="margin-top:8px">Mande seu ID pelo WhatsApp. Após o PIX de R$27, você recebe o código de liberação.</p>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:14px">Seu ID exclusivo</div>
+    <div class="vip-id" id="meuId">—</div>
+    <button class="btn primary" id="btnWa" style="width:100%">📋 Copiar e mandar no WhatsApp</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:16px 0 10px;color:var(--muted);font-size:11px;font-weight:700">
+      <span style="flex:1;height:1px;background:var(--line)"></span>JÁ TEM CÓDIGO?<span style="flex:1;height:1px;background:var(--line)"></span>
+    </div>
+    <input id="vipInput" placeholder="LIBERA-XXXX-XXXX" style="width:100%;height:48px;border:2px solid var(--deep);border-radius:12px;text-align:center;font-weight:700;text-transform:uppercase">
+    <button class="btn primary" id="btnLiberar" style="width:100%;margin-top:10px">LIBERAR ACESSO</button>
+    <button id="btnVipClose" style="margin-top:12px;font-size:12px;color:var(--muted)">Voltar</button>
+  </div>
+</div>
 
 <script>
 /* ============================================================
-   LEPUS — gestão de cunicultura · arquivo único, 100% offline
+   LEPUS 2.0 — gestão de cunicultura · arquivo único · offline
    ============================================================ */
 'use strict';
 
@@ -301,6 +355,126 @@ function idade(d){
   return a>0 ? a+' a '+m+' m' : m>0 ? m+' m '+dd+' d' : dd+' d';
 }
 const vendaTotal = v => v.itens.reduce((s,i)=> s + (Number(i.qtd)||0)*(Number(i.preco)||0), 0) - (Number(v.desconto)||0);
+
+/* ============================================================
+   FREEMIUM · TRIAL 7 DIAS · VIP POR ID+CODIGO
+   - Trial: acesso total por 7 dias desde a 1ª abertura.
+   - VIP: 'lepus_vip'==='1' → acesso total permanente.
+   - Código LIBERA-XXXX-XXXX derivado do ID do cliente;
+     gerado no painel.html (admin) e validado aqui.
+   ============================================================ */
+const SENHA_MESTRA = 'negret2026';
+const RACAS_PREMIUM = ['Nova Zelândia Branco','Nova Zelândia Azul','Nova Zelândia Vermelho','Gigante de Flandres'];
+
+function isVip(){ return localStorage.getItem('lepus_vip') === '1'; }
+function getDias(){
+  let i = localStorage.getItem('lepus_inicio');
+  if(!i){ i = Date.now(); localStorage.setItem('lepus_inicio', String(i)); }
+  return (Date.now() - parseInt(i)) / (1000*60*60*24);
+}
+function temAcesso(){ return isVip() || getDias() <= 7; }
+function ehRacaPremium(r){
+  if(!r) return false;
+  const x = String(r).toLowerCase();
+  return RACAS_PREMIUM.some(p => x.includes(p.toLowerCase()));
+}
+function gerarIdCliente(){
+  let id = localStorage.getItem('lepus_meu_id');
+  if(!id){
+    const cs = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const pick = n => Array.from({length:n}, () => cs[Math.floor(Math.random()*cs.length)]).join('');
+    id = 'LEPUS-' + pick(4) + '-' + pick(4);
+    localStorage.setItem('lepus_meu_id', id);
+  }
+  return id;
+}
+/* Mesmo algoritmo do painel.html — código derivado do ID */
+function codigoEsperadoPara(id){
+  return 'LIBERA-' + btoa(id + SENHA_MESTRA).substring(0,4).toUpperCase() + '-' + btoa(id).substring(2,6).toUpperCase();
+}
+/* Núcleo de validação (sem UI): true/false */
+function checkVipCore(codigo){
+  const c = String(codigo || '').trim().toUpperCase();
+  if(!c) return false;
+  if(c === codigoEsperadoPara(gerarIdCliente())) return true;
+  if(typeof window.validarCodigoExterno === 'function' && window.validarCodigoExterno(c)) return true;
+  return false;
+}
+function checkVip(){
+  const input = document.getElementById('vipInput');
+  if(checkVipCore(input.value)){
+    localStorage.setItem('lepus_vip','1');
+    fecharVipModal();
+    toast('VIP ativado! Acesso total liberado 👑');
+    setTimeout(() => location.reload(), 700);
+  } else {
+    alert('Código inválido. Confira com o suporte no WhatsApp (31) 98251-7147.');
+  }
+}
+function abrirVipModal(){
+  const box = document.getElementById('vipBox');
+  document.getElementById('meuId').textContent = gerarIdCliente();
+  const msg = 'Olá! Quero liberar meu app Lepus. Meu ID: ' + gerarIdCliente() + '. Já fiz o PIX de R$27';
+  const btn = document.getElementById('btnWa');
+  btn.onclick = () => {
+    const done = () => window.open('https://wa.me/5531982517147?text=' + encodeURIComponent(msg), '_blank');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(msg).then(done, done);
+    } else done();
+  };
+  box.classList.add('on');
+}
+function fecharVipModal(){ document.getElementById('vipBox').classList.remove('on'); }
+function updateBanner(){
+  const b = document.getElementById('trialBanner');
+  if(!b) return;
+  if(isVip()){ b.style.display = 'none'; return; }
+  const d = getDias();
+  if(d <= 7){
+    b.style.display = 'block';
+    b.innerText = '🎁 Trial VIP: faltam ' + Math.ceil(7 - d) + ' dias grátis — aproveite Flandres e NZ Branco';
+  } else {
+    b.style.display = 'block';
+    b.innerHTML = '⏰ Seu trial de 7 dias acabou <button onclick="abrirVipModal()" style="margin-left:10px;background:#B23A2E;color:white;padding:4px 10px;border-radius:99px;font-size:11px">ATIVAR VIP</button>';
+  }
+}
+function bloquearPremium(){
+  if(temAcesso()){
+    document.querySelectorAll('.vip-locked').forEach(el=>{
+      el.classList.remove('vip-locked');
+      const b = el.querySelector('.vip-badge'); if(b) b.remove();
+    });
+    return;
+  }
+  document.querySelectorAll('[data-vip="1"]').forEach(el=>{
+    el.classList.add('vip-locked');
+    if(!el.querySelector('.vip-badge')){
+      const badge = document.createElement('div');
+      badge.className = 'vip-badge';
+      badge.innerHTML = '🔒 VIP';
+      badge.onclick = (e)=>{ e.stopPropagation(); abrirVipModal(); };
+      el.style.position = 'relative';
+      el.appendChild(badge);
+    }
+  });
+}
+document.addEventListener('click', e => {
+  if(temAcesso()) return;
+  const t = e.target && e.target.closest && e.target.closest('.vip-locked');
+  if(t){ e.preventDefault(); e.stopPropagation(); abrirVipModal(); }
+}, true);
+/* Link mágico futuro: ?vip=LIBERA-XXXX-XXXX ativa automaticamente */
+(function(){
+  try{
+    const p = new URLSearchParams(location.search);
+    const v = p.get('vip');
+    if(v && !isVip() && checkVipCore(v)){
+      localStorage.setItem('lepus_vip','1');
+      history.replaceState(null, '', location.pathname);
+      setTimeout(() => toast('VIP ativado pelo link! 👑'), 600);
+    }
+  }catch(e){}
+})();
 
 /* ---------- Ícones ---------- */
 const P = {
@@ -342,7 +516,6 @@ const bunnySVG = cls => `<svg class="bunny ${cls||''}" viewBox="0 0 96 96" fill=
 </svg>`;
 
 /* ---------- Predefinidos ---------- */
-/* Raças: as 5 variedades de Nova Zelândia + as demais do criatório */
 const RACAS_BASE = [
   'Nova Zelândia Branco',
   'Nova Zelândia Vermelho',
@@ -358,7 +531,6 @@ const RACAS_BASE = [
   'Belo Holandês',
   'Mestiço'
 ];
-/* Descrição da pelagem exibida como dica ao cadastrar */
 const RACA_INFO = {
   'Nova Zelândia Branco':   'O mais famoso: todo branco, olho vermelho/rosa',
   'Nova Zelândia Vermelho': 'Avermelhado brilhante — o menor da raça',
@@ -401,7 +573,6 @@ function normalizaDb(d){
   out.settings = Object.assign({}, p.settings, (d && d.settings) || {});
   if(!Array.isArray(out.settings.racasCustom)) out.settings.racasCustom = [];
   ['coelhos','ninhadas','acasalamentos','tarefas','abates','vendas','sanidade','alimentacao'].forEach(k => { if(!Array.isArray(out[k])) out[k] = []; });
-  /* Migração de grafias/nomes de raças antigas */
   const renomeia = (de, para) => out.coelhos.forEach(c => { if(c.raca === de) c.raca = para; });
   renomeia('Flanders', 'Gigante de Flandres');
   renomeia('Branco de Vila Récal', 'Branco de Vila Real');
@@ -442,9 +613,8 @@ function alvoDesc(s){
 }
 
 /* ============================================================
-   LEMBRETES COM ALARME OFFLINE — 100% nativo
-   @capacitor/local-notifications · sem Firebase · sem Notification API
-   Toca com APP FECHADO e TELA APAGADA (allowWhileIdle + canal importância 5).
+   ALARME OFFLINE — @capacitor/local-notifications
+   Toca com APP FECHADO e TELA APAGADA (allowWhileIdle + canal 5).
    localStorage["tarefas"]:
    { id, nome, data, hora, repetir, feita, alarmeTocou, notifId, tipo, coelhoId }
    ============================================================ */
@@ -468,12 +638,11 @@ function migraTarefasDeBackup(){
   db.tarefas = [];
 }
 
-/* Ponte nativa — só existe dentro do APK Capacitor */
 const _Cap = (typeof window !== 'undefined' && window.Capacitor) ? window.Capacitor : null;
 const _LN  = (_Cap && _Cap.isNativePlatform && _Cap.isNativePlatform()) ? _Cap.Plugins.LocalNotifications : null;
 
 const CANAL = 'lembretes-coelhos';
-const SOM   = 'alarme.mp3';   /* android/app/src/main/res/raw/alarme.mp3 */
+const SOM   = 'alarme.mp3';
 const _REPETE_DIAS = { diario:1, semanal:7, '14dias':14 };
 
 function isoDeData(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -481,7 +650,6 @@ function hashId(s){ let h = 0; for(const ch of String(s)) h = (h*31 + ch.charCod
 function idNotif(t){ return t.notifId || (t.notifId = hashId(t.id) % 2147483000 + 1); }
 function dataHoraTarefa(t){ return new Date((t.data||isoHoje()) + 'T' + (t.hora || '08:00')); }
 
-/* Sirene interna (WebAudio) — usada ao abrir o app com atrasadas */
 let _audioCtx = null;
 function ensureAudio(){
   try{
@@ -517,7 +685,6 @@ function sirene(){
   try{ navigator.vibrate && navigator.vibrate([250,120,250,120,250,120,400]); }catch(e){}
 }
 
-/* Canal de importância MÁXIMA: tela acende, som toca, vibra — mesmo com tela apagada */
 async function lnCanal(){
   if(!_LN) return;
   try{
@@ -528,8 +695,6 @@ async function lnCanal(){
     });
   }catch(e){}
 }
-
-/* Permissões: POST_NOTIFICATIONS (Android 13+) */
 async function lnPerm(){
   if(!_LN) return false;
   try{
@@ -539,8 +704,6 @@ async function lnPerm(){
     return r.display === 'granted';
   }catch(e){ return false; }
 }
-
-/* Alarmes EXATOS (Android 12+): abre a tela "Alarmes e lembretes" se negado */
 async function lnAlarmeExato(){
   if(!_LN) return true;
   try{
@@ -555,8 +718,6 @@ async function lnAlarmeExato(){
   }catch(e){}
   return true;
 }
-
-/* BOTÃO "Tocar alarme agora": permissões + teste em 10 s (critério: tela apagada toca) */
 async function tocarAlarme(){
   if(!_LN){
     sirene();
@@ -580,8 +741,6 @@ async function tocarAlarme(){
     toast('Falha ao agendar: ' + (e && e.message ? e.message : 'erro'), 'x', true);
   }
 }
-
-/* Agenda a notificação futura de uma tarefa (com app fechado) */
 async function lnAgendar(t){
   if(!_LN || t.feita) return;
   const id = idNotif(t);
@@ -589,7 +748,7 @@ async function lnAgendar(t){
   if(!alvo || isNaN(alvo.getTime()) || alvo.getTime() <= Date.now()) return;
   try{
     await lnCanal();
-    await lnCancelar(t); /* evita duplicidade ao reagendar repetitivas */
+    await lnCancelar(t);
     await _LN.schedule({ notifications:[{
       id,
       title: 'CuniCoelho 🐰',
@@ -608,8 +767,6 @@ async function lnCancelar(t){
 async function lnAgendarTodas(){
   for(const t of tarefasGet()){ if(!t.feita) await lnAgendar(t); }
 }
-
-/* Ao abrir o app: alarme de cobrança para TODAS as atrasadas + reagenda futuras */
 async function verificarAtrasadas(){
   const hoje = isoHoje(), agora = new Date();
   const arr = tarefasGet();
@@ -640,8 +797,6 @@ async function verificarAtrasadas(){
   }
   for(const t of arr){ if(!t.feita) await lnAgendar(t); }
 }
-
-/* Concluir: tarefa repetitiva avança a data e reagenda */
 function concluirTarefa(id){
   const arr = tarefasGet(); const t = arr.find(x=>x.id===id); if(!t) return;
   if(t.repetir && t.repetir !== 'nao' && _REPETE_DIAS[t.repetir]){
@@ -667,8 +822,6 @@ function excluirTarefa(id){
   if(t){ lnCancelar(t); tarefasSet(arr.filter(x=>x.id!==id)); }
   toast('Tarefa excluída'); render();
 }
-
-/* Toque na notificação → marca e abre a aba Tarefas */
 if(_LN){
   _LN.addListener('localNotificationActionPerformed', ({ notification }) => {
     const tid = notification && notification.data && notification.data.tarefaId;
@@ -724,6 +877,23 @@ function confirmSheet(titulo, msg, acao, cb){
   sh.querySelector('[data-a=y]').onclick = () => { sh.close(); cb(); };
 }
 
+/* ---------- Menu lateral (desktop) ---------- */
+function renderSidebar(){
+  const nav = $('#menuLat'); if(!nav) return;
+  const dT = getDias();
+  nav.innerHTML = `
+    <div class="m-titulo">🐰 Lepus</div>
+    <div class="m-sub">Lepus Negret's · Cunicultura</div>
+    ${TABS.map(t => `<button class="m-item ${state.tab===t.id?'on':''}" data-tab="${t.id}">${ic(t.icon,20)}<span>${t.label}</span></button>`).join('')}
+    <div class="m-sep"></div>
+    <button class="m-item" id="mPerfil">${ic('gear',20)}<span>Perfil</span></button>
+    <div class="m-sep"></div>
+    <div class="m-vip">${isVip() ? '👑 VIP ativo' : (dT<=7 ? '🎁 Trial: ' + Math.ceil(7-dT) + ' dia(s)' : '⏰ Trial encerrado')}</div>`;
+  $$('#menuLat [data-tab]').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); window.scrollTo(0,0); });
+  const pf = $('#mPerfil');
+  if(pf) pf.onclick = () => sheetConfig();
+}
+
 /* ---------- Cabeçalho / abas / FAB ---------- */
 function renderHeader(){
   let t, s;
@@ -768,7 +938,7 @@ function renderFab(){
   };
 }
 function render(){
-  renderHeader(); renderFab();
+  renderHeader(); renderFab(); renderSidebar(); updateBanner();
   $('#tabbar').innerHTML = TABS.map(t =>
     `<button class="tab ${state.tab===t.id?'on':''}" data-tab="${t.id}">
        <span class="pill">${ic(t.icon,22)}</span><span>${t.label}</span></button>`).join('');
@@ -778,6 +948,7 @@ function render(){
   else if(state.tab === 'manejo') viewManejo();
   else if(state.tab === 'abates') viewAbates();
   else viewVendas();
+  bloquearPremium();
 }
 
 /* ============================================================
@@ -824,7 +995,7 @@ function viewPainel(){
   const filaHTML = fila.length ? fila.map(c => {
     const pct = Math.min(100, Math.round(c.peso/alvo*100));
     const car = carenciaCoelho(c);
-    return `<div class="fila-row" data-id="${c.id}">
+    return `<div class="fila-row" data-id="${c.id}" ${(!temAcesso() && ehRacaPremium(c.raca))?'data-vip="1"':''}>
       <div class="fr-main"><b>${esc(c.brinco)}</b><span>${esc(c.raca||'—')} · ${idade(c.nascimento)}</span>
         <div class="pbar"><i class="${pct>=100?'full':''}" style="width:${pct}%"></i></div></div>
       <div class="fr-w"><b>${fmtKg(c.peso)}</b>${car
@@ -912,7 +1083,7 @@ function listaCoelhosHTML(){
   lista.sort((a,b)=> (a.brinco||'').localeCompare(b.brinco||'', 'pt-BR', {numeric:true}));
   if(!lista.length) return `<div class="empty">${bunnySVG('')}<b>Nenhum coelho aqui</b><p>Ajuste o filtro ou toque em “Novo coelho”.</p></div>`;
   return lista.map(c =>
-    `<div class="crow" data-id="${c.id}">
+    `<div class="crow" data-id="${c.id}" ${(!temAcesso() && ehRacaPremium(c.raca))?'data-vip="1"':''}>
       ${avaHTML(c,'ava')}
       <div class="row-main"><b>${esc(c.brinco)}${c.nome ? ' · '+esc(c.nome) : ''}</b>
         <span>${c.jaula?'Jaula '+esc(c.jaula)+' · ':''}${esc(c.raca||'—')} · ${idade(c.nascimento)}</span></div>
@@ -1115,6 +1286,7 @@ function sparkline(pesos){
 
 function sheetDetalhe(id){
   const c = porId(id); if(!c) return;
+  if(!temAcesso() && ehRacaPremium(c.raca)){ abrirVipModal(); return; }
   const vivo = !['vendido','abatido','morto'].includes(c.status);
   const car = carenciaCoelho(c);
   const ultima = db.sanidade.filter(s => s.alvoTipo==='individual' && s.coelhoId===id)
@@ -1433,7 +1605,6 @@ function renderMsub(){
     $$('#lista .row').forEach(r => r.onclick = () => sheetAlimentacaoDet(r.dataset.id));
 
   } else {
-    /* ---- Tarefas: ATRASADAS / PARA HOJE / PENDENTES ---- */
     const hoje = isoHoje();
     const arr = tarefasGet();
     const atras = arr.filter(t=>!t.feita && t.data < hoje);
@@ -1472,11 +1643,10 @@ function renderMsub(){
     $$('#msubArea [data-ex]').forEach(b => b.onclick = e => { e.stopPropagation(); excluirTarefa(b.dataset.ex); });
     const btnAl = $('#btnAlarme');
     if(btnAl) btnAl.onclick = e => { e.stopPropagation(); tocarAlarme(); };
-    verificarAtrasadas(); /* re-checa ao entrar na aba */
+    verificarAtrasadas();
   }
 }
 
-/* ---------- Nova tarefa: data + hora + repetição ---------- */
 function sheetTarefa(){
   const sh = openSheet('Nova tarefa', `
     <div class="form">
@@ -1849,7 +2019,7 @@ function pickerCoelho(cb){
     const q = p.querySelector('#pkQ').value.toLowerCase();
     const lista = ativos().filter(c => ((c.brinco||'')+' '+(c.raca||'')).toLowerCase().includes(q));
     p.querySelector('#pkLista').innerHTML = lista.length ? lista.map(c =>
-      `<button class="pk-row" data-id="${c.id}">
+      `<button class="pk-row" data-id="${c.id}" ${(!temAcesso() && ehRacaPremium(c.raca))?'data-vip="1"':''}>
         ${avaHTML(c,'ava')}
         <div class="row-main"><b>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</b>
           <span>${esc(c.raca||'—')} · ${c.peso?fmtKg(c.peso):'sem peso'} · ${STATUS_L[c.status]}</span></div>
@@ -1994,8 +2164,8 @@ function reciboHTML(v){
 function sheetRecibo(id){
   const v = db.vendas.find(x=>x.id===id); if(!v) return;
   const sh = openSheet('Recibo #'+String(v.num).padStart(4,'0'), reciboHTML(v), {
-    foot:`<button class="btn ghost" id="rShare">${ic('share',18)} Enviar</button>
-          <button class="btn primary" id="rPdf">${ic('download',18)} PDF</button>` });
+    foot:`<button class="btn ghost" id="rShare" ${temAcesso()?'':'data-vip="1"'}>${ic('share',18)} Enviar</button>
+          <button class="btn primary" id="rPdf" ${temAcesso()?'':'data-vip="1"'}>${ic('download',18)} PDF</button>` });
   const nomeArq = 'Recibo-' + String(v.num).padStart(4,'0') + '.pdf';
   sh.querySelector('#rPdf').onclick = () => { const blob = buildVendaPdf(v); downloadBlob(blob, nomeArq); toast('PDF gerado'); };
   sh.querySelector('#rShare').onclick = () => { const blob = buildVendaPdf(v); sharePdf(blob, nomeArq); };
@@ -2243,6 +2413,12 @@ function sheetConfig(){
       <div class="fld"><label>Peso-alvo de abate (kg)</label><input id="sAlvo" type="number" inputmode="decimal" min="0" step="0.1" value="${S.pesoAlvo||3.5}"></div>
       <button class="btn primary" id="sSal">${ic('check',18)} Salvar dados do criatório</button>
 
+      <div class="sec-t">Acesso VIP · Trial 7 dias</div>
+      <div class="stbox" id="vipStatusBox"></div>
+      <div class="clist">
+        <button id="cVip">${ic('sparkle',19)}<span>Gerenciar acesso VIP<small>Ver seu ID, pedir liberação ou digitar código</small></span></button>
+      </div>
+
       <div class="sec-t">Alertas</div>
       <div class="clist">
         <button id="cSom">${ic('bell',19)}<span>Alerta sonoro de tarefas<small id="somHint"></small></span></button>
@@ -2277,6 +2453,14 @@ function sheetConfig(){
       <input type="file" id="cFile" accept=".json,application/json" style="display:none">
     </div>`);
 
+  const vsb = sh.querySelector('#vipStatusBox');
+  const dT = getDias();
+  vsb.innerHTML = isVip()
+    ? `<div class="l"><span>Acesso</span><b class="ok">VIP ativo ✓</b></div><div class="l"><span>Premium</span><b class="ok">Tudo liberado</b></div>`
+    : (dT <= 7
+      ? `<div class="l"><span>Trial grátis</span><b class="warn">faltam ${Math.ceil(7-dT)} dia(s)</b></div><div class="l"><span>Premium</span><b class="ok">liberado no trial</b></div>`
+      : `<div class="l"><span>Trial</span><b class="err">encerrado</b></div><div class="l"><span>Premium</span><b class="err">bloqueado — ative o VIP</b></div>`);
+
   const somHint = sh.querySelector('#somHint');
   const updSom = () => {
     somHint.textContent = (S.somTarefas === false)
@@ -2290,6 +2474,8 @@ function sheetConfig(){
     toast(S.somTarefas === false ? 'Alerta sonoro desligado' : 'Alerta sonoro ligado');
   };
   sh.querySelector('#cSomTest').onclick = () => { tocarAlarme(); };
+
+  sh.querySelector('#cVip').onclick = () => { sh.close(); abrirVipModal(); };
 
   sh.querySelector('#rcAdd').onclick = () => {
     const inp = sh.querySelector('#rcNova');
@@ -2380,7 +2566,7 @@ function sheetConfig(){
 
 function sheetBoasVindas(){
   const sh = openSheet('Bem-vindo ao Lepus', `
-    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas com alarme offline, abates, vendas e recibos em PDF. Comece contando quem é o seu criatório.</p>
+    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas com alarme offline, abates, vendas e recibos em PDF. Você tem <b style="color:var(--ink)">7 dias de teste VIP completo</b> — depois, as raças premium ficam atrás do código. Comece contando quem é o seu criatório.</p>
     <div class="form" style="margin-top:12px">
       <div class="fld"><label>Nome do criatório *</label><input id="wNome" placeholder="Sítio Boa Esperança"></div>
       <div class="frow">
@@ -2423,7 +2609,6 @@ function seedExample(){
   );
   db.ninhadas.push({ id:uid(), matrizId:novos[1].id, padraoId:novos[2].id, nascimento:diasAtras(28),
     nascidos:9, vivos:8, obs:'Ninho bem formado, sem perdas.', desmame:null });
-  /* Tarefas no formato novo — uma atrasada de propósito para testar o alarme */
   tarefasSet(tarefasGet().concat([
     { id:uid(), nome:'Dar remédio', data:diasAtras(1), hora:'08:00', repetir:'diario',
       feita:false, alarmeTocou:false, tipo:'Outros cuidados', coelhoId:null },
@@ -2532,9 +2717,17 @@ function tentarInstalar(){
 setupPWA();
 migraTarefasDeBackup();
 render();
-verificarAtrasadas();   /* ao abrir: alarme de cobrança para todas as atrasadas */
-lnAgendarTodas();       /* (re)agenda as notificações nativas futuras — APK */
+verificarAtrasadas();
+lnAgendarTodas();
 if(!db.settings.configurado) sheetBoasVindas();
+</script>
+
+<script src="vip-codes.js"></script>
+<script>
+/* Ligações do modal VIP (elementos no HTML) */
+document.getElementById('btnLiberar').onclick = () => checkVip();
+document.getElementById('vipInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkVip(); });
+document.getElementById('btnVipClose').onclick = () => fecharVipModal();
 </script>
 </body>
 </html>
